@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project xmlns:wlp="antlib:net.wasdev.wlp.ant" name="net.wasdev.wlp.ant.it" default="bvt">
+
+    <!-- Specify Liberty profile server installation directory -->
+    <property name="wlp_install_dir" value="${basedir}/../build.image/wlp"/>
+
+    <property name="build.dir" value="target/output"/>
+    <property name="wlp_usr" value="${build.dir}/wlp_usr"/>
+    <property name="wlp_output" value="${build.dir}/wlp_output"/>
+    <property name="serverConfig" value="${basedir}/src/test/resources/server.xml"/>
+    <property name="bootProp" value="${basedir}/src/test/resources/bootstrap.properties"/>
+    <property name="serverName" value="wlp.ant.test"/>
+
+    <path id="wlp-ant-tasks.classpath">
+        <fileset dir="${basedir}/../../../target" includes="wlp-anttasks-*.jar"/>
+    </path>
+    <typedef resource="net/wasdev/wlp/ant/antlib.xml" 
+             uri="antlib:net.wasdev.wlp.ant" 
+             classpathref="wlp-ant-tasks.classpath"/>
+
+    <target name="deploy">
+        <delete dir="${wlp_usr}"/>
+        <delete dir="${wlp_output}"/>
+        <mkdir dir="${wlp_usr}"/>
+        <mkdir dir="${wlp_output}"/>
+        <copy file="${serverConfig}" toFile="${wlp_usr}/servers/${serverName}/server.xml"/>
+        <copy file="${bootProp}" toFile="${wlp_usr}/servers/${serverName}/bootstrap.properties"/>
+
+        <wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}" 
+                    serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" 
+                    operation="start"/>
+        <wlp:server ref="wlp.ant.test" operation="status"/>
+        <wlp:deploy ref="wlp.ant.test">
+            <fileset dir="${basedir}/../setup/test-war/target">
+                <include name="*.war"/>
+            </fileset>
+        </wlp:deploy>
+        <wlp:deploy ref="wlp.ant.test" file="${basedir}/../setup/test-eba/target/test-eba.eba" timeout="40000"/>
+    </target>
+
+    <target name="undeploy">
+        <wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}" 
+                    serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" 
+                    operation="status"/>
+
+        <wlp:undeploy ref="wlp.ant.test" file="test-war.war" timeout="50000"/>
+        <wlp:undeploy ref="wlp.ant.test" file="test-eba.eba" timeout="60000"/>
+
+        <wlp:server ref="wlp.ant.test" operation="stop"/>
+        <wlp:server ref="wlp.ant.test" operation="package" archive="${build.dir}/wlp.ant.test.zip"/>
+    </target>
+
+</project>

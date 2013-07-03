@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<antlib>
+	<!-- Task -->
+	<taskdef classname="net.wasdev.wlp.ant.ServerTask" name="server"/>
+	<taskdef classname="net.wasdev.wlp.ant.DeployTask" name="deploy" />
+	<taskdef classname="net.wasdev.wlp.ant.UndeployTask" name="undeploy"/>
+</antlib>
+	
