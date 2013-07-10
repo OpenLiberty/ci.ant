@@ -31,11 +31,9 @@ To use the Liberty Ant tasks in your build scripts you need to:
                  
 ## Usage
 
+### server task
 
-server task
------------
-
-### Parameters
+#### Parameters
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
@@ -49,7 +47,7 @@ server task
 | archive | Location of the compressed file when packaging a server. The value must be a file name and only works for the `package` option. | No | 
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
-### Examples
+#### Examples
 
     <wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}" operation="start" 
             serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" />
@@ -57,10 +55,10 @@ server task
     <wlp:server ref="wlp.ant.test" operation="status"/>
 
 
-deploy task
------------
+### deploy task
 
-### Parameters
+
+#### Parameters
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
@@ -73,7 +71,7 @@ deploy task
 | timeout| Waiting time before the deployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. |No |
 
-### Examples
+#### Examples
 
     <wlp:deploy ref="wlp.ant.test" >
        <fileset dir="${basedir}/resources/">
@@ -83,10 +81,9 @@ deploy task
 
     <wlp:deploy ref="wlp.ant.test" file="${basedir}/resources/SimpleOSGiApp.eba"  timeout="40000"/>
 
-undeploy task
--------------
+### undeploy task
 
-### Parameters
+#### Parameters
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
@@ -97,7 +94,7 @@ undeploy task
 | timeout | Waiting time before the undeployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
-### Examples
+#### Examples
 
     <wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" />
 
