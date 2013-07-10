@@ -21,13 +21,12 @@ To use the Liberty Ant tasks in your build scripts you need to:
         </project>
 
 2. Make Liberty Ant tasks available in your build script by:
+ * Copying `wlp-anttasks.jar` into `$ANT_HOME/lib` directory, or
+ * Using the `typedef` task to load the Liberty tasks, for example:
 
-  * Copying `wlp-anttasks.jar` into `$ANT_HOME/lib` directory, or
-  * Using the `typedef` task to load the Liberty tasks, for example:
-
-        <typedef resource="net/wasdev/wlp/ant/antlib.xml" 
-                 uri="antlib:net.wasdev.wlp.ant" 
-                 classpath="target/wlp-anttasks.jar"/>
-
-
+            <typedef resource="net/wasdev/wlp/ant/antlib.xml" 
+                     uri="antlib:net.wasdev.wlp.ant" 
+                     classpath="target/wlp-anttasks.jar"/>
+             
+                 
 ## Usage
