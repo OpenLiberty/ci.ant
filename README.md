@@ -38,6 +38,14 @@ To use the Liberty Ant tasks in your build scripts you need to:
 ### server task
 ---
 
+The `server` task supports the following options to manage the status of a Liberty profile server:
+
+* `create`, which creates a named server instance.
+* `start`, which starts the named server instance. If the server instance does not exist, this option creates one by default.
+* `stop`, which stops the named server.
+* `status`, which checks the server status.
+* `package`, which packages the named server and its deployed applications.
+
 #### Parameters
 
 | Attribute | Description | Required |
@@ -62,6 +70,8 @@ To use the Liberty Ant tasks in your build scripts you need to:
 
 ### deploy task
 ---
+
+The `deploy` task supports deployment of one or more applications to the Liberty Profile server.
 
 #### Parameters
 
@@ -89,6 +99,8 @@ To use the Liberty Ant tasks in your build scripts you need to:
 ### undeploy task
 ---
 
+The `undeploy` task supports undeployment of a single application from the Liberty Profile server.
+
 #### Parameters
 
 | Attribute | Description | Required |
@@ -103,5 +115,4 @@ To use the Liberty Ant tasks in your build scripts you need to:
 #### Examples
 
     <wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" />
-
 
