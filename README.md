@@ -1,7 +1,11 @@
 ci.ant
 ======
 
-Collection of Ant tasks for managing WebSphere Application Server Liberty Profile and its applications.
+Collection of Ant tasks for managing WebSphere Application Server Liberty Profile and applications.
+
+* [Build](#build)
+* [Configuration](#configuration)
+* [Tasks](#tasks)
 
 ## Build
 
@@ -29,9 +33,10 @@ To use the Liberty Ant tasks in your build scripts you need to:
                      classpath="target/wlp-anttasks.jar"/>
              
                  
-## Usage
+## Tasks
 
 ### server task
+---
 
 #### Parameters
 
@@ -56,7 +61,7 @@ To use the Liberty Ant tasks in your build scripts you need to:
 
 
 ### deploy task
-
+---
 
 #### Parameters
 
@@ -82,6 +87,7 @@ To use the Liberty Ant tasks in your build scripts you need to:
     <wlp:deploy ref="wlp.ant.test" file="${basedir}/resources/SimpleOSGiApp.eba"  timeout="40000"/>
 
 ### undeploy task
+---
 
 #### Parameters
 
