@@ -31,7 +31,8 @@ To use the Liberty Ant tasks in your build scripts you need to:
             <typedef resource="net/wasdev/wlp/ant/antlib.xml" 
                      uri="antlib:net.wasdev.wlp.ant" 
                      classpath="target/wlp-anttasks.jar"/>
-             
+          
+   The latest build of `wlp-anttasks.jar` can be obtained from the [Sonatype OSS Maven snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/net/wasdev/wlp/ant/wlp-anttasks/).
                  
 ## Tasks
 
