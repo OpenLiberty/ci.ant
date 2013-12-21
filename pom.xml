@@ -28,8 +28,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:https://github.com/WASdev/ci.ant.git</connection>
-        <url>https://github.com/WASdev/ci.ant</url>
+        <connection>scm:git:git@github.com:WASdev/ci.ant.git</connection>
+        <developerConnection>scm:git:git@github.com:WASdev/ci.ant.git</developerConnection>
+        <url>git@github.com:WASdev/ci.ant.git</url>
     </scm>
 
     <developers>
