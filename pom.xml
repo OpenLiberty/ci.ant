@@ -3,10 +3,42 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
     <groupId>net.wasdev.wlp.ant</groupId>
     <artifactId>wlp-anttasks</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>WebSphere Application Server Liberty Profile Ant Tasks</name>
+    <description>
+       Parent pom for Ant tasks supporting development with 
+       WebSphere Application Server Liberty Profile.
+    </description>
+    <url>https://wasdev.github.io</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://raw.github.com/WASdev/ci.ant/master/LICENSE</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:https://github.com/WASdev/ci.ant.git</connection>
+        <url>https://github.com/WASdev/ci.ant</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>jgawor</id>
+            <name>Jarek Gawor</name>
+            <email>jgawor@gmail.com</email>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
