@@ -41,11 +41,13 @@ To use the Liberty Ant tasks in your build scripts you need to:
 
 The `server` task supports the following options to manage the status of a Liberty profile server:
 
-* `create`, which creates a named server instance.
-* `start`, which starts the named server instance. If the server instance does not exist, this option creates one by default.
-* `stop`, which stops the named server.
-* `status`, which checks the server status.
-* `package`, which packages the named server and its deployed applications.
+* `create` - creates a named server instance.
+* `start` - starts the named server instance. If the server instance does not exist, this option creates one by default.
+* `stop` - stops the named server.
+* `status` - checks the server status.
+* `package` - packages the named server and its deployed applications.
+* `dump` - dump diagnostic information from the named server into an archive.
+* `javadump` - dump diagnostic information from the named server JVM.
 
 #### Parameters
 
