@@ -14,16 +14,28 @@ import org.apache.tools.ant.BuildException;
 public class ServerTask extends AbstractTask {
 
     private String operation;
-    private boolean clean = true;
-    private File archive;
-
     private String timeout;
 
     private String wlp;
 
     private static final long SERVER_START_TIMEOUT_DEFAULT = 30 * 1000;
     private static final long SERVER_STOP_TIMEOUT_DEFAULT = 30 * 1000;
+    
+    // used with 'start' and 'debug' operations
+    private boolean clean = false;
+    
+    // used with 'status' operation
+    private String resultProperty;
 
+    // used with 'dump', and 'package' operations
+    private File archive;
+    
+    // used with 'dump', 'javadump', and 'package' operations
+    private String include;
+    
+    // used with 'create' operation
+    private String template;
+    
     @Override
     protected void initTask() {
         super.initTask();
@@ -44,6 +56,155 @@ public class ServerTask extends AbstractTask {
 
     }
 
+    @Override
+    public void execute() {
+        if (operation == null || operation.length() <= 0) {
+            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "operation"));
+        }
+
+        initTask();
+
+        try {
+            if ("create".equals(operation)) {
+                doCreate();
+            } else if ("start".equals(operation)) {
+                doStart();
+            } else if ("stop".equals(operation)) {
+                doStop();
+            } else if ("status".equals(operation)) {
+                doStatus();
+            } else if ("debug".equals(operation)) {
+                // Debug seems useless in ant tasks, but still keep it.
+                doDebug();
+            } else if ("package".equals(operation)) {
+                doPackage();
+            } else if ("dump".equals(operation)) {
+                doDump();
+            } else if ("javadump".equals(operation)) {
+                doJavaDump();
+            } else {
+                throw new BuildException("Unsupported operation: " + operation);
+            }
+        } catch (BuildException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BuildException(e);
+        }
+    }
+    
+    private void doStart() throws Exception {
+        // create server first if it doesn't exist        
+        if (!serverConfigRoot.exists()) {
+            log(MessageFormat.format(messages.getString("info.server.create"), serverName));
+            doCreate();
+        }
+        List<String> command = getInitialCommand(operation);
+        addCleanOption(command);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.REDUNDANT_ACTION_STATUS.getValue());
+
+        // check server started message code.
+        long startTimeout = SERVER_START_TIMEOUT_DEFAULT;
+        if (timeout != null && !timeout.equals("")) {
+            startTimeout = Long.valueOf(timeout);
+        }
+        validateServerStarted(getLogFile(), startTimeout);
+    }
+    
+    private void doStop() throws Exception {
+        List<String> command = getInitialCommand(operation);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.REDUNDANT_ACTION_STATUS.getValue());
+    }
+    
+    private void doStatus() throws Exception {
+        List<String> command = getInitialCommand(operation);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        int exitCode = getReturnCode(p, processBuilder.command().toString());
+        if (resultProperty == null) {
+            resultProperty = "wlp." + serverName + ".status";                                       
+        }
+        getProject().setUserProperty(resultProperty, String.valueOf(exitCode));
+    }
+    
+    private void doDump() throws Exception {
+        List<String> command = getInitialCommand(operation);
+        addArchiveOption(command);
+        addIncludeOption(command);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+    }
+    
+    private void doJavaDump() throws Exception {
+        List<String> command = getInitialCommand(operation);
+        addIncludeOption(command);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+    }
+    
+    private void doPackage() throws Exception {
+        List<String> command = getInitialCommand(operation);
+        addArchiveOption(command);
+        addIncludeOption(command);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+    }
+        
+    private void doCreate() throws Exception {
+        List<String> command = getInitialCommand("create");
+        if (template != null) {
+            command.add("--template=" + template);
+        }
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+    }
+    
+    private void doDebug() throws Exception {
+        List<String> command = getInitialCommand(operation);
+        addCleanOption(command);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+    }
+
+    private List<String> getInitialCommand(String operation) {
+        List<String> commands = new ArrayList<String>();
+        commands.add(wlp);
+        commands.add(operation);
+        if (serverName != null && !serverName.equals("")) {
+            commands.add(serverName);
+        }
+        return commands;
+    }
+    
+    private void addArchiveOption(List<String> command) {
+        if (archive != null) {
+            if (archive.isDirectory()) {
+                throw new BuildException("The archive attribute must specify a file");
+            }
+            command.add("--archive=" + archive);
+        }
+    }
+    
+    private void addIncludeOption(List<String> command) {
+        if (include != null) {
+            command.add("--include=" + include);
+        }
+    }
+    
+    private void addCleanOption(List<String> command) {
+        if (clean) {
+            command.add("--clean");
+        }
+    }
+
     /**
      * @return the operation
      */
@@ -58,88 +219,7 @@ public class ServerTask extends AbstractTask {
     public void setOperation(String operation) {
         this.operation = operation;
     }
-
-    @Override
-    public void execute() {
-        if (operation == null || operation.length() <= 0) {
-            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "operation"));
-        }
-
-        initTask();
-
-        Process p = null;
-        try {
-
-            List<String> commands = new ArrayList<String>();
-            commands.add(wlp);
-            commands.add(operation);
-            if (serverName != null && !serverName.equals("")) {
-                //start a server doesn't exist, create it first
-                if (!serverConfigRoot.exists() && operation.equals("start")) {
-                    log(MessageFormat.format(messages.getString("info.server.create"), serverName));
-                    commands.clear();
-                    commands.add(wlp);
-                    commands.add("create");
-                    commands.add(serverName);
-                    processBuilder.command(commands);
-                    p = processBuilder.start();
-                    checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-                    commands.clear();
-                    commands.add(wlp);
-                    commands.add(operation);
-                }
-                commands.add(serverName);
-            }
-
-            if (operation.equals("package") && archive != null) {
-                if (archive.isDirectory()) {
-                    throw new BuildException(messages.getString("error.server.packag"));
-                }
-                commands.add("--archive=" + getArchive());
-            }
-
-            if (isClean()) {
-                commands.add("--clean");
-            }
-
-            processBuilder.command(commands);
-
-            p = processBuilder.start();
-
-            if (operation.equals("start")) {
-                checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-
-                // check server started message code.
-                long startTimeout = SERVER_START_TIMEOUT_DEFAULT;
-                if (timeout != null && !timeout.equals("")) {
-                    startTimeout = Long.valueOf(timeout);
-                }
-                validateServerStarted(getLogFile(), startTimeout);
-
-            } else if (operation.equals("stop")) {
-                checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-
-            } else if (operation.equals("package")) {
-                checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-
-            } else if (operation.equals("create")) {
-                checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-
-            } else if (operation.equals("status")) {
-                checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-
-            } else if (operation.equals("debug")) {
-                //Debug seems useless in ant tasks, but still keep it.
-                checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-
-            }
-
-        } catch (Exception e) {
-            throw new BuildException(e);
-        }
-
-    }
-
+    
     /**
      * @return the archive
      */
@@ -183,5 +263,29 @@ public class ServerTask extends AbstractTask {
     public void setTimeout(String timeout) {
         this.timeout = timeout;
     }
+    
+    public String getResultProperty() {
+        return resultProperty;
+    }
 
+    public void setResultProperty(String resultProperty) {
+        this.resultProperty = resultProperty;
+    }
+    
+    public String getInclude() {
+        return include;
+    }
+    
+    public void setInclude(String include) {
+        this.include = include;
+    }
+    
+    public String getTemplate() {
+        return template;
+    }
+    
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+            
 }

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -133,9 +134,6 @@ public abstract class AbstractTask extends Task {
 
             log(MessageFormat.format(messages.getString("info.variable"), "OutputDir", serverOutputDir.getCanonicalPath()));
 
-        } catch (BuildException e) {
-            throw new BuildException(e);
-
         } catch (IOException e) {
             throw new BuildException(e);
         }
@@ -186,7 +184,6 @@ public abstract class AbstractTask extends Task {
     }
 
     public File getLogFile() {
-
         return new File(serverOutputDir, DEFAULT_LOG_FILE);
     }
 
@@ -203,9 +200,8 @@ public abstract class AbstractTask extends Task {
     public void setRef(String ref) {
         this.ref = ref;
     }
-
-    public void checkReturnCode(final Process p, final String commandLine,
-                                int expected) throws InterruptedException {
+    
+    protected int getReturnCode(Process p, String commandLine, int... expectedExitCodes) throws InterruptedException {
         log(MessageFormat.format(messages.getString("info.variable"), "Invoke command", commandLine, Project.MSG_VERBOSE));
 
         StreamCopier copier = new StreamCopier(p.getInputStream());
@@ -213,9 +209,19 @@ public abstract class AbstractTask extends Task {
 
         int exitVal = p.waitFor();
         copier.doJoin();
-        if (exitVal != expected) {
-            throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, expected));
+        return exitVal;        
+    }
+    
+    public void checkReturnCode(Process p, String commandLine, int... expectedExitCodes) throws InterruptedException {
+        int exitVal = getReturnCode(p, commandLine, expectedExitCodes);
+        
+        for (int expectedExitCode : expectedExitCodes) {
+            if (exitVal == expectedExitCode) {
+                return;
+            }
         }
+
+        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, Arrays.toString(expectedExitCodes)));        
     }
 
     protected void validateServerStarted(File outputFile, long startTimeout) throws Exception {
