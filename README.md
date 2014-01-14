@@ -55,10 +55,13 @@ The `server` task supports the following options to manage the status of a Liber
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
-| operation | Server operations available as options: `create`, `start`, `stop`, `status`, and `package`. | Yes | 
-| clean | Attributes that determines whether to operate the server using the clean option. | No | 
-| timeout | Waiting time before the server starts or stops. The default value is 30 seconds. The unit is milliseconds. | No | 
-| archive | Location of the compressed file when packaging a server. The value must be a file name and only works for the `package` option. | No | 
+| operation | Server operations available as options: `create`, `start`, `stop`, `status`, `package`, `dump`, and `javadump`. | Yes | 
+| clean | Clean all cached information on server start up. The default value is `false`. Only used with the `start` operation. | No | 
+| timeout | Waiting time before the server starts. The default value is 30 seconds. The unit is milliseconds. Only used with the `start` operation. | No | 
+| include | A comma-delimited list of values. The valid values vary depending on the operation. For the `package` operation the valid values are `all`, `usr`, and `minify`. For the `dump` operation the valid values are `heap`, `system`, and `thread`. For the `javadump` operation the valid values are `heap` and `system`. | No. |
+| archive | Location of the target archive file. Only used with the `package` or `dump` operations. | No |
+| template | Name of the template to use when creating a new server. Only used with the `create` operation. | No |
+| resultProperty | Name of a property in which the server status will be stored. By default the server status will be stored under `wlp.<serverName>.status` property. Only used with the `status` operation. | No |
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
 #### Examples
