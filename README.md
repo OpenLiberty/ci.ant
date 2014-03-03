@@ -55,7 +55,7 @@ The `server` task supports the following options to manage the status of a Liber
 | --------- | ------------ | ----------|
 | installDir | Location of the Liberty profile server installation. | Yes |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
-| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | operation | Server operations available as options: `create`, `start`, `stop`, `status`, `package`, `dump`, and `javadump`. | Yes | 
 | clean | Clean all cached information on server start up. The default value is `false`. Only used with the `start` operation. | No | 
