@@ -115,21 +115,33 @@ public abstract class AbstractTask extends Task {
             processBuilder = new ProcessBuilder();
 
             if (userDir != null && userDir.isDirectory()) {
-                log(MessageFormat.format(messages.getString("info.variable"), "WLP_USER_DIR", userDir.getCanonicalPath()), Project.MSG_VERBOSE);
+                log(MessageFormat.format(messages.getString("info.variable"), "userDir", userDir.getCanonicalPath()), Project.MSG_VERBOSE);
                 processBuilder.environment().put(WLP_USER_DIR_VAR, userDir.getCanonicalPath());
                 serverConfigRoot = new File(userDir, "servers/" + serverName);
             } else {
-                serverConfigRoot = new File(installDir, "usr/servers/" + serverName);
+                String wlpUserDir = processBuilder.environment().get(WLP_USER_DIR_VAR);
+                if (wlpUserDir != null) {
+                    log(MessageFormat.format(messages.getString("info.variable"), "WLP_USER_DIR", wlpUserDir), Project.MSG_VERBOSE);
+                    serverConfigRoot = new File(wlpUserDir, "servers/" + serverName);
+                } else {
+                    serverConfigRoot = new File(installDir, "usr/servers/" + serverName);
+                }
             }
 
             log(MessageFormat.format(messages.getString("info.variable"), "ConfigDir", serverConfigRoot.getCanonicalPath()));
 
             if (outputDir != null && outputDir.isDirectory()) {
-                log(MessageFormat.format(messages.getString("info.variable"), "WLP_OUTPUT_DIR", outputDir.getCanonicalPath()), Project.MSG_VERBOSE);
+                log(MessageFormat.format(messages.getString("info.variable"), "outputDir", outputDir.getCanonicalPath()), Project.MSG_VERBOSE);
                 processBuilder.environment().put(WLP_OUTPUT_DIR_VAR, outputDir.getCanonicalPath());
                 serverOutputDir = new File(outputDir, serverName);
             } else {
-                serverOutputDir = serverConfigRoot;
+                String wlpOutputDir = processBuilder.environment().get(WLP_OUTPUT_DIR_VAR);
+                if (wlpOutputDir != null) {
+                    log(MessageFormat.format(messages.getString("info.variable"), "WLP_OUTPUT_DIR", wlpOutputDir), Project.MSG_VERBOSE);
+                    serverOutputDir = new File(wlpOutputDir, serverName);
+                } else {
+                    serverOutputDir = serverConfigRoot;
+                }
             }
 
             log(MessageFormat.format(messages.getString("info.variable"), "OutputDir", serverOutputDir.getCanonicalPath()));
