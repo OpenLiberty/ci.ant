@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.wasdev.maven.parent</groupId>
         <artifactId>default-parent</artifactId>
-        <version>1.0</version>
+        <version>1.2</version>
     </parent>
 
     <groupId>net.wasdev.wlp.ant</groupId>
