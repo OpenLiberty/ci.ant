@@ -139,19 +139,4 @@ public class DeployTask extends AbstractTask {
         this.timeout = timeout;
     }
 
-    /**
-     * @return the serverRef
-     */
-    @Override
-    public String getRef() {
-        return ref;
-    }
-
-    /**
-     * @param serverRef the serverRef to set
-     */
-    @Override
-    public void setRef(String ref) {
-        this.ref = ref;
-    }
 }

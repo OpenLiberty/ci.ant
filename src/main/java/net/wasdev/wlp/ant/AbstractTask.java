@@ -228,7 +228,7 @@ public abstract class AbstractTask extends Task {
         this.ref = ref;
     }
     
-    protected int getReturnCode(Process p, String commandLine, int... expectedExitCodes) throws InterruptedException {
+    protected int getReturnCode(Process p, String commandLine) throws InterruptedException {
         log(MessageFormat.format(messages.getString("info.variable"), "Invoke command", commandLine, Project.MSG_VERBOSE));
 
         StreamCopier copier = new StreamCopier(p.getInputStream());
@@ -240,7 +240,7 @@ public abstract class AbstractTask extends Task {
     }
     
     public void checkReturnCode(Process p, String commandLine, int... expectedExitCodes) throws InterruptedException {
-        int exitVal = getReturnCode(p, commandLine, expectedExitCodes);
+        int exitVal = getReturnCode(p, commandLine);
         
         for (int expectedExitCode : expectedExitCodes) {
             if (exitVal == expectedExitCode) {

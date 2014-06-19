@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.tools.ant.BuildException;
 
@@ -82,6 +83,8 @@ public class ServerTask extends AbstractTask {
         try {
             if ("create".equals(operation)) {
                 doCreate();
+            } else if ("run".equals(operation)) {
+                doRun();
             } else if ("start".equals(operation)) {
                 doStart();
             } else if ("stop".equals(operation)) {
@@ -106,7 +109,7 @@ public class ServerTask extends AbstractTask {
             throw new BuildException(e);
         }
     }
-    
+        
     private void doStart() throws Exception {
         // create server first if it doesn't exist        
         if (!serverConfigRoot.exists()) {
@@ -125,6 +128,42 @@ public class ServerTask extends AbstractTask {
             startTimeout = Long.valueOf(timeout);
         }
         validateServerStarted(getLogFile(), startTimeout);
+    }
+
+    private void doRun() throws Exception {
+        // create server first if it doesn't exist        
+        if (!serverConfigRoot.exists()) {
+            log(MessageFormat.format(messages.getString("info.server.create"), serverName));
+            doCreate();
+        }
+        List<String> command = getInitialCommand(operation);
+        addCleanOption(command);
+        processBuilder.command(command);
+        final Process p = processBuilder.start();
+        final AtomicBoolean shutdown = new AtomicBoolean(false);
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                shutdown.set(true);
+                // give 30 seconds for the process to exit
+                for (int i = 0; i < 30; i++) {
+                    try {
+                        p.exitValue();
+                        break;
+                    } catch (IllegalThreadStateException e) {
+                        // process is still running
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignore) {
+                            // ignore
+                        }
+                    }
+                }
+            }
+        });
+        int exitCode = getReturnCode(p, processBuilder.command().toString());
+        if (!shutdown.get() && exitCode != ReturnCode.OK.getValue()) {
+            throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), processBuilder.command().toString(), exitCode, ReturnCode.OK.getValue()));
+        }
     }
     
     private void doStop() throws Exception {

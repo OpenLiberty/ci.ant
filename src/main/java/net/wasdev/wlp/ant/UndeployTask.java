@@ -91,20 +91,4 @@ public class UndeployTask extends AbstractTask {
         this.timeout = timeout;
     }
 
-    /**
-     * @return the ref
-     */
-    @Override
-    public String getRef() {
-        return ref;
-    }
-
-    /**
-     * @param ref the ref to set
-     */
-    @Override
-    public void setRef(String ref) {
-        this.ref = ref;
-    }
-
 }
