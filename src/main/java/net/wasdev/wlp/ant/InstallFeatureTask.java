@@ -32,11 +32,11 @@ public class InstallFeatureTask extends AbstractTask {
     // accept license
     private boolean acceptLicense = false;
 
-    // install as user ('usr') or product ('extension') feature
+    // install as user or product extension (usr|extension)
     private String to;
 
-    // action to take when feature is already there (fail|ignore|replace)
-    private String whenExists;
+    // action to take if a file to be installed already exists (fail|ignore|replace)
+    private String whenFileExists;
 
     // name of the feature to install or URL
     private String name;
@@ -88,8 +88,8 @@ public class InstallFeatureTask extends AbstractTask {
         if (to != null) {
             command.add("--to=" + to);
         }
-        if (whenExists != null) {
-            command.add("--when-file-exists=" + whenExists);
+        if (whenFileExists != null) {
+            command.add("--when-file-exists=" + whenFileExists);
         }
         command.add(name);
         processBuilder.command(command);
@@ -133,12 +133,12 @@ public class InstallFeatureTask extends AbstractTask {
         this.name = name;
     }
 
-    public String getWhenExists() {
-        return whenExists;
+    public String getWhenFileExists() {
+        return whenFileExists;
     }
 
-    public void setWhenExists(String whenExists) {
-        this.whenExists = whenExists;
+    public void setWhenFileExists(String whenFileExists) {
+        this.whenFileExists = whenFileExists;
     }
 
 }
