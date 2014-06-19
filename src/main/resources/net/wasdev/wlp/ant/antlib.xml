@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <antlib>
-	<!-- Task -->
-	<taskdef classname="net.wasdev.wlp.ant.ServerTask" name="server"/>
-	<taskdef classname="net.wasdev.wlp.ant.DeployTask" name="deploy" />
-	<taskdef classname="net.wasdev.wlp.ant.UndeployTask" name="undeploy"/>
+    <!-- Task -->
+    <taskdef classname="net.wasdev.wlp.ant.ServerTask" name="server" />
+    <taskdef classname="net.wasdev.wlp.ant.DeployTask" name="deploy" />
+    <taskdef classname="net.wasdev.wlp.ant.UndeployTask" name="undeploy" />
+    <taskdef classname="net.wasdev.wlp.ant.InstallFeatureTask" name="install-feature" />
 </antlib>
 	

@@ -15,7 +15,6 @@
  */
 package net.wasdev.wlp.ant;
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,37 +23,33 @@ import java.util.Properties;
 import org.apache.tools.ant.BuildException;
 
 /**
- * featureManager install operations task: install
- * <wlp:featureManager  ref="wlp.ant.test" archiveLocation="my_feature.esa" />
- * <wlp:install-feature archiveLocation=".." to=".." accept-license="true"/>
+ * Install feature task.
  */
 public class InstallFeatureTask extends AbstractTask {
 
-    private String operation;
-    private String wlp;
-    
-    // used with 'install'  operation
+    private String cmd;
+
+    // accept license
     private boolean acceptLicense = false;
-      
-    // used with "install" operation
+
+    // install as user ('usr') or product ('extension') feature
     private String to;
 
-    // used with 'install' operation
-    private String whenFileExists;
-    
-   // used with 'install' operation file name or URL
-    private String  archiveLocation;
-    
-    
+    // action to take when feature is already there (fail|ignore|replace)
+    private String whenExists;
+
+    // name of the feature to install or URL
+    private String name;
+
     @Override
     protected void initTask() {
         super.initTask();
 
         if (isWindows) {
-            wlp = installDir + "\\bin\\featureManager.bat";
+            cmd = installDir + "\\bin\\featureManager.bat";
             processBuilder.environment().put("EXIT_ALL", "1");
         } else {
-            wlp = installDir + "/bin/featureManager";
+            cmd = installDir + "/bin/featureManager";
         }
 
         Properties sysp = System.getProperties();
@@ -68,87 +63,39 @@ public class InstallFeatureTask extends AbstractTask {
 
     @Override
     public void execute() {
-        if (operation == null || operation.length() <= 0) {
-            throw new BuildException(MessageFormat.format(messages.getString("error.featureManager.operation.validate"), "operation"));
+        if (name == null || name.length() <= 0) {
+            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "name"));
         }
-
+        
         initTask();
-
+        
         try {
-        	if ("install".equals(operation)) {
-                doInstall();
-            } else {
-                throw new BuildException("Unsupported operation: " + operation);
-            }
+            doInstall();
         } catch (BuildException e) {
             throw e;
         } catch (Exception e) {
             throw new BuildException(e);
         }
     }
-    
-        private void doInstall() throws Exception {
 
-            List<String> command = getInitialCommand(operation);
-            
-            addAcceptLicenseOption(command);
-            addToOption(command);
-            addWhenFileExistsOption((command));
-            
-            processBuilder.command(command);
-            Process p = processBuilder.start();
-            checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.REDUNDANT_ACTION_STATUS.getValue());
-
-           
-          
-        }
-        
-    
-    private List<String> getInitialCommand(String operation) {
-        List<String> commands = new ArrayList<String>();
-        commands.add(wlp);
-        commands.add(operation);
-        if (archiveLocation != null && !archiveLocation.equals("")) {
-            commands.add(archiveLocation);
-        }
-        
-        return commands;
-    }
-    
-    
-    private void addWhenFileExistsOption(List<String> command) {
-        if (whenFileExists != null) {
-            command.add("--when-file-exists=" + whenFileExists);
-        }
-    }
-    
-    private void addToOption(List<String> command) {
-        if (to != null) {
-            command.add("--to=" + to);
-        }
-    }
-    
-    private void addAcceptLicenseOption(List<String> command) {
+    private void doInstall() throws Exception {
+        List<String> command = new ArrayList<String>();
+        command.add(cmd);
+        command.add("install");      
         if (acceptLicense) {
             command.add("--acceptLicense");
         }
+        if (to != null) {
+            command.add("--to=" + to);
+        }
+        if (whenExists != null) {
+            command.add("--when-file-exists=" + whenExists);
+        }
+        command.add(name);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
     }
-    
-    
-    /**
-     * @return the operation
-     */
-    public String getOperation() {
-        return operation;
-    }
-
-    /**
-     * @param operation
-     *            the operation to set
-     */
-    public void setOperation(String operation) {
-        this.operation = operation;
-    }   
 
     /**
      * @return the acceptLicense
@@ -158,35 +105,40 @@ public class InstallFeatureTask extends AbstractTask {
     }
 
     /**
-     * @param acceptLicense
-     *            the acceptLicense to set
+     * @param acceptLicense the acceptLicense to set
      */
     public void setAcceptLicense(boolean acceptLicense) {
         this.acceptLicense = acceptLicense;
     }
-    
-     
+
     public String getTo() {
         return to;
     }
-    
+
     public void setTo(String to) {
         this.to = to;
     }
-        
+
     /**
-     * @return the archiveLocation
+     * @return the feature name
      */
-    public String getArchiveLocation() {
-        return archiveLocation;
+    public String getName() {
+        return name;
     }
 
     /**
-     * @param 
-     *            the archiveLocation to set
+     * @param the feature name
      */
-    public void setArchiveLocation(String archiveLocation) {
-        this.archiveLocation = archiveLocation;
+    public void setName(String name) {
+        this.name = name;
     }
-    
+
+    public String getWhenExists() {
+        return whenExists;
+    }
+
+    public void setWhenExists(String whenExists) {
+        this.whenExists = whenExists;
+    }
+
 }
