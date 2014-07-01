@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project xmlns:wlp="antlib:net.wasdev.wlp.ant" name="net.wasdev.wlp.ant.it" default="bvt">
+<project xmlns:wlp="antlib:net.wasdev.wlp.ant" name="net.wasdev.wlp.ant.it">
 
     <!-- Specify Liberty profile server installation directory -->
     <property name="wlp_install_dir" value="${basedir}/../build.image/wlp"/>

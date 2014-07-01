@@ -36,10 +36,38 @@ To use the Liberty Ant tasks in your build scripts you need to:
                  
 ## Tasks
 
+### install-liberty task
+---
+
+The `install-liberty` task is used to download and install Liberty profile server. The task can download the Liberty runtime archive from a specified location (via `runtimeUrl`) or automatically resolve it from the WASdev repository based on a version. 
+
+The Liberty license code must always be set in order to install the runtime. If you are installing Liberty from the WASdev repository, you can obtain the license code by reading the [current license](http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/8.5.5.2/lafiles/runtime//en.html) and looking for the `D/N: <license code>` line. Otherwise, download the runtime archive and execute `java -jar wlp*runtime.jar --viewLicenseInfo` command and look for the `D/N: <license code>` line.
+
+#### Parameters
+
+| Attribute | Description | Required |
+| --------- | ------------ | ----------|
+| licenseCode | Liberty profile license code. See [above](#install-liberty-task). | Yes |
+| version | Exact or wildcard version of the Liberty profile server to install. Only used if `runtimeUrl` is not set. The default value is `8.5.+`. | No |
+| runtimeUrl | URL to the Liberty profile's `wlp*runtime.jar`. If not set, the WASdev repository will be used to find the Liberty runtime archive. | No |
+| baseDir | The base installation directory. The actual installation directory of Liberty profile will be `${baseDir}/wlp`. The default value is `.` (current working directory). | No | 
+| cacheDir | The directory used for caching downloaded files such as the license or `.jar` files. The default value is `${java.io.tmpdir}/wlp-cache`. | No | 
+| username | Username needed for basic authentication. | No | 
+| password | Password needed for basic authentication. | No | 
+| maxDownloadTime | Maximum time in seconds the download can take. The default value is `0` (no maximum time). | No | 
+
+#### Examples
+
+    <!-- Install using WASdev repository -->
+    <wlp:install-server licenseCode="<license code>" />
+
+    <!-- Install from a specific location -->
+    <wlp:install-server licenseCode="<license code>" runtimeUrl="<url to runtime.jar>"/>
+
 ### server task
 ---
 
-The `server` task supports the following options to manage the status of a Liberty profile server:
+The `server` task supports the following operations:
 
 * `create` - creates a named server instance.
 * `start` - starts the named server instance. If the server instance does not exist, this option creates one by default.
