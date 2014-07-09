@@ -70,7 +70,8 @@ The Liberty license code must always be set in order to install the runtime. If 
 The `server` task supports the following operations:
 
 * `create` - creates a named server instance.
-* `start` - starts the named server instance. If the server instance does not exist, this option creates one by default.
+* `start` - starts the named server instance in background. If the server instance does not exist, this option creates one by default.
+* `run` - start the named service instance in foreground. If the server instance does not exist, this option creates one by default.
 * `stop` - stops the named server.
 * `status` - checks the server status.
 * `package` - packages the named server and its deployed applications.
