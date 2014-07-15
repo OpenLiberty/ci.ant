@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 /**
  * server operations task: start/stop/package/create/status/debug
@@ -143,20 +144,14 @@ public class ServerTask extends AbstractTask {
         final AtomicBoolean shutdown = new AtomicBoolean(false);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                shutdown.set(true);
-                // give 30 seconds for the process to exit
-                for (int i = 0; i < 30; i++) {
-                    try {
-                        p.exitValue();
-                        break;
-                    } catch (IllegalThreadStateException e) {
-                        // process is still running
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException ignore) {
-                            // ignore
-                        }
-                    }
+                shutdown.set(true);                
+                List<String> stopCommand = getInitialCommand("stop");
+                processBuilder.command(stopCommand);
+                try {
+                    Process p = processBuilder.start();
+                    p.waitFor();
+                } catch (Exception e) {
+                    log("Error stopping server", e, Project.MSG_WARN);
                 }
             }
         });
