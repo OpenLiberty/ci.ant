@@ -67,6 +67,20 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>deployRemote</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <ant dir="${basedir}" antfile="${basedir}/build.xml" target="deployRemote">
+                                    <property name="wlp_install_dir" value="${wlp.install.dir}" />
+                                </ant>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>deploy</id>
                         <phase>pre-integration-test</phase>
                         <goals>
