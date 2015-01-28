@@ -49,6 +49,7 @@ public abstract class AbstractTask extends Task {
     protected static boolean isWindows;
 
     protected ProcessBuilder processBuilder;
+    public static String result;
 
     protected static final String DEFAULT_SERVER = "defaultServer";
     protected static final String DEFAULT_LOG_FILE = "logs/console.log";
@@ -297,6 +298,8 @@ public abstract class AbstractTask extends Task {
                             // output from the foreground process.
                             break;
                         }
+                        if (line != null && !line.equals(""))
+                            AbstractTask.result=line;
                         log(line);
                     }
                 }
