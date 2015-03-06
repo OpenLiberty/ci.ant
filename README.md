@@ -59,10 +59,10 @@ The Liberty license code must always be set in order to install the runtime. If 
 #### Examples
 
     <!-- Install using Liberty repository -->
-    <wlp:install-server licenseCode="<license code>" />
+    <wlp:install-liberty licenseCode="<license code>" />
 
     <!-- Install from a specific location -->
-    <wlp:install-server licenseCode="<license code>" runtimeUrl="<url to runtime.jar>"/>
+    <wlp:install-liberty licenseCode="<license code>" runtimeUrl="<url to runtime.jar>"/>
 
 ### server task
 ---
@@ -144,6 +144,7 @@ The `undeploy` task supports undeployment of a single application from the Liber
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| file | The application to be undeployed. The application type can be war, ear, rar, eba, zip , or jar. | Yes |
 | timeout | Waiting time before the undeployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
