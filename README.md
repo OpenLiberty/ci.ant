@@ -144,13 +144,29 @@ The `undeploy` task supports undeployment of a single application from the Liber
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
-| file | The application to be undeployed. The application type can be war, ear, rar, eba, zip , or jar. | Yes |
+| file | Name of the application to be undeployed. The application type can be war, ear, rar, eba, zip , or jar. | No |
+| patternset | Includes and excludes patterns of applications to be undeployed. See [patternset attribute in Apache Ant](http://ant.apache.org/manual/Types/patternset.html). | No |
 | timeout | Waiting time before the undeployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
+When `file` has been set the `patternset` parameter will be ignored, also when the `file` and `patternset` parameters are not set the task will undeploy all the deployed applications.
 #### Examples
-
+    <!-- Only undeploys the application "SimpleOSGiApp.eba" -->
     <wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" />
+
+
+    <!-- This will undeploy all the applications with ".war" extension except the "example.war" file-->
+    <patternset id="mypattern">
+        <include name="**/*.war"/>
+        <exclude name="example.war" />
+    </patternset>
+    <wlp:undeploy ref="wlp.ant.test"  timeout="20000" >
+        <patternset refid="mypattern" />
+    </wlp:undeploy>
+
+
+    <!-- This will undeploy all the applications previously deployed on the server-->
+    <wlp:undeploy ref="wlp.ant.test" timeout="60000" />
 
 ### install-feature task
 ---
