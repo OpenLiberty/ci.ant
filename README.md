@@ -154,8 +154,7 @@ When `file` has been set the `patternset` parameter will be ignored, also when t
     <!-- Only undeploys the application "SimpleOSGiApp.eba" -->
     <wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" />
 
-
-    <!-- This will undeploy all the applications with ".war" extension except the "example.war" file-->
+    <!-- This will undeploy all the applications with ".war" extension except the "example.war" file -->
     <patternset id="mypattern">
         <include name="**/*.war"/>
         <exclude name="example.war" />
@@ -164,8 +163,7 @@ When `file` has been set the `patternset` parameter will be ignored, also when t
         <patternset refid="mypattern" />
     </wlp:undeploy>
 
-
-    <!-- This will undeploy all the applications previously deployed on the server-->
+    <!-- This will undeploy all the applications previously deployed on the server -->
     <wlp:undeploy ref="wlp.ant.test" timeout="60000" />
 
 ### install-feature task
