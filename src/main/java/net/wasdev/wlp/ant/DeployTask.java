@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2014, 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package net.wasdev.wlp.ant;
 
+import java.io.IOException;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -47,22 +48,21 @@ public class DeployTask extends AbstractTask {
 
         // Check for no arguments
         if ((filePath == null) && (apps.size() == 0)) {
-            stopServer(getTimeout());
             throw new BuildException(messages.getString("error.fileset.set"), getLocation());
         }
 
         final List<File> files = scanFileSets();
 
-        try {
-
             dropInFolder = new File(serverConfigRoot, "dropins/");
             for (File f : files) {
 
                 File destFile = new File(dropInFolder, f.getName());
-                log(MessageFormat.format(messages.getString("info.deploy.app"), f.getCanonicalPath()));
-
-                FileUtils.getFileUtils().copyFile(f, destFile, null, true);
-
+                log(MessageFormat.format(messages.getString("info.deploy.app"), f.getPath()));
+                try {
+                    FileUtils.getFileUtils().copyFile(f, destFile, null, true);
+                } catch (IOException e) {
+                    throw new BuildException(messages.getString("error.deploy.fail"));
+                }
                 // Check start message code
                 String appName = f.getName();
 
@@ -73,23 +73,15 @@ public class DeployTask extends AbstractTask {
 
                 String startMessage = START_APP_MESSAGE_CODE_REG + appName.substring(0, appName.indexOf("."));
                 if (waitForStringInLog(startMessage, appStartTimeout, getLogFile()) == null) {
-                    //Stop server if deploy fails.
-                    stopServer(getTimeout());
-                    throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), f.getCanonicalPath()));
+                    throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), f.getPath()));
                 }
-
             }
-
-        } catch (Exception e) {
-            stopServer(getTimeout());
-            throw new BuildException(e);
-        }
     }
 
     /**
      * Adds a set of files (nested fileset attribute).
      * 
-     * @param aFS
+     * @param fs
      *            the file set to add
      */
     public void addFileset(FileSet fs) {
@@ -107,15 +99,38 @@ public class DeployTask extends AbstractTask {
      */
     private List<File> scanFileSets() {
         final List<File> list = new ArrayList<File>();
-        if (filePath != null && (new File(filePath)).exists()) {
-            list.add(new File(filePath));
-        }
+
+        if (filePath != null) {
+            
+            filePath = filePath.trim();
+            if (filePath.length() == 0) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.parameter.invalid"), "file"), getLocation());
+            }
+            File fileToDeploy = new File(filePath);
+            if (!fileToDeploy.exists()) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.file.noexist"), filePath), getLocation());
+            }
+            
+            else if (fileToDeploy.isDirectory()) {
+                    throw new BuildException(messages.getString("error.deploy.file.isdirectory"), getLocation());
+                }
+                else {
+                    list.add(fileToDeploy);
+                }
+            }
+
+
         for (int i = 0; i < apps.size(); i++) {
             final FileSet fs = apps.get(i);
             final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             ds.scan();
 
             final String[] names = ds.getIncludedFiles();
+
+            //Throw a BuildException if the directory specified as parameter is empty.
+            if(names.length == 0) {
+                throw new BuildException(messages.getString("error.deploy.fileset.invalid"), getLocation());
+            }
 
             for (String element : names) {
                 list.add(new File(ds.getBasedir(), element));
