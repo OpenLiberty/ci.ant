@@ -48,14 +48,14 @@ public class UndeployTask extends AbstractTask {
             appStopTimeout = Long.valueOf(timeout);
         }
         
-        for (File fileUndeploy : files) {
-            log(MessageFormat.format(messages.getString("info.undeploy"), fileUndeploy));
-            FileUtils.delete(fileUndeploy);
+        for (File file : files) {
+            log(MessageFormat.format(messages.getString("info.undeploy"), file.getName()));
+            FileUtils.delete(file);
 
             //check stop message code
-            String stopMessage = STOP_APP_MESSAGE_CODE_REG + fileUndeploy.getName().substring(0, fileUndeploy.getName().length() - 4);
+            String stopMessage = STOP_APP_MESSAGE_CODE_REG + getFileName(file.getName());
             if (waitForStringInLog(stopMessage, appStopTimeout, getLogFile()) == null) {
-                throw new BuildException(MessageFormat.format(messages.getString("error.undeploy.fail"), fileUndeploy.getName()));
+                throw new BuildException(MessageFormat.format(messages.getString("error.undeploy.fail"), file.getPath()));
             }
         }
     }

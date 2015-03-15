@@ -491,6 +491,14 @@ public abstract class AbstractTask extends Task {
         return matches;
     }
 
+    /*
+     * Returns file name without the extension.
+     */
+    protected String getFileName(String fileName) {
+        int index = fileName.lastIndexOf('.');
+        return (index == -1) ? fileName : fileName.substring(0, index);
+    }
+
     protected void stopServer(String timeout) {
         //Stop server if exception happens.
         ServerTask st = new ServerTask();

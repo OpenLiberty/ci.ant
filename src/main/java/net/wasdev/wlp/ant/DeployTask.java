@@ -32,14 +32,9 @@ import org.apache.tools.ant.util.FileUtils;
 public class DeployTask extends AbstractTask {
 
     private final List<FileSet> apps = new ArrayList<FileSet>();
-
     private String filePath;
-
-    private File dropInFolder;
-
     private String timeout;
-
-    private static long APP_START_TIMEOUT_DEFAULT = 30 * 1000;
+    private static final long APP_START_TIMEOUT_DEFAULT = 30 * 1000;
 
     @Override
     public void execute() {
@@ -53,29 +48,26 @@ public class DeployTask extends AbstractTask {
 
         final List<File> files = scanFileSets();
 
-            dropInFolder = new File(serverConfigRoot, "dropins/");
-            for (File f : files) {
+        long appStartTimeout = APP_START_TIMEOUT_DEFAULT;
+        if (timeout != null && !timeout.equals("")) {
+            appStartTimeout = Long.valueOf(timeout);
+        }
 
-                File destFile = new File(dropInFolder, f.getName());
-                log(MessageFormat.format(messages.getString("info.deploy.app"), f.getPath()));
-                try {
-                    FileUtils.getFileUtils().copyFile(f, destFile, null, true);
-                } catch (IOException e) {
-                    throw new BuildException(messages.getString("error.deploy.fail"));
-                }
-                // Check start message code
-                String appName = f.getName();
-
-                long appStartTimeout = APP_START_TIMEOUT_DEFAULT;
-                if (timeout != null && !timeout.equals("")) {
-                    appStartTimeout = Long.valueOf(timeout);
-                }
-
-                String startMessage = START_APP_MESSAGE_CODE_REG + appName.substring(0, appName.indexOf("."));
-                if (waitForStringInLog(startMessage, appStartTimeout, getLogFile()) == null) {
-                    throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), f.getPath()));
-                }
+        File dropInFolder = new File(serverConfigRoot, "dropins");
+        for (File file : files) {
+            File destFile = new File(dropInFolder, file.getName());
+            log(MessageFormat.format(messages.getString("info.deploy.app"), file.getPath()));
+            try {
+                FileUtils.getFileUtils().copyFile(file, destFile, null, true);
+            } catch (IOException e) {
+                throw new BuildException(messages.getString("error.deploy.fail"));
             }
+            // Check start message code
+            String startMessage = START_APP_MESSAGE_CODE_REG + getFileName(file.getName());
+            if (waitForStringInLog(startMessage, appStartTimeout, getLogFile()) == null) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), file.getPath()));
+            }
+        }
     }
 
     /**
@@ -101,7 +93,6 @@ public class DeployTask extends AbstractTask {
         final List<File> list = new ArrayList<File>();
 
         if (filePath != null) {
-            
             filePath = filePath.trim();
             if (filePath.length() == 0) {
                 throw new BuildException(MessageFormat.format(messages.getString("error.parameter.invalid"), "file"), getLocation());
@@ -109,16 +100,12 @@ public class DeployTask extends AbstractTask {
             File fileToDeploy = new File(filePath);
             if (!fileToDeploy.exists()) {
                 throw new BuildException(MessageFormat.format(messages.getString("error.deploy.file.noexist"), filePath), getLocation());
+            } else if (fileToDeploy.isDirectory()) {
+                throw new BuildException(messages.getString("error.deploy.file.isdirectory"), getLocation());
+            } else {
+                list.add(fileToDeploy);
             }
-            
-            else if (fileToDeploy.isDirectory()) {
-                    throw new BuildException(messages.getString("error.deploy.file.isdirectory"), getLocation());
-                }
-                else {
-                    list.add(fileToDeploy);
-                }
-            }
-
+        }
 
         for (int i = 0; i < apps.size(); i++) {
             final FileSet fs = apps.get(i);
@@ -128,7 +115,7 @@ public class DeployTask extends AbstractTask {
             final String[] names = ds.getIncludedFiles();
 
             //Throw a BuildException if the directory specified as parameter is empty.
-            if(names.length == 0) {
+            if (names.length == 0) {
                 throw new BuildException(messages.getString("error.deploy.fileset.invalid"), getLocation());
             }
 
