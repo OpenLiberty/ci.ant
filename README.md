@@ -1,5 +1,4 @@
-ci.ant
-======
+# ci.ant [![Build Status](https://travis-ci.org/WASdev/ci.ant.svg?branch=master)](https://travis-ci.org/WASdev/ci.ant)
 
 Collection of Ant tasks for managing WebSphere Application Server Liberty Profile and applications.
 
