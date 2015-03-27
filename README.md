@@ -118,17 +118,26 @@ The `deploy` task supports deployment of one or more applications to the Liberty
 | file | Location of a single application to be deployed. See [file attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). The application type can be war, ear, rar, eba, zip , or jar. | Yes, only when the `fileset` attribute is not specified. |
 | fileset | Location of multiple applications to be deployed. See [fileset attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). | Yes, only when the `file` attribute is not specified.|
 | timeout| Waiting time before the deployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
-| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. |No |
+| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No |
+| toServerXml | A true or false value that indicates deploy to the server.xml file. By default is false.| No |
+| application | One or more applications to be deployed. See [application](#application).| Yes, if toServerXml is set. |
 
 #### Examples
-
+    <!-- Deploy with fileset -->
     <wlp:deploy ref="wlp.ant.test" >
        <fileset dir="${basedir}/resources/">
              <include name="**/*.war"/>                
        </fileset>
     </wlp:deploy>
 
+    <!-- Deploy with file attribute -->
     <wlp:deploy ref="wlp.ant.test" file="${basedir}/resources/SimpleOSGiApp.eba"  timeout="40000"/>
+
+    <!-- Deploy to server.xml file -->
+    <wlp:deploy ref="wlp.ant.test" toServerXml="true">
+        <application location="{basedir}/resources/SampleWar.war"/>
+        <application location="{basedir}/resources/SampleOSGiApp.eba" name="OSGiApp"/>
+    </wlp:deploy>
 
 ### undeploy task
 ---
@@ -146,9 +155,12 @@ The `undeploy` task supports undeployment of a single application from the Liber
 | file | Name of the application to be undeployed. The application type can be war, ear, rar, eba, zip , or jar. | No |
 | patternset | Includes and excludes patterns of applications to be undeployed. See [patternset attribute in Apache Ant](http://ant.apache.org/manual/Types/patternset.html). | No |
 | timeout | Waiting time before the undeployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
-| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
+| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No |
+| fromServerXml | A true or false value that indicates undeploy from the server.xml file. By default is false.| No |
+| application | One or more applications to be undeployed. See [application](#application).| Yes, if fromServerXml is set. |
 
 When `file` has been set the `patternset` parameter will be ignored, also when the `file` and `patternset` parameters are not set the task will undeploy all the deployed applications.
+
 #### Examples
     <!-- Only undeploys the application "SimpleOSGiApp.eba" -->
     <wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" />
@@ -164,6 +176,12 @@ When `file` has been set the `patternset` parameter will be ignored, also when t
 
     <!-- This will undeploy all the applications previously deployed on the server -->
     <wlp:undeploy ref="wlp.ant.test" timeout="60000" />
+
+    <!-- Undeploy multiple applications from the server.xml file -->
+    <wlp:undeploy ref="wlp.ant.test" fromServerXml="true">
+        <application location="{basedir}/resources/SampleWar.war"/>
+        <application location="{basedir}/resources/SampleOSGiApp.eba" name="OSGiApp"/>
+    </wlp:undeploy>
 
 ### install-feature task
 ---
@@ -187,4 +205,20 @@ The `install-feature` task installs a feature packaged as a Subsystem Archive (E
     
 	<wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
 
+## Types
 
+### application
+
+The application type is used to define a new application to deploy/undeploy from the server.xml file.
+
+| Attribute | Description | Required |
+| --------- | ------------ | ----------|
+| id | A unique identifier for the application. | No |
+| location | The path to the application resource | Yes |
+| name | A descriptive/display name for the application. | No |
+| type | The application type: war, ear, or eba. | No |
+| contextRoot | The context root of the application. | No |
+
+#### Example
+
+    <application id="1" location="{basedir}/resources/SampleWAR.war" name="SampleWAR" type="war" contextRoot="/" />
