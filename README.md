@@ -96,12 +96,27 @@ The `server` task supports the following operations:
 
 #### Examples
 
-    <wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}" operation="start" 
-            serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" />
+1- Set the operation in the task where is being used the "ref" atribute.
 
-    <wlp:server ref="wlp.ant.test" operation="status"/>
+```
+<!-- In the following example is defined a server configuration reference 
+     and is executed the "status" operation only. -->
 
+<wlp:server id="idMyServer" installDir="${wlp_install_dir}" 
+userDir="${wlp_usr}" outputDir="${wlp_output}" serverName="${serverName}"/>
 
+<wlp:server ref="idMyServer" operation="status"/>
+```
+
+2- Optionally could be set an operation in the server configuration, in this way if the second task also contains an operation set, both operations are executed.
+```
+<!-- In the following example is defined an operation in the server configuration reference and then another one is set up in the second task both are executed. -->
+
+<wlp:server id="idMyServer" installDir="${wlp_install_dir}" 
+userDir="${wlp_usr}" outputDir="${wlp_output}" serverName="${serverName}" operation="status"/>
+
+<wlp:server ref="idMyServer" operation="start"/>
+```
 ### deploy task
 ---
 

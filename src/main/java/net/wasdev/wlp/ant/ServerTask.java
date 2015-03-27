@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2014, 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,39 +75,44 @@ public class ServerTask extends AbstractTask {
 
     @Override
     public void execute() {
-        if (operation == null || operation.length() <= 0) {
-            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "operation"));
-        }
 
         initTask();
 
-        try {
-            if ("create".equals(operation)) {
-                doCreate();
-            } else if ("run".equals(operation)) {
-                doRun();
-            } else if ("start".equals(operation)) {
-                doStart();
-            } else if ("stop".equals(operation)) {
-                doStop();
-            } else if ("status".equals(operation)) {
-                doStatus();
-            } else if ("debug".equals(operation)) {
-                // Debug seems useless in ant tasks, but still keep it.
-                doDebug();
-            } else if ("package".equals(operation)) {
-                doPackage();
-            } else if ("dump".equals(operation)) {
-                doDump();
-            } else if ("javadump".equals(operation)) {
-                doJavaDump();
-            } else {
-                throw new BuildException("Unsupported operation: " + operation);
+        if(getRuntimeConfigurableWrapper().getAttributeMap().get("id") == null) {
+            if ((operation == null || operation.length() <= 0)) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "operation"));
             }
-        } catch (BuildException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new BuildException(e);
+        }
+
+        if (operation != null) {
+            try {
+              if ("create".equals(operation)) {
+                  doCreate();
+              } else if ("run".equals(operation)) {
+                  doRun();
+              } else if ("start".equals(operation)) {
+                  doStart();
+              } else if ("stop".equals(operation)) {
+                  doStop();
+              } else if ("status".equals(operation)) {
+                  doStatus();
+              } else if ("debug".equals(operation)) {
+                  // Debug seems useless in ant tasks, but still keep it.
+                  doDebug();
+              } else if ("package".equals(operation)) {
+                  doPackage();
+              } else if ("dump".equals(operation)) {
+                  doDump();
+              } else if ("javadump".equals(operation)) {
+                  doJavaDump();
+              } else {
+                  throw new BuildException("Unsupported operation: " + operation);
+              }
+          } catch (BuildException e) {
+              throw e;
+          } catch (Exception e) {
+              throw new BuildException(e);
+          }
         }
     }
         
@@ -336,5 +341,5 @@ public class ServerTask extends AbstractTask {
     public void setTemplate(String template) {
         this.template = template;
     }
-            
+
 }
