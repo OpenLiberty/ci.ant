@@ -31,11 +31,11 @@ public abstract class AbstractRemoteTask extends AbstractTask {
 
     //Connection parameters
     protected String hostName;
-    protected String httpsPort;
+    protected int httpsPort;
     protected String userName;
     protected String password;
 
-    protected File trustStoreLocationPath;
+    protected File trustStoreLocation;
     protected String trustStorePassword;
 
     @Override
@@ -50,7 +50,7 @@ public abstract class AbstractRemoteTask extends AbstractTask {
                 setHttpsPort(remoteServerRef.getHttpsPort());
                 setUserName(remoteServerRef.getUserName());
                 setPassword(remoteServerRef.getPassword());
-                setTrustStoreLocationPath(remoteServerRef.getTrustStoreLocationPath());
+                setTrustStoreLocation(remoteServerRef.getTrustStoreLocation());
                 setTrustStorePassword(remoteServerRef.getTrustStorePassword());
             }
         }
@@ -105,7 +105,7 @@ public abstract class AbstractRemoteTask extends AbstractTask {
      * Returns the https port in which the liberty server is listening
      * @return the https port
      */
-    public String getHttpsPort() {
+    public int getHttpsPort() {
         return httpsPort;
     }
 
@@ -113,7 +113,7 @@ public abstract class AbstractRemoteTask extends AbstractTask {
      * Sets the https port in which the liberty server is listening
      * @param httpsPortthe http port
      */
-    public void setHttpsPort(String httpsPort) {
+    public void setHttpsPort(int httpsPort) {
         this.httpsPort = httpsPort;
     }
 
@@ -154,16 +154,16 @@ public abstract class AbstractRemoteTask extends AbstractTask {
      * Returns the location of the trust store with the certificate used to connect to the liberty server
      * @return the trust store location (absolute path)
      */
-    public File getTrustStoreLocationPath() {
-        return trustStoreLocationPath;
+    public File getTrustStoreLocation() {
+        return trustStoreLocation;
     }
 
     /**
      *  Sets the location of the trust store with the certificate used to connect to the liberty server
-     * @param trustStoreLocationPath the trust store location (absolute path)
+     * @param trustStoreLocation the trust store location (absolute path)
      */
-    public void setTrustStoreLocationPath(File trustStoreLocationPath) {
-        this.trustStoreLocationPath = trustStoreLocationPath;
+    public void setTrustStoreLocation(File trustStoreLocation) {
+        this.trustStoreLocation = trustStoreLocation;
     }
 
     /**

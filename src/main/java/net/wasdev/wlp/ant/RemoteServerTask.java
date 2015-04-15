@@ -15,7 +15,10 @@
  */
 package net.wasdev.wlp.ant;
 
+import java.text.MessageFormat;
 import java.util.Properties;
+
+import org.apache.tools.ant.BuildException;
 
 /**
  * Remote server operations task: (none)
@@ -24,6 +27,7 @@ public class RemoteServerTask extends AbstractRemoteTask {
 
     private String operation;
     private String timeout;
+    private boolean disableHostnameVerification = true;
 
     @Override
     protected void initTask() {
@@ -40,9 +44,32 @@ public class RemoteServerTask extends AbstractRemoteTask {
         // Set active directory (install dir)
         processBuilder.directory(installDir);
         processBuilder.environment().put("JAVA_HOME", javaHome);
-
+        
+        System.out.println("initOperation"+operation);
     }
 
+    @Override
+    public void execute() {
+
+        if (operation == null) {
+            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "operation"));
+        }
+
+        try {
+            if("connect".equals(operation)) {
+                RemoteServerManager server = new RemoteServerManager();
+                server.connect(hostName, httpsPort, userName, password, trustStoreLocation, trustStorePassword, disableHostnameVerification);
+            }
+            else {
+                System.out.println("This has not operation");
+            }
+        } catch (BuildException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BuildException(e);
+        }
+
+    }
 
     /**
      * @return the operation

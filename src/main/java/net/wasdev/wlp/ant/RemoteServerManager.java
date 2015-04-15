@@ -40,7 +40,7 @@ import javax.management.remote.JMXServiceURL;
 public class RemoteServerManager  {
 
     private MBeanServerConnection mbsc;
-    private JMXConnector jmxConnector;
+    private JMXConnector connector;
     private final ClassLoader classLoader;
 
 
@@ -52,27 +52,32 @@ public class RemoteServerManager  {
         this.classLoader = classLoader;
     }
 
+    public void connect(String hostName, int httpsPort, String userName, String password, File trustStoreLocation, String trustStorePassword, boolean disableHostnameVerification) throws IOException{
 
-    public void connect(String hostName, int httpsPort, String userName, String password, String trustStoreLocation, String trustStorePassword) throws IOException{
-
-        System.setProperty("javax.net.ssl.trustStore", trustStoreLocation);
+        System.setProperty("javax.net.ssl.trustStore", trustStoreLocation.getPath());
         System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
-        Map<String, Object> environment = new HashMap<String, Object>();
-        environment.put("jmx.remote.protocol.provider.pkgs", "com.ibm.ws.jmx.connector.client");
-        environment.put(JMXConnector.CREDENTIALS, new String[] { userName, password });
-        if (classLoader != null){
-            environment.put("jmx.remote.protocol.provider.class.loader", classLoader);
-        }
-        //environment.put(ConnectorSettings.DISABLE_HOSTNAME_VERIFICATION, true); //optional setting (replace with "com.ibm.ws.jmx.connector.client.disableURLHostnameVerification")
-        //environment.put(ConnectorSettings.READ_TIMEOUT, 2 * 60 * 1000); //optional setting (replace with "com.ibm.ws.jmx.connector.client.rest.readTimeout")
 
-        JMXServiceURL url;
-        url = new JMXServiceURL("REST", hostName, httpsPort , "/IBMJMXConnectorREST");
-        jmxConnector = JMXConnectorFactory.connect(url, environment);
-        mbsc = jmxConnector.getMBeanServerConnection();
-        jmxConnector = JMXConnectorFactory.newJMXConnector(url, environment);
-        jmxConnector.connect();
-        mbsc = jmxConnector.getMBeanServerConnection();
+        try {
+            Map<String, Object> environment = new HashMap<String, Object>();
+            environment.put("jmx.remote.protocol.provider.pkgs", "com.ibm.ws.jmx.connector.client");
+            environment.put(JMXConnector.CREDENTIALS, new String[] { userName, password });
+            if (classLoader != null){
+                environment.put("jmx.remote.protocol.provider.class.loader", classLoader);
+            }
+            environment.put("com.ibm.ws.jmx.connector.client.disableURLHostnameVerification", disableHostnameVerification);
+            
+            JMXServiceURL url;
+            url = new JMXServiceURL("REST", hostName, httpsPort, "/IBMJMXConnectorREST");
+//            connector = JMXConnectorFactory.connect(url, environment);
+            connector = JMXConnectorFactory.newJMXConnector(url, environment);
+            connector.connect();
+            mbsc = connector.getMBeanServerConnection();
+//            mbsc = connector.getMBeanServerConnection();
+        } catch(Throwable t)
+        {
+            t.printStackTrace();
+        }
+
     }
 
 
@@ -160,42 +165,42 @@ public class RemoteServerManager  {
     }
 
     public void disconnect() {
-        if (jmxConnector != null){
+        if (connector != null){
             try {
-                jmxConnector.close();
+                connector.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             finally{
-                jmxConnector = null;
+                connector = null;
             }
         }
 
     }
 
 
-    public static void main(String[] args){
-        String hostName = args[0];
-        int httpsPort = Integer.parseInt(args[1]);
-        String userName = args[2];
-        String password = args[3];
-        String trustStoreLocation = args[4];
-        String trustStorePassword = args[5];
-        String fileToDeploy = args[6];
-
-        RemoteServerManager server = new RemoteServerManager() ;
-        File file = new File(fileToDeploy);
-        try {
-            server.connect(hostName, httpsPort, userName, password, trustStoreLocation, trustStorePassword);
-            server.publishApp(file);
-            //server.deleteApp(file);
-            server.disconnect();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
+//    public static void main(String[] args){
+//        String hostName = args[0];
+//        int httpsPort = Integer.parseInt(args[1]);
+//        String userName = args[2];
+//        String password = args[3];
+//        String trustStoreLocation = args[4];
+//        String trustStorePassword = args[5];
+//        String fileToDeploy = args[6];
+//
+//        RemoteServerManager server = new RemoteServerManager() ;
+//        File file = new File(fileToDeploy);
+//        try {
+//            server.connect(hostName, httpsPort, userName, password, trustStoreLocation, trustStorePassword);
+//            server.publishApp(file);
+//            //server.deleteApp(file);
+//            server.disconnect();
+//        } catch (IOException e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//        }
+//
+//    }
 
 }

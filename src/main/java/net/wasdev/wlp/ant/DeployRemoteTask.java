@@ -61,29 +61,29 @@ public class DeployRemoteTask extends AbstractRemoteTask {
 
         final List<File> files = scanFileSets();
 
-        int httpPortInteger = Integer.parseInt(httpsPort);
+        int httpPortInteger = httpsPort;
 
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         ClassLoader newLoader = null;
         RemoteServerManager rso = null;
 
-        try {
-            newLoader = getNewClassLoader(oldLoader);
-            rso = new RemoteServerManager(newLoader);
-            rso.connect(hostName, httpPortInteger, userName, password, trustStoreLocationPath.getCanonicalPath(), trustStorePassword);
-
-            for (File f : files) {
-                rso.publishApp(f);
-            }
-
-        } catch (Exception e) {
-            throw new BuildException(e);
-        }
-        finally{
-            if (rso != null){
-                rso.disconnect();
-            }
-        }
+//        try {
+//            newLoader = getNewClassLoader(oldLoader);
+//            rso = new RemoteServerManager(newLoader);
+//            rso.connect(hostName, httpPortInteger, userName, password, trustStoreLocationPath.getCanonicalPath(), trustStorePassword);
+//
+//            for (File f : files) {
+//                rso.publishApp(f);
+//            }
+//
+//        } catch (Exception e) {
+//            throw new BuildException(e);
+//        }
+//        finally{
+//            if (rso != null){
+//                rso.disconnect();
+//            }
+//        }
     }
 
 
