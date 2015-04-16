@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ public class RemoteServerTask extends AbstractRemoteTask {
 
     private String operation;
     private String timeout;
-    private boolean disableHostnameVerification = true;
 
     @Override
     protected void initTask() {
@@ -44,8 +43,7 @@ public class RemoteServerTask extends AbstractRemoteTask {
         // Set active directory (install dir)
         processBuilder.directory(installDir);
         processBuilder.environment().put("JAVA_HOME", javaHome);
-        
-        System.out.println("initOperation"+operation);
+
     }
 
     @Override
@@ -59,9 +57,6 @@ public class RemoteServerTask extends AbstractRemoteTask {
             if("connect".equals(operation)) {
                 RemoteServerManager server = new RemoteServerManager();
                 server.connect(hostName, httpsPort, userName, password, trustStoreLocation, trustStorePassword, disableHostnameVerification);
-            }
-            else {
-                System.out.println("This has not operation");
             }
         } catch (BuildException e) {
             throw e;
@@ -98,6 +93,5 @@ public class RemoteServerTask extends AbstractRemoteTask {
     public void setTimeout(String timeout) {
         this.timeout = timeout;
     }
-
 
 }

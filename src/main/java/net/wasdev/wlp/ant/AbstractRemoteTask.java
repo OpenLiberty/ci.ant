@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public abstract class AbstractRemoteTask extends AbstractTask {
 
     protected File trustStoreLocation;
     protected String trustStorePassword;
+    protected boolean disableHostnameVerification;
 
     @Override
     protected void initTask() {
@@ -180,6 +181,15 @@ public abstract class AbstractRemoteTask extends AbstractTask {
      */
     public void setTrustStorePassword(String trustStorePassword) {
         this.trustStorePassword = trustStorePassword;
+    }
+
+
+    public boolean isDisableHostnameVerification() {
+        return disableHostnameVerification;
+    }
+
+    public void setDisableHostnameVerification(boolean disableHostnameVerification) {
+        this.disableHostnameVerification = disableHostnameVerification;
     }
 
 }

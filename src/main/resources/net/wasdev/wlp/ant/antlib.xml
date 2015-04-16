@@ -4,6 +4,7 @@
     <taskdef classname="net.wasdev.wlp.ant.ServerTask" name="server"/>
     <taskdef classname="net.wasdev.wlp.ant.RemoteServerTask" name="remote-server"/>
     <taskdef classname="net.wasdev.wlp.ant.DeployTask" name="deploy" />
+    <taskdef classname="net.wasdev.wlp.ant.UndeployRemoteTask" name="delete-app" />
     <taskdef classname="net.wasdev.wlp.ant.UndeployTask" name="undeploy"/>
     <taskdef classname="net.wasdev.wlp.ant.DeployRemoteTask" name="upload-file" />
     <taskdef classname="net.wasdev.wlp.ant.InstallFeatureTask" name="install-feature" />

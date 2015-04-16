@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,18 +68,16 @@ public class RemoteServerManager  {
             
             JMXServiceURL url;
             url = new JMXServiceURL("REST", hostName, httpsPort, "/IBMJMXConnectorREST");
-//            connector = JMXConnectorFactory.connect(url, environment);
+
             connector = JMXConnectorFactory.newJMXConnector(url, environment);
             connector.connect();
             mbsc = connector.getMBeanServerConnection();
-//            mbsc = connector.getMBeanServerConnection();
+
         } catch(Throwable t)
         {
             t.printStackTrace();
         }
-
     }
-
 
     public void publishApp(File file) {
         // Use the FileTransfer MBean to publish the file to the
@@ -95,9 +93,6 @@ public class RemoteServerManager  {
                 mbsc.invoke(fileTransferBeanName, "uploadFile",
                         new Object[]{file.getAbsolutePath(), "${server.config.dir}/dropins/"+file.getName(), false},
                         new String[]{String.class.getName(),String.class.getName(),Boolean.class.getName()});
-                /*FileTransferMBean fileTransferBean = JMX.newMBeanProxy(mbsc, fileTransferBeanName, FileTransferMBean.class);
-                fileTransferBean.uploadFile(file.getAbsolutePath(), "${server.config.dir}/dropins/"+file.getName(), false);*/
-                //fileTransferBean.uploadFile(file.getAbsolutePath(), "${server.output.dir}/dropins/"+file.getName(), false);
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -117,7 +112,7 @@ public class RemoteServerManager  {
         }
     }
 
-    public void deleteApp(File file) {
+    public void deleteApp(String file) {
 
         // Use the FileTransfer MBean to publish the file to the
         // folder ${server.output.dir}/dropins/ of the remote server.
@@ -129,10 +124,8 @@ public class RemoteServerManager  {
 
             if (mbsc.isRegistered(fileTransferBeanName)) {
                 mbsc.invoke(fileTransferBeanName, "deleteFile",
-                        new Object[]{"${server.output.dir}/dropins/"+file.getName()},
+                        new Object[]{"${server.output.dir}/dropins/"+file},
                         new String[]{String.class.getName()});
-                /*FileTransferMBean fileTransferBean = JMX.newMBeanProxy(mbsc, fileTransferBeanName, FileTransferMBean.class);
-                fileTransferBean.deleteFile("${server.output.dir}/dropins/"+file.getName());*/
             }
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -151,8 +144,6 @@ public class RemoteServerManager  {
             e.printStackTrace();
         }
     }
-
-
 
     public void startApp() {
         // TODO Auto-generated method stub
@@ -176,31 +167,5 @@ public class RemoteServerManager  {
                 connector = null;
             }
         }
-
     }
-
-
-//    public static void main(String[] args){
-//        String hostName = args[0];
-//        int httpsPort = Integer.parseInt(args[1]);
-//        String userName = args[2];
-//        String password = args[3];
-//        String trustStoreLocation = args[4];
-//        String trustStorePassword = args[5];
-//        String fileToDeploy = args[6];
-//
-//        RemoteServerManager server = new RemoteServerManager() ;
-//        File file = new File(fileToDeploy);
-//        try {
-//            server.connect(hostName, httpsPort, userName, password, trustStoreLocation, trustStorePassword);
-//            server.publishApp(file);
-//            //server.deleteApp(file);
-//            server.disconnect();
-//        } catch (IOException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//
-//    }
-
 }

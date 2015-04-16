@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ public class DeployRemoteTask extends AbstractRemoteTask {
     private String timeout;
     private Path classpath;
 
-
     @Override
     public void execute() {
 
@@ -61,40 +60,38 @@ public class DeployRemoteTask extends AbstractRemoteTask {
 
         final List<File> files = scanFileSets();
 
-        int httpPortInteger = httpsPort;
-
         ClassLoader oldLoader = Thread.currentThread().getContextClassLoader();
         ClassLoader newLoader = null;
         RemoteServerManager rso = null;
 
-//        try {
-//            newLoader = getNewClassLoader(oldLoader);
-//            rso = new RemoteServerManager(newLoader);
-//            rso.connect(hostName, httpPortInteger, userName, password, trustStoreLocationPath.getCanonicalPath(), trustStorePassword);
-//
-//            for (File f : files) {
-//                rso.publishApp(f);
-//            }
-//
-//        } catch (Exception e) {
-//            throw new BuildException(e);
-//        }
-//        finally{
-//            if (rso != null){
-//                rso.disconnect();
-//            }
-//        }
+        try {
+            newLoader = getNewClassLoader(oldLoader);
+            rso = new RemoteServerManager(newLoader);
+            rso.connect(hostName, httpsPort, userName, password, trustStoreLocation, trustStorePassword, disableHostnameVerification);
+
+            for (File f : files) {
+                rso.publishApp(f);
+            }
+
+        } catch (Exception e) {
+            throw new BuildException(e);
+        }
+        finally{
+            if (rso != null) {
+                rso.disconnect();
+            }
+        }
     }
 
 
     private ClassLoader getNewClassLoader(ClassLoader parent) {
         ArrayList<URL> urls = new ArrayList<URL>();
 
-        //
         if (installDir != null){
             File f = new File(installDir + "/clients/restConnector.jar");
             try {
                 urls.add(f.toURI().toURL());
+                System.out.println(urls);
             } catch (MalformedURLException e) {
                 throw new BuildException(e);
             }
