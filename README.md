@@ -187,4 +187,169 @@ The `install-feature` task installs a feature packaged as a Subsystem Archive (E
     
 	<wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
 
+##Remote tasks
+To use the remote tasks your server must have enabled the feature `restConnector-1.0`.  
 
+1.- Enable the REST connector by using the followind code in the `server.xml` file.
+```xml
+<featureManager>
+   <feature>restConnector-1.0</feature>
+</featureManager>
+```
+
+2.-[Configure SSL certificates](https://www-01.ibm.com/support/knowledgecenter/was_beta_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_sec_ssl.html?cp=was_beta_liberty&lang=es) in the `server.xml` file.
+
+3.-[Configure a user or group to the administrator role](https://www-01.ibm.com/support/knowledgecenter/was_beta_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_sec_mapadmin.html?cp=was_beta_liberty&lang=es) in the `server.xml` file.
+
+4.-Configure the permissions to enable remote file access in your `server.xml` file.
+
+Example:
+The following code shows an example of how to set permissions to enable remote access to your server's folders.
+```xml
+<remoteFileAccess>
+    <readDir>${server.output.dir}/logs</readDir>
+    <readDir>${server.output.dir}/apps</readDir>
+    <writeDir>${server.output.dir}/dropins</writeDir>
+</remoteFileAccess>
+```
+### remote-server
+The following task doesn't have any function beyond to define a reference configuration that could be used later using using the 'ref' parameter instead of declare all the attributes again.
+
+#### Parameters
+The following parameters are used in all the remote tasks. 
+
+| Attribute | Description | Required |
+| --------- | ------------ | ----------|
+| installDir | Location of a local Liberty profile server installation. | Yes, only when  `classPath` is not specified.|
+| classPath | Location of the `restConnector.jar` file. | Yes, only when `installDir` is not specified.|
+| hostname| URL address of the remote server. |Yes |
+| httpsPort| Port used to connect to the remote Liberty Profile server, if empty the default value is `9443`. |No |
+| userName | User declared with administrator role in the `server.xml` file. [See](https://www-01.ibm.com/support/knowledgecenter/was_beta_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_sec_mapadmin.html?cp=was_beta_liberty&lang=es) |Yes |
+| password | Password declared in the server.xml file for the user with administrator role. |Yes |
+| trustStoreLocation | Location of the TrustStore file. |Yes|
+| trustStoreLocationPassword | Password defined for the TrustStore file. |Yes |
+| disableHostNameVerification | Let the user decide if want to disable the HostNameVerification function. Default value is `true`.|No |
+
+####Example:
+```ant
+<wlp:remote-server id="remoteServer"
+    hostName="<host>"
+    classpath="C:/wlp/clients/restConnector.jar"
+    userName="bob"
+    password="bobpassword"            
+    trustStoreLocation="C:/keystore.jks"
+    trustStorePassword="password"
+    disableHostNameVerification="true"/>
+```
+
+### upload-file task
+The `upload-file` task supports deployment of one or more applications to a remote Liberty Profile server.
+
+#### Parameters
+
+| Attribute | Description | Required |
+| --------- | ------------ | ----------|
+| installDir | Location of a local Liberty profile server installation. | Yes, only when  `classPath` is not specified.|
+| classPath | Location of the `restConnector.jar` file. | Yes, only when `installDir` is not specified.|
+| file | Location of a single application to be deployed. See [file attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). The application type can be war, ear, rar, eba, zip , or jar. | Yes, only when the `fileset` attribute is not specified. |
+| fileset | Location of multiple applications to be deployed. See [fileset attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). | Yes, only when the `file` attribute is not specified.|
+| hostname| URL address of the remote server. |Yes |
+| httpsPort| Port used to connect to the remote Liberty Profile server, if empty the default value is `9443`. |No |
+| userName | User declared with administrator role in the `server.xml` file. [See](https://www-01.ibm.com/support/knowledgecenter/was_beta_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_sec_mapadmin.html?cp=was_beta_liberty&lang=es) |Yes |
+| password | Password declared in the server.xml file for the user with administrator role. |Yes |
+| trustStoreLocation | Location of the TrustStore file. |Yes|
+| trustStoreLocationPassword | Password defined for the TrustStore file. |Yes |
+| disableHostNameVerification | Let the user decide if want to disable the HostNameVerification function. Default value is `true`.|No |
+| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. |No |
+
+#### Examples
+```ant
+<!-- Deploys "test-war.war" application to a remote server. -->
+<wlp:upload-file installDir="${wlp_install_dir}"
+                 hostName="<remote host adress>"
+                 userName="bob"
+                 password="bobpassword"             
+                 trustStoreLocation="C:/keystore.jks"
+                 trustStorePassword="password"
+                 disableHostNameVerification="true">
+                 <fileset dir="C:/resources/test-war.war" />
+</wlp:upload-file> 
+         
+<!-- Deploys "test-war.war" application to a remote server using a configuration previously defined. -->
+<wlp:upload-file ref="remoteServer">
+                 <fileset dir="C:/resources/test-war.war" />  
+</wlp:upload-file>               
+```
+
+### delete-app task
+The `delete-app` task supports undeployment of an specific application in a remote Liberty Profile server.
+
+#### Parameters
+
+| Attribute | Description | Required |
+| --------- | ------------ | ----------|
+| installDir | Location of a local Liberty profile server installation. | Yes, only when  `classPath` is not specified.|
+| classPath | Location of the `restConnector.jar` file. | Yes, only when `installDir` is not specified.|
+| file | Location of a single application to be undeployed. See [file attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). | Yes.|
+| hostname| URL address of the remote server. |Yes |
+| httpsPort| Port used to connect to the remote Liberty Profile server, if empty the default value is `9443`. |No |
+| userName | User declared with administrator role in the `server.xml` file. [See](https://www-01.ibm.com/support/knowledgecenter/was_beta_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_sec_mapadmin.html?cp=was_beta_liberty&lang=es) |Yes |
+| password | Password declared in the server.xml file for the user with administrator role. |Yes |
+| trustStoreLocation | Location of the TrustStore file. |Yes|
+| trustStoreLocationPassword | Password defined for the TrustStore file. |Yes |
+| disableHostNameVerification | Let the user decide if want to disable the HostNameVerification function. Default value is `true`.|No |
+| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. |No |
+
+
+####Example
+```ant
+<!--The following code undeploy the app 'sample' from a remote server.-->
+<wlp:delete-app installDir="${wlp_install_dir}"
+                serverName="<server name>"
+                hostName="<host>"
+                httpsPort="<port>"
+                userName="<user>"
+                password="<password>"
+                trustStoreLocation="C:/keystore.jks"
+                trustStorePassword="<Keystore password>"
+                disableHostNameVerification="true"
+                file="sample.war" 
+                /> 
+```
+
+### remote-app task
+The `remote-app` task let you manipulate the state of an specific application in a remote Liberty Profile server through the following operations: `start`, `stop`, `status`.
+
+#### Parameters
+
+| Attribute | Description | Required |
+| --------- | ------------ | ----------|
+| installDir | Location of a local Liberty profile server installation. | Yes, only when  `classPath` is not specified.|
+| classPath | Location of the `restConnector.jar` file. | Yes, only when `installDir` is not specified.|
+| hostname| URL address of the remote server. |Yes |
+| httpsPort| Port used to connect to the remote Liberty Profile server, if empty the default value is `9443`. |No |
+| userName | User declared with administrator role in the `server.xml` file. [See](https://www-01.ibm.com/support/knowledgecenter/was_beta_liberty/com.ibm.websphere.wlp.nd.multiplatform.doc/ae/twlp_sec_mapadmin.html?cp=was_beta_liberty&lang=es) |Yes |
+| password | Password declared in the server.xml file for the user with administrator role. |Yes |
+| trustStoreLocation | Location of the TrustStore file. |Yes|
+| trustStoreLocationPassword | Password defined for the TrustStore file. |Yes |
+| disableHostNameVerification | Let the user decide if want to disable the HostNameVerification function. Default value is `true`.|No |
+| applicationName | Name of the application to be manipuled.|No |
+| operation| Manipulate the state of an specific application. |No |
+| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. |No |
+
+####Example
+```ant
+<!--The following example stops the app 'sample' from a remote server.-->
+<wlp:remote-app installDir="${wlp_install_dir}"
+                serverName="<server name>"
+                hostName="<host>"
+                httpsPort="<port>"
+                userName="<user>"
+                password="<password>"
+                trustStoreLocation="C:/keystore.jks"
+                trustStorePassword="<Keystore password>"
+                disableHostNameVerification="true"
+                appName= "sample"
+                operation="stop" 
+                /> 
+```

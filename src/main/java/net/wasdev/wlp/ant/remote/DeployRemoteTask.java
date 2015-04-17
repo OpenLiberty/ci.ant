@@ -13,20 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.wasdev.wlp.ant;
+package net.wasdev.wlp.ant.remote;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
 
 /**
  * Deploy remote ant task. This task copies a file or files to ${server.config.dir}/dropins of a remote Liberty server.
@@ -45,15 +41,12 @@ public class DeployRemoteTask extends AbstractRemoteTask {
     private String filePath;
 
     private String timeout;
-    private Path classpath;
-
+    
     @Override
     public void execute() {
 
         super.initTask();
 
-        // TODO: Validate the server is not null.
-        // Check for no arguments
         if ((filePath == null) && (apps.size() == 0)) {
             throw new BuildException(messages.getString("error.fileset.set"), getLocation());
         }
@@ -70,6 +63,7 @@ public class DeployRemoteTask extends AbstractRemoteTask {
             rso.connect(hostName, httpsPort, userName, password, trustStoreLocation, trustStorePassword, disableHostnameVerification);
 
             for (File f : files) {
+                System.out.println("Uploading: "+f.getName());//Add message to messages instead of hardcode
                 rso.publishApp(f);
             }
 
@@ -81,37 +75,6 @@ public class DeployRemoteTask extends AbstractRemoteTask {
                 rso.disconnect();
             }
         }
-    }
-
-
-    private ClassLoader getNewClassLoader(ClassLoader parent) {
-        ArrayList<URL> urls = new ArrayList<URL>();
-
-        if (installDir != null){
-            File f = new File(installDir + "/clients/restConnector.jar");
-            try {
-                urls.add(f.toURI().toURL());
-                System.out.println(urls);
-            } catch (MalformedURLException e) {
-                throw new BuildException(e);
-            }
-            return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
-        }
-        if (classpath == null)
-            return null;
-
-        String[] pathElements = classpath.list();
-        for (String pathElement:pathElements){
-            try {
-                File f = new File(pathElement);
-                urls.add(f.toURI().toURL());
-            } catch (MalformedURLException e) {
-                throw new BuildException(e);
-            }
-        }
-        if (urls.size() == 0)
-            return null;
-        return new URLClassLoader(urls.toArray(new URL[urls.size()]), parent);
     }
 
 
@@ -137,15 +100,33 @@ public class DeployRemoteTask extends AbstractRemoteTask {
      */
     private List<File> scanFileSets() {
         final List<File> list = new ArrayList<File>();
-        if (filePath != null && (new File(filePath)).exists()) {
-            list.add(new File(filePath));
+
+        if (filePath != null) {
+            filePath = filePath.trim();
+            if (filePath.length() == 0) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.parameter.invalid"), "file"), getLocation());
+            }
+            File fileToDeploy = new File(filePath);
+            if (!fileToDeploy.exists()) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.file.noexist"), filePath), getLocation());
+            } else if (fileToDeploy.isDirectory()) {
+                throw new BuildException(messages.getString("error.deploy.file.isdirectory"), getLocation());
+            } else {
+                list.add(fileToDeploy);
+            }
         }
+
         for (int i = 0; i < apps.size(); i++) {
             final FileSet fs = apps.get(i);
             final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             ds.scan();
 
             final String[] names = ds.getIncludedFiles();
+
+            //Throw a BuildException if the directory specified as parameter is empty.
+            if (names.length == 0) {
+                throw new BuildException(messages.getString("error.deploy.fileset.invalid"), getLocation());
+            }
 
             for (String element : names) {
                 list.add(new File(ds.getBasedir(), element));
@@ -167,30 +148,6 @@ public class DeployRemoteTask extends AbstractRemoteTask {
      */
     public void setTimeout(String timeout) {
         this.timeout = timeout;
-    }
-
-    public void setClasspath(Path classpath) {
-        if(classpath == null) {
-            this.classpath = classpath;
-         } else {
-         this.classpath.append(classpath);
-       }
-    }
-
-
-    public void setClasspathRef(Reference r) {
-        Path path = createClasspath();
-        path.setRefid(r);
-        path.toString();
-    }
-
-
-    public Path createClasspath() {
-        if(classpath == null) {
-            classpath = new Path(getProject());
-        }
-        Path result = classpath.createPath();
-        return result;
     }
 
 }
