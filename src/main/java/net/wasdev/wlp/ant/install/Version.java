@@ -27,7 +27,7 @@ public class Version implements Comparable<Version> {
     private final int micro;
     private final String qualifier;
     
-    private Version(int major, int minor, int micro, String qualifier) {
+    public Version(int major, int minor, int micro, String qualifier) {
         this.major = major;
         this.minor = minor;
         this.micro = micro;

@@ -57,13 +57,14 @@ The Liberty license code must always be set in order to install the runtime. If 
 | maxDownloadTime | Maximum time in seconds the download can take. The default value is `0` (no maximum time). | No | 
 
 #### Examples
-
-    <!-- Install using Liberty repository -->
-    <wlp:install-liberty licenseCode="<license code>" />
-
-    <!-- Install from a specific location -->
-    <wlp:install-liberty licenseCode="<license code>" runtimeUrl="<url to runtime.jar>"/>
-
+```ant
+<!-- Install using Liberty repository -->
+<wlp:install-liberty licenseCode="<license code>" />
+```
+```ant
+<!-- Install from a specific location -->
+<wlp:install-liberty licenseCode="<license code>" runtimeUrl="<url to runtime.jar>"/>
+```
 ### server task
 ---
 
@@ -96,12 +97,13 @@ The `server` task supports the following operations:
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
 #### Examples
-
-    <wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}" operation="start" 
-            serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" />
-
-    <wlp:server ref="wlp.ant.test" operation="status"/>
-
+```ant
+<wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}" operation="start" 
+    serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" />
+```
+```ant
+<wlp:server ref="wlp.ant.test" operation="status"/>
+```
 
 ### deploy task
 ---
@@ -122,15 +124,16 @@ The `deploy` task supports deployment of one or more applications to the Liberty
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. |No |
 
 #### Examples
-
-    <wlp:deploy ref="wlp.ant.test" >
-       <fileset dir="${basedir}/resources/">
-             <include name="**/*.war"/>                
-       </fileset>
-    </wlp:deploy>
-
-    <wlp:deploy ref="wlp.ant.test" file="${basedir}/resources/SimpleOSGiApp.eba"  timeout="40000"/>
-
+```ant
+<wlp:deploy ref="wlp.ant.test" >
+    <fileset dir="${basedir}/resources/">
+         <include name="**/*.war"/>
+    </fileset>
+</wlp:deploy>
+```
+```ant
+<wlp:deploy ref="wlp.ant.test" file="${basedir}/resources/SimpleOSGiApp.eba"  timeout="40000"/>
+```
 ### undeploy task
 ---
 
@@ -151,20 +154,24 @@ The `undeploy` task supports undeployment of a single application from the Liber
 
 When `file` has been set the `patternset` parameter will be ignored, also when the `file` and `patternset` parameters are not set the task will undeploy all the deployed applications.
 #### Examples
-    <!-- Only undeploys the application "SimpleOSGiApp.eba" -->
-    <wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" />
-
-    <!-- This will undeploy all the applications with ".war" extension except the "example.war" file -->
-    <patternset id="mypattern">
-        <include name="**/*.war"/>
-        <exclude name="example.war" />
-    </patternset>
-    <wlp:undeploy ref="wlp.ant.test"  timeout="20000" >
-        <patternset refid="mypattern" />
-    </wlp:undeploy>
-
-    <!-- This will undeploy all the applications previously deployed on the server -->
-    <wlp:undeploy ref="wlp.ant.test" timeout="60000" />
+```ant
+<!-- Only undeploys the application "SimpleOSGiApp.eba" -->
+<wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" />
+```
+```ant
+<!-- This will undeploy all the applications with ".war" extension except the "example.war" file -->
+<patternset id="mypattern">
+    <include name="**/*.war"/>
+    <exclude name="example.war" />
+</patternset>
+<wlp:undeploy ref="wlp.ant.test"  timeout="20000" >
+    <patternset refid="mypattern" />
+</wlp:undeploy>
+```
+```ant
+<!-- This will undeploy all the applications previously deployed on the server -->
+<wlp:undeploy ref="wlp.ant.test" timeout="60000" />
+```
 
 ### install-feature task
 ---
@@ -182,10 +189,32 @@ The `install-feature` task installs a feature packaged as a Subsystem Archive (E
 | acceptLicense | Accept feature license terms and conditions. The default value is `false`. | No |
 | whenFileExits | Specifies the action to take if a file to be installed already exits. Use `fail` to abort the installation, `ignore` to continue the installation and ignore the file that exists, and `replace` to overwrite the existing file. | No | 
 | to | Specifies feature installation location. Set to `usr` to install as a user feature. Otherwise, set it to any configured product extension location. The default value is `usr`. | No |
-| name | Specifies the name of the Subsystem Archive (ESA file) to be installed. The name can a feature name, a file name or a URL. | Yes | 
+| name | Specifies the name of the Subsystem Archive (ESA file) to be installed. The name can be a feature name, a file name or a URL. | Yes | 
 
 #### Examples
-    
-	<wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
+```ant
+<wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
+```
 
+### uninstall-feature task
+---
+
+The `uninstall-feature` task uninstalls a feature from the specified Liberty runtime.
+
+#### Parameters
+
+| Attribute | Description | Required |
+| --------- | ------------ | ----------|
+| installDir | Location of the Liberty profile server installation. | Yes |
+| serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
+| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| noPrompts | If `true` suppress confirmation messages from console and uninstalls features without any user interaction. The default value is `false`. | No |
+| name | Specify the feature to be uninstalled. This can be an IBM-Shortname or the Subsystem-SymbolicName of the Subsystem archive. | Yes | 
+
+#####Note: This task requires Liberty to be turned off before be executed.
+#### Examples
+```ant
+<wlp:uninstall-feature installDir="${wlp_install_dir}" name="mongodb-2.0" noPrompts="true"/>
+```
 

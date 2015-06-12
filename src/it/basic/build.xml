@@ -31,7 +31,8 @@
 
         <wlp:server operation="create" ref="testServer" />
 
-        <wlp:install-feature ref="testServer" name="portlet-2.0" whenFileExists="ignore" acceptLicense="true" />
+    	<!--mongodb-2.0 feature requires Liberty version 8.5.5.2 or higher. -->
+        <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
 
         <copy overwrite="true" file="${serverConfig}" toFile="${wlp.usr.dir}/servers/${servername}/server.xml" />
         <copy file="${bootProp}" toFile="${wlp.usr.dir}/servers/${servername}/bootstrap.properties" />
@@ -57,7 +58,10 @@
         <wlp:undeploy ref="testServer" file="test-eba.eba" timeout="60000" />
 
         <wlp:server ref="testServer" operation="stop" />
+    	<wlp:uninstall-feature ref="testServer" name="mongodb-2.0" noPrompts="true"/>
         <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.zip" />
     </target>
+	
+	
 
 </project>

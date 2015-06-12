@@ -5,6 +5,7 @@
     <taskdef classname="net.wasdev.wlp.ant.DeployTask" name="deploy" />
     <taskdef classname="net.wasdev.wlp.ant.UndeployTask" name="undeploy"/>
     <taskdef classname="net.wasdev.wlp.ant.InstallFeatureTask" name="install-feature" />
+    <taskdef classname="net.wasdev.wlp.ant.UninstallFeatureTask" name="uninstall-feature" />
     <taskdef classname="net.wasdev.wlp.ant.install.InstallLibertyTask" name="install-liberty" />
 </antlib>
 	
