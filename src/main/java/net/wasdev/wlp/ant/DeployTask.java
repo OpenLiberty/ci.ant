@@ -31,6 +31,8 @@ import org.apache.tools.ant.util.FileUtils;
  */
 public class DeployTask extends AbstractTask {
 
+    private static final String START_APP_MESSAGE_CODE_REG = "CWWKZ0001I.*";
+    
     private final List<FileSet> apps = new ArrayList<FileSet>();
     private String filePath;
     private String timeout;

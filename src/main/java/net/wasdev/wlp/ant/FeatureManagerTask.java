@@ -61,4 +61,18 @@ public abstract class FeatureManagerTask extends AbstractTask {
         this.name = name;
     }
 
+    /** featureManager's exit codes. */
+    public enum ReturnCode {
+        OK(0);
+
+        final int val;
+
+        ReturnCode(int val) {
+            this.val = val;
+        }
+
+        public int getValue() {
+            return val;
+        }
+    }
 }
