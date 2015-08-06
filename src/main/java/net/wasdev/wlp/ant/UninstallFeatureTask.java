@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,9 @@ import java.util.List;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Install feature task.
+ * Uninstall feature task.
  */
-public class InstallFeatureTask extends FeatureManagerTask {
-
-    // accept license
-    private boolean acceptLicense = false;
-
-    // install as user or product extension (usr|extension)
-    private String to;
-
-    // action to take if a file to be installed already exists (fail|ignore|replace)
-    private String whenFileExists;
+public class UninstallFeatureTask extends FeatureManagerTask {
 
     @Override
     public void execute() {
@@ -44,7 +35,7 @@ public class InstallFeatureTask extends FeatureManagerTask {
         initTask();
         
         try {
-            doInstall();
+            doUninstall();
         } catch (BuildException e) {
             throw e;
         } catch (Exception e) {
@@ -52,53 +43,15 @@ public class InstallFeatureTask extends FeatureManagerTask {
         }
     }
 
-    private void doInstall() throws Exception {
+    private void doUninstall() throws Exception {
         List<String> command = new ArrayList<String>();
         command.add(cmd);
-        command.add("install");      
-        if (acceptLicense) {
-            command.add("--acceptLicense");
-        }
-        if (to != null) {
-            command.add("--to=" + to);
-        }
-        if (whenFileExists != null) {
-            command.add("--when-file-exists=" + whenFileExists);
-        }
+        command.add("uninstall");      
+        command.add("--noPrompts");
         command.add(name);
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
-    }
-
-    /**
-     * @return the acceptLicense
-     */
-    public boolean isAcceptLicense() {
-        return acceptLicense;
-    }
-
-    /**
-     * @param acceptLicense the acceptLicense to set
-     */
-    public void setAcceptLicense(boolean acceptLicense) {
-        this.acceptLicense = acceptLicense;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public String getWhenFileExists() {
-        return whenFileExists;
-    }
-
-    public void setWhenFileExists(String whenFileExists) {
-        this.whenFileExists = whenFileExists;
     }
 
 }
