@@ -55,44 +55,8 @@ public abstract class AbstractTask extends Task {
 
     protected static final String WLP_USER_DIR_VAR = "WLP_USER_DIR";
     protected static final String WLP_OUTPUT_DIR_VAR = "WLP_OUTPUT_DIR";
-
-    protected static final String START_MESSAGE_CODE = "CWWKF0011I";
-    protected static final String STOP_MESSAGE_CODE = "CWWKE0036I";
-    protected static final String START_APP_MESSAGE_CODE_REG = "CWWKZ0001I.*";
-    protected static final String STOP_APP_MESSAGE_CODE_REG = "CWWKZ0009I.*";
-
+    
     protected static final ResourceBundle messages = ResourceBundle.getBundle("net.wasdev.wlp.ant.AntMessages");
-
-    /**
-     * Pick and use a consistent set of return codes across all platforms. Most
-     * common range is 0 to 256.
-     */
-    public enum ReturnCode {
-        OK(0),
-        // started/stopped is set based on operation.
-        // process will return this code if start is called when server is
-        // already running
-        // or will return this code for stop/status when the server is not
-        // running
-        REDUNDANT_ACTION_STATUS(1), SERVER_NOT_EXIST_STATUS(2), SERVER_ACTIVE_STATUS(
-                                                                                     3), SERVER_INACTIVE_STATUS(4),
-        // Jump a few numbers for error return codes-- see readInitialConfig
-        BAD_ARGUMENT(20), ERROR_SERVER_STOP(21), ERROR_SERVER_START(22), LOCATION_EXCEPTION(
-                                                                                            23), LAUNCH_EXCEPTION(24), RUNTIME_EXCEPTION(25), UNKNOWN_EXCEPTION(
-                                                                                                                                                                26),
-        PROCESS_CLIENT_EXCEPTION(27), ERROR_SERVER_PACKAGE(28), ERROR_SERVER_DUMP(
-                                                                                  29), ERROR_SERVER_ATTACH(30);
-
-        final int val;
-
-        ReturnCode(int val) {
-            this.val = val;
-        }
-
-        public int getValue() {
-            return val;
-        }
-    }
 
     protected void initTask() {
         if (ref != null) {
@@ -103,8 +67,8 @@ public abstract class AbstractTask extends Task {
                 setUserDir(((ServerTask) serverRef).getUserDir());
                 setOutputDir(((ServerTask) serverRef).getOutputDir());
             }
-
         }
+        
         try {
 
             if (installDir != null) {
@@ -249,31 +213,6 @@ public abstract class AbstractTask extends Task {
         }
 
         throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, Arrays.toString(expectedExitCodes)));        
-    }
-
-    protected void validateServerStarted(File outputFile, long startTimeout) throws Exception {
-
-        boolean serverStarted = false;
-
-        log("Waiting up to " + (startTimeout / 1000)
-            + " seconds for server confirmation:  "
-            + START_MESSAGE_CODE.toString() + " to be found in "
-            + outputFile);
-
-        try {
-
-            final String startMessage = waitForStringInLog(START_MESSAGE_CODE, startTimeout, outputFile);
-            serverStarted = (startMessage != null);
-
-        } catch (Exception e) {
-            throw new BuildException(e);
-        }
-
-        if (!!!serverStarted) {
-            throw new BuildException(messages.getString("error.server.fail"));
-
-        }
-
     }
 
     private class StreamCopier extends Thread {

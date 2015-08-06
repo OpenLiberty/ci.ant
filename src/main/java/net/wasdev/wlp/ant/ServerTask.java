@@ -35,6 +35,9 @@ public class ServerTask extends AbstractTask {
 
     private String wlp;
 
+    private static final String START_MESSAGE_CODE = "CWWKF0011I";
+    private static final String STOP_MESSAGE_CODE = "CWWKE0036I";
+    
     private static final long SERVER_START_TIMEOUT_DEFAULT = 30 * 1000;
     private static final long SERVER_STOP_TIMEOUT_DEFAULT = 30 * 1000;
     
@@ -78,7 +81,7 @@ public class ServerTask extends AbstractTask {
 
         initTask();
 
-        if(getRuntimeConfigurableWrapper().getAttributeMap().get("id") == null) {
+        if (getRuntimeConfigurableWrapper().getAttributeMap().get("id") == null) {
             if ((operation == null || operation.length() <= 0)) {
                 throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "operation"));
             }
@@ -136,6 +139,31 @@ public class ServerTask extends AbstractTask {
         validateServerStarted(getLogFile(), startTimeout);
     }
 
+    private void validateServerStarted(File outputFile, long startTimeout) throws Exception {
+
+        boolean serverStarted = false;
+
+        log("Waiting up to " + (startTimeout / 1000)
+            + " seconds for server confirmation:  "
+            + START_MESSAGE_CODE.toString() + " to be found in "
+            + outputFile);
+
+        try {
+
+            final String startMessage = waitForStringInLog(START_MESSAGE_CODE, startTimeout, outputFile);
+            serverStarted = (startMessage != null);
+
+        } catch (Exception e) {
+            throw new BuildException(e);
+        }
+
+        if (!!!serverStarted) {
+            throw new BuildException(messages.getString("error.server.fail"));
+
+        }
+
+    }
+    
     private void doRun() throws Exception {
         // create server first if it doesn't exist        
         if (!serverConfigRoot.exists()) {
@@ -340,6 +368,32 @@ public class ServerTask extends AbstractTask {
     
     public void setTemplate(String template) {
         this.template = template;
+    }
+
+    /* server's exit codes  */
+    public enum ReturnCode {
+        OK(0),
+        // started/stopped is set based on operation.
+        // process will return this code if start is called when server is already running
+        // or will return this code for stop/status when the server is not running
+        REDUNDANT_ACTION_STATUS(1), SERVER_NOT_EXIST_STATUS(2), SERVER_ACTIVE_STATUS(
+                                                                                     3), SERVER_INACTIVE_STATUS(4),
+        // Jump a few numbers for error return codes-- see readInitialConfig
+        BAD_ARGUMENT(20), ERROR_SERVER_STOP(21), ERROR_SERVER_START(22), LOCATION_EXCEPTION(
+                                                                                            23), LAUNCH_EXCEPTION(24), RUNTIME_EXCEPTION(25), UNKNOWN_EXCEPTION(
+                                                                                                                                                                26),
+        PROCESS_CLIENT_EXCEPTION(27), ERROR_SERVER_PACKAGE(28), ERROR_SERVER_DUMP(
+                                                                                  29), ERROR_SERVER_ATTACH(30);
+
+        final int val;
+
+        ReturnCode(int val) {
+            this.val = val;
+        }
+
+        public int getValue() {
+            return val;
+        }
     }
 
 }

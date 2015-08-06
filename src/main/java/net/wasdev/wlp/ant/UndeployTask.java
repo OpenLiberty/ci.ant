@@ -16,7 +16,6 @@
 package net.wasdev.wlp.ant;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,8 @@ import org.apache.tools.ant.util.FileUtils;
  */
 public class UndeployTask extends AbstractTask {
 
+    private static final String STOP_APP_MESSAGE_CODE_REG = "CWWKZ0009I.*";
+    
     private String fileName;
     private PatternSet pattern;
     private String timeout;
