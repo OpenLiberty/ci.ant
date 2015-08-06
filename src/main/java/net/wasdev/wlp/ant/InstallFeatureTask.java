@@ -68,7 +68,7 @@ public class InstallFeatureTask extends FeatureManagerTask {
         command.add(name);
         processBuilder.command(command);
         Process p = processBuilder.start();
-        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.ALREADY_EXISTS.getValue());
     }
 
     /**

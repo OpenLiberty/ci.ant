@@ -32,6 +32,8 @@
         <wlp:server operation="create" ref="testServer" />
 
         <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
+        <!-- install the same feature twice - should not cause an error -->
+        <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
 
         <copy overwrite="true" file="${serverConfig}" toFile="${wlp.usr.dir}/servers/${servername}/server.xml" />
         <copy file="${bootProp}" toFile="${wlp.usr.dir}/servers/${servername}/bootstrap.properties" />
