@@ -97,12 +97,27 @@ The `server` task supports the following operations:
 
 #### Examples
 
-    <wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}" operation="start" 
-            serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" />
+1- Set the operation in the task where is being used the "ref" atribute.
 
-    <wlp:server ref="wlp.ant.test" operation="status"/>
+```
+<!-- In the following example is defined a server configuration reference 
+     and is executed the "status" operation only. -->
 
+<wlp:server id="idMyServer" installDir="${wlp_install_dir}" 
+userDir="${wlp_usr}" outputDir="${wlp_output}" serverName="${serverName}"/>
 
+<wlp:server ref="idMyServer" operation="status"/>
+```
+
+2- Optionally could be set an operation in the server configuration, in this way if the second task also contains an operation set, both operations are executed.
+```
+<!-- In the following example is defined an operation in the server configuration reference and then another one is set up in the second task both are executed. -->
+
+<wlp:server id="idMyServer" installDir="${wlp_install_dir}" 
+userDir="${wlp_usr}" outputDir="${wlp_output}" serverName="${serverName}" operation="status"/>
+
+<wlp:server ref="idMyServer" operation="start"/>
+```
 ### deploy task
 ---
 
@@ -114,7 +129,7 @@ The `deploy` task supports deployment of one or more applications to the Liberty
 | --------- | ------------ | ----------|
 | installDir | Location of the Liberty profile server installation. | Yes |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
-| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | file | Location of a single application to be deployed. See [file attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). The application type can be war, ear, rar, eba, zip , or jar. | Yes, only when the `fileset` attribute is not specified. |
 | fileset | Location of multiple applications to be deployed. See [fileset attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). | Yes, only when the `file` attribute is not specified.|
@@ -142,7 +157,7 @@ The `undeploy` task supports undeployment of a single application from the Liber
 | --------- | ------------ | ----------|
 | installDir | Location of the Liberty profile server installation. | Yes |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
-| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | file | Name of the application to be undeployed. The application type can be war, ear, rar, eba, zip , or jar. | No |
 | patternset | Includes and excludes patterns of applications to be undeployed. See [patternset attribute in Apache Ant](http://ant.apache.org/manual/Types/patternset.html). | No |
@@ -177,7 +192,7 @@ The `install-feature` task installs a feature packaged as a Subsystem Archive (E
 | --------- | ------------ | ----------|
 | installDir | Location of the Liberty profile server installation. | Yes |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
-| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | acceptLicense | Accept feature license terms and conditions. The default value is `false`. | No |
 | whenFileExits | Specifies the action to take if a file to be installed already exits. Use `fail` to abort the installation, `ignore` to continue the installation and ignore the file that exists, and `replace` to overwrite the existing file. | No | 
