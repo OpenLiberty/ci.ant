@@ -59,6 +59,7 @@ The Liberty license code must always be set in order to install the runtime. If 
 | username | Username needed for basic authentication. | No | 
 | password | Password needed for basic authentication. | No | 
 | maxDownloadTime | Maximum time in seconds the download can take. The default value is `0` (no maximum time). | No | 
+| offline | Enable offline mode. Install without access to a network. The Liberty profile files must be present in the `cacheDir` directory. The default value is `false`. | No |
 
 #### Examples
 

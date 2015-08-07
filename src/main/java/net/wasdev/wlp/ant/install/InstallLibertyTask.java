@@ -41,6 +41,7 @@ public class InstallLibertyTask extends AbstractTask {
     private String username;
     private String password;
     private long maxDownloadTime;
+    private boolean offline;
     
     @Override
     public void execute() throws BuildException {
@@ -83,6 +84,22 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     protected void downloadFile(URL source, File dest) throws IOException {
+        if (offline) {
+            offlineDownload(source, dest);
+        } else {
+            onlineDownload(source, dest);
+        }
+    }
+    
+    private void offlineDownload(URL source, File dest) throws IOException {
+        if (dest.exists()) {
+            log("Offline mode. Using " + dest + " for " + source);
+        } else {
+            throw new BuildException("Offline mode. File " + dest.getName() + " is not available in the cache.");
+        }
+    }
+    
+    private void onlineDownload(URL source, File dest) throws IOException {
         Get get = (Get) getProject().createTask("get");
         DownloadProgress progress = null;
         if (verbose) {
@@ -191,5 +208,13 @@ public class InstallLibertyTask extends AbstractTask {
 
     public void setMaxDownloadTime(long maxDownloadTime) {
         this.maxDownloadTime = maxDownloadTime;
+    }
+    
+    public void setOffline(boolean offline) {
+        this.offline = offline;
+    }
+    
+    public boolean isOffline() {
+        return offline;
     }
 }
