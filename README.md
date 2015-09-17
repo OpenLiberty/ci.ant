@@ -104,6 +104,7 @@ The `server` task supports the following operations:
 | archive | Location of the target archive file. Only used with the `package` or `dump` operations. | No |
 | template | Name of the template to use when creating a new server. Only used with the `create` operation. | No |
 | resultProperty | Name of a property in which the server status will be stored. By default the server status will be stored under `wlp.<serverName>.status` property. Only used with the `status` operation. | No |
+| os| Specifies the operating systems that you want the packaged server to support. Supply a comma-separated list. Only used with the `package` operation and the 'include' option must be 'minify'. | No |
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
 #### Examples

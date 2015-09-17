@@ -56,6 +56,9 @@ public class ServerTask extends AbstractTask {
     // used with 'create' operation
     private String template;
     
+    // used with 'package' operation
+    private String os;
+    
     @Override
     protected void initTask() {
         super.initTask();
@@ -233,6 +236,7 @@ public class ServerTask extends AbstractTask {
         List<String> command = getInitialCommand(operation);
         addArchiveOption(command);
         addIncludeOption(command);
+        addOsOption(command);
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
@@ -272,6 +276,15 @@ public class ServerTask extends AbstractTask {
                 throw new BuildException("The archive attribute must specify a file");
             }
             command.add("--archive=" + archive);
+        }
+    }
+    
+    private void addOsOption(List<String> command) {
+        if (os != null) {
+        	if(!include.equals("minify")) {
+        		throw new BuildException("The 'os' option can only be used when the include attribute is 'minify' and it's: '" + include + "'");
+        	}
+            command.add("--os=" + os);
         }
     }
     
@@ -315,6 +328,21 @@ public class ServerTask extends AbstractTask {
      */
     public void setArchive(File archive) {
         this.archive = archive;
+    }
+    
+    /**
+     * @return the os
+     */
+    public String getOs() {
+        return os;
+    }
+
+    /**
+     * @param os
+     *            the os to set
+     */
+    public void setOs(String os) {
+        this.os = os;
     }
 
     /**
@@ -376,14 +404,22 @@ public class ServerTask extends AbstractTask {
         // started/stopped is set based on operation.
         // process will return this code if start is called when server is already running
         // or will return this code for stop/status when the server is not running
-        REDUNDANT_ACTION_STATUS(1), SERVER_NOT_EXIST_STATUS(2), SERVER_ACTIVE_STATUS(
-                                                                                     3), SERVER_INACTIVE_STATUS(4),
+        REDUNDANT_ACTION_STATUS(1), 
+        SERVER_NOT_EXIST_STATUS(2), 
+        SERVER_ACTIVE_STATUS(3), 
+        SERVER_INACTIVE_STATUS(4),
         // Jump a few numbers for error return codes-- see readInitialConfig
-        BAD_ARGUMENT(20), ERROR_SERVER_STOP(21), ERROR_SERVER_START(22), LOCATION_EXCEPTION(
-                                                                                            23), LAUNCH_EXCEPTION(24), RUNTIME_EXCEPTION(25), UNKNOWN_EXCEPTION(
-                                                                                                                                                                26),
-        PROCESS_CLIENT_EXCEPTION(27), ERROR_SERVER_PACKAGE(28), ERROR_SERVER_DUMP(
-                                                                                  29), ERROR_SERVER_ATTACH(30);
+        BAD_ARGUMENT(20), 
+        ERROR_SERVER_STOP(21), 
+        ERROR_SERVER_START(22), 
+        LOCATION_EXCEPTION(23), 
+        LAUNCH_EXCEPTION(24), 
+        RUNTIME_EXCEPTION(25), 
+        UNKNOWN_EXCEPTION(26),
+        PROCESS_CLIENT_EXCEPTION(27), 
+        ERROR_SERVER_PACKAGE(28), 
+        ERROR_SERVER_DUMP(29), 
+        ERROR_SERVER_ATTACH(30);
 
         final int val;
 
