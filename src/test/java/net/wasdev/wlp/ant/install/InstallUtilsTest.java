@@ -16,6 +16,7 @@
 package net.wasdev.wlp.ant.install;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -23,7 +24,7 @@ import junit.framework.TestCase;
 public class InstallUtilsTest extends TestCase {
 
     private LibertyInfo createEntry(String version, String uri, String licenseUri) {
-        LibertyInfo info = new LibertyInfo(version, uri, licenseUri);
+        LibertyInfo info = new LibertyInfo(version, new HashMap<String, String>());
         return info;
     }
     

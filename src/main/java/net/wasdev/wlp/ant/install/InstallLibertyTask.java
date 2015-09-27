@@ -31,18 +31,19 @@ import org.apache.tools.ant.taskdefs.Java;
  * Install Liberty profile server task.
  */
 public class InstallLibertyTask extends AbstractTask {
-   
+
     private String baseDir;
     private String cacheDir;
     private boolean verbose;
     private String licenseCode;
     private String version;
+    private String type;
     private String runtimeUrl;
     private String username;
     private String password;
     private long maxDownloadTime;
     private boolean offline;
-    
+
     @Override
     public void execute() throws BuildException {
         try {
@@ -53,12 +54,10 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     private void doExecute() throws Exception {
-        checkLicenseSet();
-
         if (baseDir == null) {
             baseDir = ".";
         }
-        
+
         File wlpDir = new File(baseDir, "wlp");
         if (wlpDir.exists()) {
             log("Liberty profile is already installed.");
@@ -67,13 +66,14 @@ public class InstallLibertyTask extends AbstractTask {
 
         if (cacheDir == null) {
             File dir = new File(System.getProperty("java.io.tmpdir"), "wlp-cache");
-            cacheDir = dir.getAbsolutePath();            
+            cacheDir = dir.getAbsolutePath();
         }
-                
+
         if (runtimeUrl == null) {
             WasDevInstaller installer = new WasDevInstaller();
             installer.setVersion(version);
             installer.setLicenseCode(licenseCode);
+            installer.setType(type);
             installer.install(this);
         } else {
             ArchiveInstaller installer = new ArchiveInstaller();
@@ -90,7 +90,7 @@ public class InstallLibertyTask extends AbstractTask {
             onlineDownload(source, dest);
         }
     }
-    
+
     private void offlineDownload(URL source, File dest) throws IOException {
         if (dest.exists()) {
             log("Offline mode. Using " + dest + " for " + source);
@@ -98,7 +98,7 @@ public class InstallLibertyTask extends AbstractTask {
             throw new BuildException("Offline mode. File " + dest.getName() + " is not available in the cache.");
         }
     }
-    
+
     private void onlineDownload(URL source, File dest) throws IOException {
         Get get = (Get) getProject().createTask("get");
         DownloadProgress progress = null;
@@ -112,7 +112,7 @@ public class InstallLibertyTask extends AbstractTask {
         get.doGet(source, dest, Project.MSG_INFO, progress);
     }
 
-    protected int installLiberty(File jarFile) {
+    protected void installLiberty(File jarFile) throws Exception {
         Java java = (Java) getProject().createTask("java");
         java.setJar(jarFile);
         java.setFork(true);
@@ -120,7 +120,13 @@ public class InstallLibertyTask extends AbstractTask {
         java.createArg().setValue(baseDir);
 
         int exitCode = java.executeJava();
-        return exitCode;
+        if (exitCode != 0) {
+            throw new BuildException("Error installing Liberty.");
+        }
+    }
+
+    protected void unzipLiberty(File zipFile) throws Exception {
+        Unzip.unzipToDirectory(zipFile, new File(baseDir));
     }
 
     protected void checkLicense(String actualLicenseCode) {
@@ -131,13 +137,13 @@ public class InstallLibertyTask extends AbstractTask {
             throw new BuildException("License code does not match.");
         }
     }
-    
+
     protected void checkLicenseSet() {
         if (licenseCode == null) {
             throw new BuildException("Liberty license code must be specified.");
         }
     }
-    
+
     public String getBaseDir() {
         return baseDir;
     }
@@ -153,7 +159,7 @@ public class InstallLibertyTask extends AbstractTask {
     public void setCacheDir(String cacheDir) {
         this.cacheDir = cacheDir;
     }
-    
+
     public String getLicenseCode() {
         return licenseCode;
     }
@@ -169,7 +175,15 @@ public class InstallLibertyTask extends AbstractTask {
     public void setRuntimeUrl(String runtimeUrl) {
         this.runtimeUrl = runtimeUrl;
     }
-    
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getVersion() {
         return version;
     }
@@ -177,11 +191,11 @@ public class InstallLibertyTask extends AbstractTask {
     public void setVersion(String version) {
         this.version = version;
     }
-    
+
     public boolean isVerbose() {
         return verbose;
     }
-    
+
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
@@ -209,11 +223,11 @@ public class InstallLibertyTask extends AbstractTask {
     public void setMaxDownloadTime(long maxDownloadTime) {
         this.maxDownloadTime = maxDownloadTime;
     }
-    
+
     public void setOffline(boolean offline) {
         this.offline = offline;
     }
-    
+
     public boolean isOffline() {
         return offline;
     }

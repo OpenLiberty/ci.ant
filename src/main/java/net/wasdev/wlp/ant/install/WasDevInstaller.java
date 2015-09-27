@@ -22,13 +22,14 @@ import java.util.List;
 import org.apache.tools.ant.BuildException;
 
 public class WasDevInstaller implements Installer {
-    
+
     private static final String LICENSE_REGEX = "D/N:\\s*(.*?)\\s*\\<";
-    
+
     private String url;
     private String licenseCode;
     private String version;
-    
+    private String type;
+
     public String getUrl() {
         return url;
     }
@@ -53,52 +54,82 @@ public class WasDevInstaller implements Installer {
         this.version = version;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public void install(InstallLibertyTask task) throws Exception {
-        task.checkLicenseSet();
-        
         if (url == null) {
-            url = "http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml";
+            url = "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml";
         }
 
         if (version == null) {
             version = "8.5.+";
         }
-        
+
+        if (type == null) {
+            type = "webProfile6";
+        }
+
         File cacheDir = new File(task.getCacheDir());
         InstallUtils.createDirectory(cacheDir);
-        
+
         // download yml file
         URL ymlURL = new URL(url);
         File ymlFile = new File(cacheDir, InstallUtils.getFile(ymlURL));
         task.downloadFile(ymlURL, ymlFile);
-        
+
         // parse yml
-        List<LibertyInfo> versions = InstallUtils.parseYml(ymlFile);
-        
+        List<LibertyInfo> versions = LibertyYaml.parse(ymlFile);
+
         // select version from yml
         Version baseVersion = Version.parseVersion(version, true);
         LibertyInfo selectedVersion = InstallUtils.selectVersion(baseVersion, versions);
-        
+
         File versionCacheDir = new File(task.getCacheDir(), selectedVersion.getVersion().toString());
         InstallUtils.createDirectory(versionCacheDir);
-        
-        // download license
-        URL licenseURL = new URL(selectedVersion.getLicenseUri());
-        File licenseFile = new File(versionCacheDir, InstallUtils.getFile(licenseURL));
-        task.downloadFile(licenseURL, licenseFile);
-        
-        // do license check
-        task.checkLicense(InstallUtils.getLicenseCode(licenseFile, LICENSE_REGEX));
-        
-        // download liberty
-        URL libertyURL = new URL(selectedVersion.getUri());
-        File libertyFile = new File(versionCacheDir, InstallUtils.getFile(libertyURL));
-        task.downloadFile(libertyURL, libertyFile);
-        
-        // install        
-        int exitCode = task.installLiberty(libertyFile);
-        if (exitCode != 0) {
-            throw new BuildException("Error installing Liberty profile.");
-        }            
+
+        String uri = getRuntimeURI(selectedVersion);
+        if (uri.endsWith(".jar")) {
+            // ensure licenseCode is set
+            task.checkLicenseSet();
+
+            // download license
+            URL licenseURL = new URL(selectedVersion.getLicenseUri());
+            File licenseFile = new File(versionCacheDir, InstallUtils.getFile(licenseURL));
+            task.downloadFile(licenseURL, licenseFile);
+
+            // do license check
+            task.checkLicense(InstallUtils.getLicenseCode(licenseFile, LICENSE_REGEX));
+
+            // download Liberty jar
+            URL libertyURL = new URL(uri);
+            File libertyFile = new File(versionCacheDir, InstallUtils.getFile(libertyURL));
+            task.downloadFile(libertyURL, libertyFile);
+
+            // install Liberty jar
+            task.installLiberty(libertyFile);
+        } else {
+            // download zip file
+            URL libertyURL = new URL(uri);
+            File libertyFile = new File(versionCacheDir, InstallUtils.getFile(libertyURL));
+            task.downloadFile(libertyURL, libertyFile);
+
+            // unzip
+            task.unzipLiberty(libertyFile);
+        }
+    }
+
+    private String getRuntimeURI(LibertyInfo selected) {
+        String propertyName = ("webProfile6".equalsIgnoreCase(type)) ? "uri" : type;
+        String value = selected.getProperty(propertyName);
+        if (value == null) {
+            throw new BuildException("Archive type " + propertyName + " is not available for Liberty version " + selected.getVersion());
+        }
+        return value;
     }
 }
