@@ -3,4 +3,4 @@ language: java
 jdk:
   - oraclejdk8
 script:
-  - "mvn verify -Ponline-its -DwlpVersion=8.5.5_06 -DwlpLicense=L-MCAO-9SYMVC"
+  - travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=8.5.5_07 -DwlpLicense=L-MCAO-9SYMVC

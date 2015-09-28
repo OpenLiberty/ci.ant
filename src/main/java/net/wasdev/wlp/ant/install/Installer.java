@@ -16,7 +16,7 @@
 package net.wasdev.wlp.ant.install;
 
 public interface Installer {
-    
+
     void install(InstallLibertyTask task) throws Exception;
-    
+
 }
