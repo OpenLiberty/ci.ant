@@ -100,11 +100,11 @@ The `server` task supports the following operations:
 | operation | Server operations available as options: `create`, `start`, `stop`, `status`, `package`, `dump`, and `javadump`. | Yes | 
 | clean | Clean all cached information on server start up. The default value is `false`. Only used with the `start` operation. | No | 
 | timeout | Waiting time before the server starts. The default value is 30 seconds. The unit is milliseconds. Only used with the `start` operation. | No | 
-| include | A comma-delimited list of values. The valid values vary depending on the operation. For the `package` operation the valid values are `all`, `usr`, and `minify`. For the `dump` operation the valid values are `heap`, `system`, and `thread`. For the `javadump` operation the valid values are `heap` and `system`. | No. |
+| include | A comma-delimited list of values. The valid values vary depending on the operation. For the `package` operation the valid values are `all`, `usr`, and `minify`. For the `dump` operation the valid values are `heap`, `system`, and `thread`. For the `javadump` operation the valid values are `heap` and `system`. | Yes, only when the `os` option is set. |
 | archive | Location of the target archive file. Only used with the `package` or `dump` operations. | No |
 | template | Name of the template to use when creating a new server. Only used with the `create` operation. | No |
 | resultProperty | Name of a property in which the server status will be stored. By default the server status will be stored under `wlp.<serverName>.status` property. Only used with the `status` operation. | No |
-| os| Specifies the operating systems that you want the packaged server to support. Supply a comma-separated list. Only used with the `package` operation and the 'include' option must be 'minify'. | No |
+| os| A comma-delimited list of operating systems that you want the packaged server to support. Only used with the `package` operation and the 'include' option must be set to 'minify'. | No |
 | ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
 #### Examples

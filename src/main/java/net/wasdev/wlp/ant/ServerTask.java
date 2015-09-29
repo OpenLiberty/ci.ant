@@ -281,12 +281,6 @@ public class ServerTask extends AbstractTask {
     
     private void addOsOption(List<String> command) {
         if (os != null) {
-        	if(include == null){
-        		throw new BuildException("In order to use the 'os' option, the 'include' attribute must be set with the value 'minify'.");
-        	}
-        	if(!include.equals("minify")) {
-        		throw new BuildException("The 'os' option can only be used when the 'include' attribute is 'minify' and it's: '" + include + "'.");
-        	}
             command.add("--os=" + os);
         }
     }
