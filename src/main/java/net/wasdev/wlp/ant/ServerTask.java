@@ -121,7 +121,7 @@ public class ServerTask extends AbstractTask {
         
     private void doStart() throws Exception {
         // create server first if it doesn't exist        
-        if (!serverConfigRoot.exists()) {
+        if (!serverConfigDir.exists()) {
             log(MessageFormat.format(messages.getString("info.server.create"), serverName));
             doCreate();
         }
@@ -166,7 +166,7 @@ public class ServerTask extends AbstractTask {
     
     private void doRun() throws Exception {
         // create server first if it doesn't exist        
-        if (!serverConfigRoot.exists()) {
+        if (!serverConfigDir.exists()) {
             log(MessageFormat.format(messages.getString("info.server.create"), serverName));
             doCreate();
         }
