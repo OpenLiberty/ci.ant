@@ -62,7 +62,7 @@ public class UndeployTask extends AbstractTask {
     }
 
     private List<File> scanFileSets() throws BuildException {
-        File dropinsDir = new File(serverConfigRoot, "dropins");
+        File dropinsDir = new File(serverConfigDir, "dropins");
         final List<File> list = new ArrayList<File>();
 
         if (fileName != null) {

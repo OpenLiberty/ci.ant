@@ -55,7 +55,7 @@ public class DeployTask extends AbstractTask {
             appStartTimeout = Long.valueOf(timeout);
         }
 
-        File dropInFolder = new File(serverConfigRoot, "dropins");
+        File dropInFolder = new File(serverConfigDir, "dropins");
         for (File file : files) {
             File destFile = new File(dropInFolder, file.getName());
             log(MessageFormat.format(messages.getString("info.deploy.app"), file.getPath()));

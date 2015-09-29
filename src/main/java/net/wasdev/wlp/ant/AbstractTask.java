@@ -39,7 +39,7 @@ public abstract class AbstractTask extends Task {
     protected File installDir;
     protected File userDir;
     protected File outputDir;
-    protected File serverConfigRoot = null;
+    protected File serverConfigDir = null;
     protected File serverOutputDir = null;
     protected String serverName;
 
@@ -55,7 +55,7 @@ public abstract class AbstractTask extends Task {
 
     protected static final String WLP_USER_DIR_VAR = "WLP_USER_DIR";
     protected static final String WLP_OUTPUT_DIR_VAR = "WLP_OUTPUT_DIR";
-    
+
     protected static final ResourceBundle messages = ResourceBundle.getBundle("net.wasdev.wlp.ant.AntMessages");
 
     protected void initTask() {
@@ -68,7 +68,7 @@ public abstract class AbstractTask extends Task {
                 setOutputDir(((ServerTask) serverRef).getOutputDir());
             }
         }
-        
+
         try {
 
             if (installDir != null) {
@@ -80,11 +80,9 @@ public abstract class AbstractTask extends Task {
                     throw new BuildException(messages.getString("error.installDir.set"));
                 }
 
-                log(MessageFormat.format(messages.getString("info.variable"), "installDir", installDir));
-
+                log(MessageFormat.format(messages.getString("info.variable"), "installDir", installDir.getCanonicalPath()), Project.MSG_VERBOSE);
             } else {
-                //throw new BuildException("You must set installDir attribute pointing to where your server is located.");
-                throw new BuildException(messages.getString("error.installDir.validate"));
+                throw new BuildException("Liberty installation directory must be set.");
             }
 
             if (serverName == null) {
@@ -93,23 +91,23 @@ public abstract class AbstractTask extends Task {
 
             processBuilder = new ProcessBuilder();
 
-            if (userDir != null && userDir.isDirectory()) {
+            if (userDir != null) {
                 log(MessageFormat.format(messages.getString("info.variable"), "userDir", userDir.getCanonicalPath()), Project.MSG_VERBOSE);
                 processBuilder.environment().put(WLP_USER_DIR_VAR, userDir.getCanonicalPath());
-                serverConfigRoot = new File(userDir, "servers/" + serverName);
+                serverConfigDir = new File(userDir, "servers/" + serverName);
             } else {
                 String wlpUserDir = processBuilder.environment().get(WLP_USER_DIR_VAR);
                 if (wlpUserDir != null) {
                     log(MessageFormat.format(messages.getString("info.variable"), "WLP_USER_DIR", wlpUserDir), Project.MSG_VERBOSE);
-                    serverConfigRoot = new File(wlpUserDir, "servers/" + serverName);
+                    serverConfigDir = new File(wlpUserDir, "servers/" + serverName);
                 } else {
-                    serverConfigRoot = new File(installDir, "usr/servers/" + serverName);
+                    serverConfigDir = new File(installDir, "usr/servers/" + serverName);
                 }
             }
 
-            log(MessageFormat.format(messages.getString("info.variable"), "ConfigDir", serverConfigRoot.getCanonicalPath()));
+            log(MessageFormat.format(messages.getString("info.variable"), "server.config.dir", serverConfigDir.getCanonicalPath()));
 
-            if (outputDir != null && outputDir.isDirectory()) {
+            if (outputDir != null) {
                 log(MessageFormat.format(messages.getString("info.variable"), "outputDir", outputDir.getCanonicalPath()), Project.MSG_VERBOSE);
                 processBuilder.environment().put(WLP_OUTPUT_DIR_VAR, outputDir.getCanonicalPath());
                 serverOutputDir = new File(outputDir, serverName);
@@ -119,12 +117,11 @@ public abstract class AbstractTask extends Task {
                     log(MessageFormat.format(messages.getString("info.variable"), "WLP_OUTPUT_DIR", wlpOutputDir), Project.MSG_VERBOSE);
                     serverOutputDir = new File(wlpOutputDir, serverName);
                 } else {
-                    serverOutputDir = serverConfigRoot;
+                    serverOutputDir = serverConfigDir;
                 }
             }
 
-            log(MessageFormat.format(messages.getString("info.variable"), "OutputDir", serverOutputDir.getCanonicalPath()));
-
+            log(MessageFormat.format(messages.getString("info.variable"), "server.output.dir", serverOutputDir.getCanonicalPath()));
         } catch (IOException e) {
             throw new BuildException(e);
         }
@@ -191,7 +188,7 @@ public abstract class AbstractTask extends Task {
     public void setRef(String ref) {
         this.ref = ref;
     }
-    
+
     protected int getReturnCode(Process p, String commandLine) throws InterruptedException {
         log(MessageFormat.format(messages.getString("info.variable"), "Invoke command", commandLine, Project.MSG_VERBOSE));
 
@@ -200,19 +197,19 @@ public abstract class AbstractTask extends Task {
 
         int exitVal = p.waitFor();
         copier.doJoin();
-        return exitVal;        
+        return exitVal;
     }
-    
+
     public void checkReturnCode(Process p, String commandLine, int... expectedExitCodes) throws InterruptedException {
         int exitVal = getReturnCode(p, commandLine);
-        
+
         for (int expectedExitCode : expectedExitCodes) {
             if (exitVal == expectedExitCode) {
                 return;
             }
         }
 
-        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, Arrays.toString(expectedExitCodes)));        
+        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, Arrays.toString(expectedExitCodes)));
     }
 
     private class StreamCopier extends Thread {
@@ -285,7 +282,7 @@ public abstract class AbstractTask extends Task {
 
     /**
      * Check for a number of strings in a potentially remote file
-     * 
+     *
      * @param regexp
      *            a regular expression to search for
      * @param timeout
@@ -327,7 +324,7 @@ public abstract class AbstractTask extends Task {
 
     /**
      * Searches the given file for the given regular expression.
-     * 
+     *
      * @param regexp
      *            a regular expression (or just a text snippet) to search for
      * @param fileToSearch
@@ -350,7 +347,7 @@ public abstract class AbstractTask extends Task {
 
     /**
      * Searches the given file for the given regular expression.
-     * 
+     *
      * @param regexp
      *            a regular expression (or just a text snippet) to search for
      * @param fileToSearch

@@ -24,13 +24,13 @@ import java.util.zip.ZipEntry;
 import org.apache.tools.ant.BuildException;
 
 public class ArchiveInstaller implements Installer {
-    
+
     private static final String LICENSE_REGEX = "D/N:\\s*(.*)\\s*";
-    
+
     private String runtimeUrl;
     private String extendedUrl;
     private String licenseCode;
-    
+
     public String getRuntimeUrl() {
         return runtimeUrl;
     }
@@ -54,48 +54,50 @@ public class ArchiveInstaller implements Installer {
     public void setLicenseCode(String licenseCode) {
         this.licenseCode = licenseCode;
     }
-    
+
     public void install(InstallLibertyTask task) throws Exception {
-        task.checkLicenseSet();
-        
         if (runtimeUrl == null) {
             throw new BuildException("Rumtime URL must be specified.");
         }
-        
+
         File cacheDir = new File(task.getCacheDir());
         InstallUtils.createDirectory(cacheDir);
-        
-        // download runtime file
-        URL runtimeURL = new URL(runtimeUrl);
-        File runtimeFile = new File(cacheDir, InstallUtils.getFile(runtimeURL));
-        task.downloadFile(runtimeURL, runtimeFile);
-        
-        // do license check
-        task.checkLicense(getLicenseCode(runtimeFile));
-        
-        // install runtime
-        int exitCode = task.installLiberty(runtimeFile);
-        if (exitCode != 0) {
-            throw new BuildException("Error installing Liberty profile.");
-        } 
-                    
-        // download extended file
+
+        // download & install runtime file
+        install(task, cacheDir, runtimeUrl);
+
+        // download & install extended file
         if (extendedUrl != null) {
-            URL extendedURL = new URL(extendedUrl);
-            File extendedFile = new File(cacheDir, InstallUtils.getFile(extendedURL));
-            task.downloadFile(extendedURL, extendedFile);
-            
-            // do license check
-            task.checkLicense(getLicenseCode(extendedFile));
-            
-            // install extended
-            exitCode = task.installLiberty(extendedFile);
-            if (exitCode != 0) {
-                throw new BuildException("Error installing extended features for Liberty profile.");
-            } 
+            install(task, cacheDir, extendedUrl);
         }
     }
-    
+
+    private void install(InstallLibertyTask task, File cacheDir, String url) throws Exception {
+        // download file
+        URL downloadURL = new URL(url);
+        File cachedFile = new File(cacheDir, InstallUtils.getFile(downloadURL));
+
+        if (url.endsWith(".jar")) {
+            // ensure licenseCode is set
+            task.checkLicenseSet();
+
+            // download Liberty jar
+            task.downloadFile(downloadURL, cachedFile);
+
+            // do license check
+            task.checkLicense(getLicenseCode(cachedFile));
+
+            // install Liberty jar
+            task.installLiberty(cachedFile);
+        } else {
+            // download zip file
+            task.downloadFile(downloadURL, cachedFile);
+
+            // unzip
+            task.unzipLiberty(cachedFile);
+        }
+    }
+
     private String getLicenseCode(File jarFile) throws Exception {
         JarFile jar = new JarFile(jarFile);
         InputStream in = null;
@@ -103,7 +105,7 @@ public class ArchiveInstaller implements Installer {
             ZipEntry entry = jar.getEntry("wlp/lafiles/LI_en");
             if (entry == null) {
                 throw new BuildException("Unable to find license file in " + jarFile);
-            } 
+            }
             in = jar.getInputStream(entry);
             return InstallUtils.getLicenseCode(in, "UTF-16", LICENSE_REGEX);
         } finally {

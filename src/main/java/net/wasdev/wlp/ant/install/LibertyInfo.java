@@ -15,36 +15,42 @@
  */
 package net.wasdev.wlp.ant.install;
 
+import java.util.Map;
+
 public class LibertyInfo {
 
     private final String version;
-    private final String uri;
-    private final String licenseUri;
-    
-    public LibertyInfo(String version, String uri, String licenseUri) {
+    private final Map<String, String> map;
+
+    public LibertyInfo(String version, Map<String, String> map) {
         this.version = version;
-        this.uri = uri;
-        this.licenseUri = licenseUri;
+        this.map = map;
     }
-        
+
+    public String getProperty(String type) {
+        return map.get(type);
+    }
+
     public String getUri() {
-        return uri;
+        return map.get("uri");
     }
 
     public String getLicenseUri() {
-        return licenseUri;
+        return map.get("license");
     }
 
     public Version getVersion() {
         return Version.parseVersion(version);
     }
-    
+
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("LibertyInfo[");
         builder.append(version);
+        builder.append(": ");
+        builder.append(map);
         builder.append("]");
         return builder.toString();
     }
-    
+
 }
