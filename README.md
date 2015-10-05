@@ -106,18 +106,18 @@ The `server` task supports the following operations:
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
-| installDir | Location of the Liberty profile server installation. | Yes |
+| installDir | Location of the Liberty profile server installation. | Yes, only if the `ref` attribute is not set. |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No | 
 | operation | Server operations available as options: `create`, `start`, `stop`, `status`, `package`, `dump`, and `javadump`. | Yes | 
 | clean | Clean all cached information on server start up. The default value is `false`. Only used with the `start` operation. | No | 
 | timeout | Waiting time before the server starts. The default value is 30 seconds. The unit is milliseconds. Only used with the `start` operation. | No | 
-| include | A comma-delimited list of values. The valid values vary depending on the operation. For the `package` operation the valid values are `all`, `usr`, and `minify`. For the `dump` operation the valid values are `heap`, `system`, and `thread`. For the `javadump` operation the valid values are `heap` and `system`. | No. |
+| include | A comma-delimited list of values. The valid values vary depending on the operation. For the `package` operation the valid values are `all`, `usr`, and `minify`. For the `dump` operation the valid values are `heap`, `system`, and `thread`. For the `javadump` operation the valid values are `heap` and `system`. | No |
 | archive | Location of the target archive file. Only used with the `package` or `dump` operations. | No |
 | template | Name of the template to use when creating a new server. Only used with the `create` operation. | No |
 | resultProperty | Name of a property in which the server status will be stored. By default the server status will be stored under `wlp.<serverName>.status` property. Only used with the `status` operation. | No |
-| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
 #### Examples
 
@@ -148,14 +148,14 @@ The `deploy` task supports deployment of one or more applications to the Liberty
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
-| installDir | Location of the Liberty profile server installation. | Yes |
+| installDir | Location of the Liberty profile server installation. | Yes, only if the `ref` attribute is not set. |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
-| outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No |
+| ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No | 
 | file | Location of a single application to be deployed. See [file attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). The application type can be war, ear, rar, eba, zip , or jar. | Yes, only when the `fileset` attribute is not specified. |
 | fileset | Location of multiple applications to be deployed. See [fileset attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). | Yes, only when the `file` attribute is not specified.|
 | timeout| Waiting time before the deployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
-| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. |No |
 
 #### Examples
 
@@ -184,14 +184,14 @@ The `undeploy` task supports undeployment of a single application from the Liber
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
-| installDir | Location of the Liberty profile server installation. | Yes |
+| installDir | Location of the Liberty profile server installation. | Yes, only if the `ref` attribute is not set. |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No | 
 | file | Name of the application to be undeployed. The application type can be war, ear, rar, eba, zip , or jar. | No |
 | patternset | Includes and excludes patterns of applications to be undeployed. See [patternset attribute in Apache Ant](http://ant.apache.org/manual/Types/patternset.html). | No |
 | timeout | Waiting time before the undeployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
-| ref | Reference to an existing server task definition to reuse its server configuration. The value can be null when other required attributes are set. | No | 
 
 When `file` has been set the `patternset` parameter will be ignored, also when the `file` and `patternset` parameters are not set the task will undeploy all the deployed applications.
 #### Examples
@@ -229,10 +229,11 @@ The `install-feature` task installs a feature packaged as a Subsystem Archive (E
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
-| installDir | Location of the Liberty profile server installation. | Yes |
+| installDir | Location of the Liberty profile server installation. | Yes, only if the `ref` attribute is not set. |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No |
 | acceptLicense | Accept feature license terms and conditions. The default value is `false`. | No |
 | whenFileExits | Specifies the action to take if a file to be installed already exits. Use `fail` to abort the installation, `ignore` to continue the installation and ignore the file that exists, and `replace` to overwrite the existing file. | No | 
 | to | Specifies feature installation location. Set to `usr` to install as a user feature. Otherwise, set it to any configured product extension location. The default value is `usr`. | No |
@@ -252,10 +253,11 @@ The `uninstall-feature` task uninstalls a feature from the Liberty runtime.
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
-| installDir | Location of the Liberty profile server installation. | Yes |
+| installDir | Location of the Liberty profile server installation. | Yes, only if the `ref` attribute is not set. |
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
+| ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No |
 | name | Specifies the feature name to be uninstalled. The name can a short name or a symbolic name of a Subsystem Archive (ESA file). | Yes | 
 
 #### Examples
