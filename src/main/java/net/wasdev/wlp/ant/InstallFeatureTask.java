@@ -40,9 +40,9 @@ public class InstallFeatureTask extends FeatureManagerTask {
         if (name == null || name.length() <= 0) {
             throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "name"));
         }
-        
+
         initTask();
-        
+
         try {
             doInstall();
         } catch (BuildException e) {
@@ -55,9 +55,11 @@ public class InstallFeatureTask extends FeatureManagerTask {
     private void doInstall() throws Exception {
         List<String> command = new ArrayList<String>();
         command.add(cmd);
-        command.add("install");      
+        command.add("install");
         if (acceptLicense) {
             command.add("--acceptLicense");
+        } else {
+            command.add("--viewLicenseAgreement");
         }
         if (to != null) {
             command.add("--to=" + to);
@@ -69,6 +71,9 @@ public class InstallFeatureTask extends FeatureManagerTask {
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.ALREADY_EXISTS.getValue());
+        if (!acceptLicense) {
+            throw new BuildException("To install a feature, you must accept the feature's license terms and conditions.");
+        }
     }
 
     /**
