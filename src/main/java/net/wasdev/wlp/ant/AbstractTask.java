@@ -51,7 +51,7 @@ public abstract class AbstractTask extends Task {
     protected ProcessBuilder processBuilder;
 
     protected static final String DEFAULT_SERVER = "defaultServer";
-    protected static final String DEFAULT_LOG_FILE = "logs/console.log";
+    protected static final String DEFAULT_LOG_FILE = "logs/messages.log";
 
     protected static final String WLP_USER_DIR_VAR = "WLP_USER_DIR";
     protected static final String WLP_OUTPUT_DIR_VAR = "WLP_OUTPUT_DIR";
