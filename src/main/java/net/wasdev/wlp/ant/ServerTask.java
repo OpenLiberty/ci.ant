@@ -56,6 +56,9 @@ public class ServerTask extends AbstractTask {
     // used with 'create' operation
     private String template;
     
+    // used with 'package' operation
+    private String os;
+    
     @Override
     protected void initTask() {
         super.initTask();
@@ -233,6 +236,7 @@ public class ServerTask extends AbstractTask {
         List<String> command = getInitialCommand(operation);
         addArchiveOption(command);
         addIncludeOption(command);
+        addOsOption(command);
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
@@ -278,6 +282,12 @@ public class ServerTask extends AbstractTask {
     private void addIncludeOption(List<String> command) {
         if (include != null) {
             command.add("--include=" + include);
+        }
+    }
+    
+    private void addOsOption(List<String> command) {
+        if (os != null) {
+            command.add("--os=" + os);
         }
     }
     
@@ -344,6 +354,20 @@ public class ServerTask extends AbstractTask {
      */
     public void setTimeout(String timeout) {
         this.timeout = timeout;
+    }
+
+    /**
+     * @return the os
+     */
+    public String getOs() {
+        return os;
+    }
+
+    /**
+     * @param os the os to set
+     */
+    public void setOs(String os) {
+        this.os = os;
     }
     
     public String getResultProperty() {
