@@ -53,7 +53,7 @@ In certain cases, the Liberty license code may need to be provided in order to i
 | --------- | ------------ | ----------|
 | licenseCode | Liberty profile license code. See [above](#install-liberty-task). | Yes, if `type` is `webProfile6` or `runtimeUrl` specifies a `.jar` file. |
 | version | Exact or wildcard version of the Liberty profile server to install. Available versions are listed in the [index.yml](http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml) file. Only used if `runtimeUrl` is not set. The default value is `8.5.+`. | No |
-| type | Liberty runtime type to download from the Liberty repository. Currently, the following types are supported: `kernel`, `webProfile6`, `webProfile7`, and `javaee7`. Only used if `runtimeUrl` is not set. The default value is `webProfile6`. | No |
+| type | Liberty runtime type to download from the Liberty repository. Currently, the following types are supported: `kernel`, `webProfile6`, `webProfile7`, and `javaee7`. Only used if `runtimeUrl` is not set. Defaults to `webProfile6` if `licenseCode` is set and `webProfile7` otherwise. | No |
 | runtimeUrl | URL to the Liberty profile's `.jar` or a `.zip` file. If not set, the Liberty repository will be used to find the Liberty runtime archive. | No |
 | baseDir | The base installation directory. The actual installation directory of Liberty profile will be `${baseDir}/wlp`. The default value is `.` (current working directory). | No | 
 | cacheDir | The directory used for caching downloaded files such as the license or `.jar` files. The default value is `${java.io.tmpdir}/wlp-cache`. | No | 
@@ -64,16 +64,16 @@ In certain cases, the Liberty license code may need to be provided in order to i
 
 #### Examples
 
-1. Install Liberty runtime with all Java EE 7 features using Liberty repository.
+1. Install Liberty runtime with Java EE 7 Web Profile features from the Liberty repository.
 
  ```ant
-<wlp:install-liberty type="javaee7"/>
+<wlp:install-liberty/>
  ```
 
-2. Install Liberty runtime with Java EE 6 Web Profile features using Liberty repository.
+2. Install Liberty runtime with Java EE 6 Web Profile features from the Liberty repository (must provide `licenseCode`).
 
  ```ant
-<wlp:install-liberty licenseCode="<license code>"/>
+<wlp:install-liberty type="webProfile6" licenseCode="<license code>"/>
  ```
 
 3. Install from a specific location using a zip file.
