@@ -2,5 +2,6 @@
      <featureManager>        
         <feature>wab-1.0</feature>
         <feature>jsp-2.2</feature>
+        <feature>openid-2.0</feature>
     </featureManager>     
 </server>

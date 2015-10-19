@@ -27,11 +27,7 @@ import org.apache.tools.ant.BuildException;
 public class UninstallFeatureTask extends FeatureManagerTask {
 
     @Override
-    public void execute() {
-        if (name == null || name.length() <= 0) {
-            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "name"));
-        }
-        
+    public void execute() {        
         initTask();
         
         try {
@@ -44,14 +40,31 @@ public class UninstallFeatureTask extends FeatureManagerTask {
     }
 
     private void doUninstall() throws Exception {
-        List<String> command = new ArrayList<String>();
-        command.add(cmd);
-        command.add("uninstall");      
-        command.add("--noPrompts");
-        command.add(name);
-        processBuilder.command(command);
-        Process p = processBuilder.start();
-        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+        List<String> command;
+        if (features.isEmpty()) {
+            if (name == null || name.length() <= 0) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "features elements or a name"));
+            }
+            command = new ArrayList<String>();
+            command.add(cmd);
+            command.add("uninstall");      
+            command.add("--noPrompts");
+            command.add(name);
+            processBuilder.command(command);
+            Process p = processBuilder.start();
+            checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+        } else {
+            for (Feature feature : features) {
+                command = new ArrayList<String>();
+                command.add(cmd);
+                command.add("uninstall");      
+                command.add("--noPrompts");
+                command.add(feature.getFeature());
+                processBuilder.command(command);
+                Process p = processBuilder.start();
+                checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+            }
+        }
     }
 
 }
