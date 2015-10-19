@@ -16,6 +16,8 @@
 package net.wasdev.wlp.ant;
 
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Install feature task.
@@ -26,6 +28,13 @@ public abstract class FeatureManagerTask extends AbstractTask {
 
     // name of the feature to install or URL
     protected String name;
+    
+    // list of features to be installed/uninstalled.
+    protected List<Feature> features = new ArrayList<Feature>();
+    
+    public void addFeature(Feature feature) {
+        features.add(feature);
+    }
 
     @Override
     protected void initTask() {
@@ -86,4 +95,19 @@ public abstract class FeatureManagerTask extends AbstractTask {
             return val;
         }
     }
+    
+    /* Class for the nested 'feature' element. */
+    public static class Feature {
+        private String feature;
+        
+        public String getFeature() {
+            return feature;
+        }
+        
+        public void addText(String txt) {
+            feature = txt;
+        }
+        
+    }
+    
 }
