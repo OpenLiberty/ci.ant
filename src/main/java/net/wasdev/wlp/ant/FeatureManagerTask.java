@@ -55,7 +55,7 @@ public abstract class FeatureManagerTask extends AbstractTask {
     }
 
     /**
-     * @param the feature name
+     * @param name the feature name
      */
     public void setName(String name) {
         this.name = name;
