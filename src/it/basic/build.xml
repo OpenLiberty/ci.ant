@@ -62,6 +62,7 @@
         <wlp:uninstall-feature ref="testServer" name="mongodb-2.0"/>
         <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.zip" />
     	<wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.os.zip" include="minify" os="OS/400,-z/OS"/>
+        <wlp:clean ref="testServer" apps="true" dropins="true" />
     </target>
 
 </project>
