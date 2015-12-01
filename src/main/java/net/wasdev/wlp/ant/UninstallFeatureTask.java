@@ -28,8 +28,8 @@ public class UninstallFeatureTask extends FeatureManagerTask {
 
     @Override
     public void execute() {
-        if (name == null || name.length() <= 0) {
-            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "name"));
+        if ((name == null || name.isEmpty()) && features.isEmpty()) {
+            throw new BuildException(MessageFormat.format(messages.getString("error.parameter.empty"), "name"));
         }
         
         initTask();
@@ -48,7 +48,16 @@ public class UninstallFeatureTask extends FeatureManagerTask {
         command.add(cmd);
         command.add("uninstall");      
         command.add("--noPrompts");
-        command.add(name);
+        
+        if (name != null && !name.isEmpty()) {
+            command.add(name);
+        }
+        if (!features.isEmpty()) {
+            for (Feature feature : features) {
+                command.add(feature.getFeature());
+            }
+        }
+        
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());

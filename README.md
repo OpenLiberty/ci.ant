@@ -235,15 +235,32 @@ The `install-feature` task installs a feature packaged as a Subsystem Archive (E
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No |
-| acceptLicense | Accept feature license terms and conditions. The default value is `false`. | No |
-| whenFileExits | Specifies the action to take if a file to be installed already exits. Use `fail` to abort the installation, `ignore` to continue the installation and ignore the file that exists, and `replace` to overwrite the existing file. | No | 
+| acceptLicense | Accept feature license terms and conditions. The default value is `false`. | No | 
 | to | Specifies feature installation location. Set to `usr` to install as a user feature. Otherwise, set it to any configured product extension location. The default value is `usr`. | No |
-| name | Specifies the name of the Subsystem Archive (ESA file) to be installed. The name can be a feature name, a file name or a URL. | Yes | 
+| from | Specifies a single directory-based repository as the source of the assets. | No |
+| name | Specifies the name of the Subsystem Archive (ESA file) to be installed. The name can be a feature name, a file name or a URL. | No | 
+
+To install the features from the `server.xml` file, don't specify any features in the name or in [nested features](#nested-feature-elements).
 
 #### Examples
-```ant
-<wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
-```
+1. Install a single feature using the `name` parameter.
+ ```ant
+ <wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
+ ```
+ 
+2. Install one or more features using nested `feature` elements.
+ ```ant
+ <wlp:install-feature installDir="${wlp_install_dir}" whenFileExists="ignore" acceptLicense="true">
+         <feature>mongodb-2.0</feature>
+         <feature>oauth-2.0</feature>
+ </wlp:install-feature>
+ ```
+
+3. Install all the not-installed features from the server.
+ ```ant
+ <wlp:install-feature installDir="${wlp_install_dir}" whenFileExists="ignore" acceptLicense="true"
+      serverName="${serverName}" />
+ ```
 
 ### uninstall-feature task
 ---
@@ -259,12 +276,28 @@ The `uninstall-feature` task uninstalls a feature from the Liberty runtime.
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
 | outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
 | ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No |
-| name | Specifies the feature name to be uninstalled. The name can a short name or a symbolic name of a Subsystem Archive (ESA file). | Yes | 
+| name | Specifies the feature name to be uninstalled. The name can a short name or a symbolic name of a Subsystem Archive (ESA file). | Yes, only if there are no [nested features](#nested-feature-elements) | 
 
 #### Examples
-```ant
-<wlp:uninstall-feature installDir="${wlp_install_dir}" name="mongodb-2.0"/>
-```
+
+1. Uninstall a single feature using the `name` parameter.
+ ```ant
+ <wlp:uninstall-feature installDir="${wlp_install_dir}" name="mongodb-2.0"/>
+ ```
+ 
+2. Uninstall one or more features using nested `feature` elements.
+ ```ant
+ <wlp:uninstall-feature installDir="${wlp_install_dir}">
+         <feature>mongodb-2.0</feature>
+         <feature>oauth-2.0</feature>
+ </wlp:uninstall-feature>
+ ```
+ 
+#### Nested Feature Elements
+
+| Element | Description | Required |
+| --------- | ------------ | ----------|
+| feature | Specifies the feature name to be uninstalled. The name can a short name or a symbolic name of a Subsystem Archive (ESA file). | No |
 
 ### clean task
 ---

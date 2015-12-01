@@ -16,6 +16,8 @@
 package net.wasdev.wlp.ant;
 
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Install feature task.
@@ -26,16 +28,26 @@ public abstract class FeatureManagerTask extends AbstractTask {
 
     // name of the feature to install or URL
     protected String name;
+    
+    // list of features to be installed/uninstalled.
+    protected List<Feature> features = new ArrayList<Feature>();
+    
+    /** Add a Feature object
+     * @param feature The Feature object.
+     */
+    public void addFeature(Feature feature) {
+        features.add(feature);
+    }
 
     @Override
     protected void initTask() {
         super.initTask();
 
         if (isWindows) {
-            cmd = installDir + "\\bin\\featureManager.bat";
+            cmd = installDir + "\\bin\\installUtility.bat";
             processBuilder.environment().put("EXIT_ALL", "1");
         } else {
-            cmd = installDir + "/bin/featureManager";
+            cmd = installDir + "/bin/installUtility";
         }
 
         Properties sysp = System.getProperties();
@@ -59,6 +71,20 @@ public abstract class FeatureManagerTask extends AbstractTask {
      */
     public void setName(String name) {
         this.name = name;
+    }
+    
+    /**
+     * @return the features
+     */
+    public List<Feature> getFeatures() {
+        return features;
+    }
+
+    /**
+     * @param features the features to set
+     */
+    public void setFeatures(List<Feature> features) {
+        this.features = features;
     }
 
     /** featureManager's exit codes. */
@@ -85,5 +111,22 @@ public abstract class FeatureManagerTask extends AbstractTask {
         public int getValue() {
             return val;
         }
+    }
+    
+    /** Class for the nested 'feature' element. */
+    public static class Feature {
+        private String feature;
+        
+        /**
+         * @return the name of the feature.
+         */
+        public String getFeature() {
+            return feature;
+        }
+        
+        public void addText(String txt) {
+            feature = txt;
+        }
+        
     }
 }
