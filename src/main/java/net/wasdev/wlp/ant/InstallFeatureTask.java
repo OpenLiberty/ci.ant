@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2014, 2015.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package net.wasdev.wlp.ant;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,12 +33,12 @@ public class InstallFeatureTask extends FeatureManagerTask {
 
     // action to take if a file to be installed already exists (fail|ignore|replace)
     private String whenFileExists;
+    
+    // a single directory-based repository as the source of the assets for the installUtility command
+    private String from;
 
     @Override
     public void execute() {
-        if (name == null || name.length() <= 0) {
-            throw new BuildException(MessageFormat.format(messages.getString("error.server.operation.validate"), "name"));
-        }
 
         initTask();
 
@@ -53,6 +52,26 @@ public class InstallFeatureTask extends FeatureManagerTask {
     }
 
     private void doInstall() throws Exception {
+        List<String> command;
+        command = initCommand();
+        if (name != null && !name.isEmpty()) {
+            command.add(name);
+        } 
+        if (!features.isEmpty()) {
+            for (Feature feature : features) {
+                command.add(feature.getFeature());
+            }
+        }
+        if (features.isEmpty() && (name == null || name.isEmpty())) {
+            command.add(serverName);
+        }
+        processCommand(command);
+    }
+    
+    /** Generate a String list containing all the parameter for the command.
+     * @returns A List<String> containing the command to be executed.
+     */
+    private List<String> initCommand(){
         List<String> command = new ArrayList<String>();
         command.add(cmd);
         command.add("install");
@@ -64,10 +83,17 @@ public class InstallFeatureTask extends FeatureManagerTask {
         if (to != null) {
             command.add("--to=" + to);
         }
-        if (whenFileExists != null) {
-            command.add("--when-file-exists=" + whenFileExists);
+        if (from != null) {
+            command.add("--from=" + from);
         }
-        command.add(name);
+        
+        return command;
+    }
+    
+    /** Process the command.
+     * @param command A String list containing the command to be executed.
+     */
+    private void processCommand(List<String> command) throws Exception {
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.ALREADY_EXISTS.getValue());
@@ -97,13 +123,29 @@ public class InstallFeatureTask extends FeatureManagerTask {
     public void setTo(String to) {
         this.to = to;
     }
-
+    
+    /**
+     * @deprecated installUtility does not have a whenFileExist parameter.
+     */
+    @Deprecated
     public String getWhenFileExists() {
         return whenFileExists;
     }
 
+    /**
+     * @deprecated installUtility does not have a whenFileExist parameter.
+     */
+    @Deprecated
     public void setWhenFileExists(String whenFileExists) {
         this.whenFileExists = whenFileExists;
+    }
+    
+    public String getFrom() {
+        return from;
+    }
+
+    public void setFrom(String from) {
+        this.from = from;
     }
 
 }
