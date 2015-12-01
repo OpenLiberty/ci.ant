@@ -34,9 +34,19 @@
         <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
         <!-- install the same feature twice - should not cause an error -->
         <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
+        
+        <!-- install features in nested elements -->
+        <wlp:install-feature ref="testServer" acceptLicense="true">
+            <!-- install the same feature again - should not cause an error -->
+            <feature>mongodb-2.0</feature>
+            <feature>oauth-2.0</feature>
+        </wlp:install-feature>
 
         <copy overwrite="true" file="${serverConfig}" toFile="${wlp.usr.dir}/servers/${servername}/server.xml" />
         <copy file="${bootProp}" toFile="${wlp.usr.dir}/servers/${servername}/bootstrap.properties" />
+        
+        <!-- install the features from the server.xml file that are not installed (openid-2-0) -->
+        <wlp:install-feature ref="testServer" acceptLicense="true" />
     </target>
 
     <target name="deploy" depends="createServer">
@@ -60,6 +70,13 @@
 
         <wlp:server ref="testServer" operation="stop" />
         <wlp:uninstall-feature ref="testServer" name="mongodb-2.0"/>
+        
+        <!-- uninstall features using nested elements -->
+        <wlp:uninstall-feature ref="testServer">
+            <feature>oauth-2.0</feature>
+            <feature>openid-2.0</feature>
+        </wlp:uninstall-feature>
+        
         <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.zip" />
     	<wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.os.zip" include="minify" os="OS/400,-z/OS"/>
         <wlp:clean ref="testServer" apps="true" dropins="true" />
