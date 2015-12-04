@@ -17,6 +17,11 @@ public class AppsTest {
     public void testSimpleEBA() {
         runTest("test-wab/index.jsp");
     }
+    
+    @Test
+    public void testHelloWARXml() {
+        runTest("test-war-xml/index.jsp");
+    }
 
     private void runTest(String test) {
         String port = System.getProperty("HTTP_default", "9080");

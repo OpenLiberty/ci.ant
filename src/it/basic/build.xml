@@ -61,6 +61,27 @@
         </wlp:deploy>
         <wlp:deploy ref="testServer" file="${basedir}/../setup/test-eba/target/test-eba.eba" timeout="40000" />
     </target>
+    
+    <target name="deploy-xml">
+
+        <copy file="${basedir}/../setup/test-war/target/test-war.war" toFile="${basedir}/../setup/test-war/target/test-war-xml.war" />
+
+        <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}"  operation="status" />
+
+        <wlp:deploy ref="testServer" deployTo="configDropins" >
+            <fileset dir="${basedir}/../setup/test-war/target">
+                <include name="*xml.war" />
+            </fileset>
+        </wlp:deploy>
+        
+    </target>
+    
+    <target name="undeploy-xml">
+        
+        <wlp:undeploy id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" 
+            file="test-war-xml.war" timeout="50000" from="configDropins" />
+        
+    </target>
 
     <target name="undeploy">
 
