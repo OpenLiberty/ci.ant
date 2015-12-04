@@ -31,6 +31,7 @@
 
         <wlp:server operation="create" ref="testServer" />
 
+        <!-- whenFileExists does not work anymore, but leave it to confirm backward compatibility -->
         <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
         <!-- install the same feature twice - should not cause an error -->
         <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />

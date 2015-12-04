@@ -245,12 +245,12 @@ To install the features from the `server.xml` file, don't specify any features i
 #### Examples
 1. Install a single feature using the `name` parameter.
  ```ant
- <wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
+ <wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" acceptLicense="true"/>
  ```
  
 2. Install one or more features using nested `feature` elements.
  ```ant
- <wlp:install-feature installDir="${wlp_install_dir}" whenFileExists="ignore" acceptLicense="true">
+ <wlp:install-feature installDir="${wlp_install_dir}" acceptLicense="true">
          <feature>mongodb-2.0</feature>
          <feature>oauth-2.0</feature>
  </wlp:install-feature>
@@ -258,7 +258,7 @@ To install the features from the `server.xml` file, don't specify any features i
 
 3. Install all the not-installed features from the server.
  ```ant
- <wlp:install-feature installDir="${wlp_install_dir}" whenFileExists="ignore" acceptLicense="true"
+ <wlp:install-feature installDir="${wlp_install_dir}" acceptLicense="true"
       serverName="${serverName}" />
  ```
 
