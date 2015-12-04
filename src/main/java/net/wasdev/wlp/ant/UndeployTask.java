@@ -37,9 +37,14 @@ public class UndeployTask extends AbstractTask {
     private PatternSet pattern;
     private String timeout;
     private static final long APP_STOP_TIMEOUT_DEFAULT = 30 * 1000;
+    private String from = "dropins";
 
     @Override
     public void execute() {
+        if (!from.equals("dropins") && !from.equals("configDropins")) {
+            throw new BuildException(MessageFormat.format(messages.getString("error.parameter.type.invalid"), "from"));
+        }
+        
         super.initTask();
 
         final List<File> files = scanFileSets();
@@ -50,6 +55,14 @@ public class UndeployTask extends AbstractTask {
         }
         
         for (File file : files) {
+            if (from.equals("configDropins")) {
+                // If undeploying a xml file, change the file location to overrides
+                file = new File(serverConfigDir, "configDropins/overrides/" + file.getName());
+                
+                if (!file.exists()) {
+                    throw new BuildException(MessageFormat.format(messages.getString("error.undeploy.file.noexist"), file.getPath()));
+                }
+            }
             log(MessageFormat.format(messages.getString("info.undeploy"), file.getName()));
             FileUtils.delete(file);
 
@@ -62,16 +75,37 @@ public class UndeployTask extends AbstractTask {
     }
 
     private List<File> scanFileSets() throws BuildException {
-        File dropinsDir = new File(serverConfigDir, "dropins");
+        File dropinsDir;
+        
+        if (from.equals("dropins")) {
+            // If undeploying from dropins, set serverConfigDir/dropins as the root dir
+            dropinsDir = new File(serverConfigDir, "dropins");
+            
+        } else {
+         // If undeploying from xml, set serverConfigDir/configDropins/overrides as the root dir
+            dropinsDir = new File(serverConfigDir, "configDropins/overrides");
+            
+        }
+        
         final List<File> list = new ArrayList<File>();
 
         if (fileName != null) {
-            File fileUndeploy = new File(dropinsDir, fileName);
+            File fileUndeploy;
+            
+            if (from.equals("dropins")) {
+                fileUndeploy = new File(dropinsDir, fileName);
+                
+            } else {
+                // If undeploying from xml, add the xml extension to the fileName
+                fileUndeploy = new File(dropinsDir, fileName + ".xml");
+            }
+            
             if (fileUndeploy.exists()) {
                 list.add(fileUndeploy);
             } else {
                 throw new BuildException(MessageFormat.format(messages.getString("error.undeploy.file.noexist"), fileUndeploy.getPath()));
             }
+            
         } else {
             FileSet dropins = new FileSet();
             dropins.setDir(dropinsDir);
@@ -120,6 +154,20 @@ public class UndeployTask extends AbstractTask {
 
     public void addPatternset(PatternSet pattern) {
         this.pattern=pattern;
+    }
+    
+    /**
+     * @return From which location the app will be undeployed.
+     */
+    public String getFrom() {
+        return from;
+    }
+
+    /**
+     * @param from The location from which the app will be undeployed.
+     */
+    public void setFrom(String from) {
+        this.from = from;
     }
 
 }
