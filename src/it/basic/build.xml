@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <project xmlns:wlp="antlib:net.wasdev.wlp.ant" name="net.wasdev.wlp.ant.it">
 
+    <!-- Specify Liberty profile server installation directory -->
+    <property name="wlp_install_dir" value="${basedir}/../build.image/wlp"/>
+
+    <property name="build.dir" value="target/output"/>
+    <property name="wlp_usr" value="${build.dir}/wlp_usr"/>
+    <property name="wlp_output" value="${build.dir}/wlp_output"/>
+    <property name="serverConfig" value="${basedir}/src/test/resources/server.xml"/>
+    <property name="serverConfigRemote" value="${basedir}/src/test/resources/server-remote.xml"/>
+    <property name="bootProp" value="${basedir}/src/test/resources/bootstrap.properties"/>
+    <property name="serverName" value="wlp.ant.test"/>
+
     <path id="wlp-ant-tasks.classpath">
         <fileset dir="${basedir}/../../../target" includes="wlp-anttasks-*.jar" />
     </path>
@@ -63,6 +74,35 @@
         <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.zip" />
     	<wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.os.zip" include="minify" os="OS/400,-z/OS"/>
         <wlp:clean ref="testServer" apps="true" dropins="true" />
+    </target>
+
+    <target name="deployRemote">
+        <delete dir="${wlp_usr}"/>
+        <delete dir="${wlp_output}"/>
+        <mkdir dir="${wlp_usr}"/>
+        <mkdir dir="${wlp_output}"/>
+        <copy file="${serverConfigRemote}" toFile="${wlp_usr}/servers/${serverName}/server.xml"/>
+        <copy file="${bootProp}" toFile="${wlp_usr}/servers/${serverName}/bootstrap.properties"/>
+
+        <wlp:server id="wlp.ant.test" installDir="${wlp_install_dir}"
+                                serverName="${serverName}" userDir="${wlp_usr}" outputDir="${wlp_output}" operation="start"/>
+        <wlp:server ref="wlp.ant.test" operation="status"/>
+
+        <wlp:remote-server id="wlp.ant.remote-test" installDir="${wlp_install_dir}"
+            hostName="localhost" httpsPort="8444" userName="testUser" password="testUser" trustStoreLocationPath="${wlp_output}/${serverName}/resources/security/key.jks" trustStorePassword="testStore"/>
+
+        <wlp:upload-file ref="wlp.ant.remote-test">
+            <classpath>
+                <pathelement location="${wlp_install_dir}/clients/restConnector.jar"/>
+                </classpath>
+            <fileset dir="${basedir}/../setup/test-war/target">
+                <include name="*.war"/>
+             </fileset>
+        </wlp:upload-file>
+
+        <wlp:upload-file ref="wlp.ant.remote-test" file="${basedir}/../setup/test-eba/target/test-eba.eba"/>
+
+        <wlp:server ref="wlp.ant.test" operation="stop"/>
     </target>
 
 </project>
