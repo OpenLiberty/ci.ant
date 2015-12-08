@@ -8,4 +8,8 @@
     <taskdef classname="net.wasdev.wlp.ant.UninstallFeatureTask" name="uninstall-feature" />
     <taskdef classname="net.wasdev.wlp.ant.CleanTask" name="clean" />
     <taskdef classname="net.wasdev.wlp.ant.install.InstallLibertyTask" name="install-liberty" />
+    <taskdef classname="net.wasdev.wlp.ant.remote.RemoteServerTask" name="remote-server"/>
+    <taskdef classname="net.wasdev.wlp.ant.remote.DeployRemoteTask" name="remote-deploy" />
+    <taskdef classname="net.wasdev.wlp.ant.remote.UndeployRemoteTask" name="remote-undeploy" />
+    <taskdef classname="net.wasdev.wlp.ant.remote.RemoteApplicationManagerTask" name="remote-app" />
 </antlib>
