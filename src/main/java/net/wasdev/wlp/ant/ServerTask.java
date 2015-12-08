@@ -76,7 +76,7 @@ public class ServerTask extends AbstractTask {
         // Set active directory (install dir)
         processBuilder.directory(installDir);
         processBuilder.environment().put("JAVA_HOME", javaHome);
-
+        processBuilder.redirectErrorStream(true);
     }
 
     @Override
