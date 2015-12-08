@@ -44,7 +44,7 @@ public abstract class FeatureManagerTask extends AbstractTask {
         super.initTask();
 
         if (isWindows) {
-            cmd = installDir + "\\bin\\installUtility.bat";
+            cmd = "\"" + installDir + "\\bin\\installUtility.bat\"";
             processBuilder.environment().put("EXIT_ALL", "1");
         } else {
             cmd = installDir + "/bin/installUtility";

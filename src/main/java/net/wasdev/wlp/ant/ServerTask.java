@@ -64,7 +64,7 @@ public class ServerTask extends AbstractTask {
         super.initTask();
 
         if (isWindows) {
-            wlp = installDir + "\\bin\\server.bat";
+            wlp = "\"" + installDir + "\\bin\\server.bat\"";
             processBuilder.environment().put("EXIT_ALL", "1");
         } else {
             wlp = installDir + "/bin/server";
@@ -76,7 +76,7 @@ public class ServerTask extends AbstractTask {
         // Set active directory (install dir)
         processBuilder.directory(installDir);
         processBuilder.environment().put("JAVA_HOME", javaHome);
-
+        processBuilder.redirectErrorStream(true);
     }
 
     @Override
