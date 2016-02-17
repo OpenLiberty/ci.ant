@@ -51,7 +51,7 @@ public class LibertyYaml  {
             if (line.startsWith("---")) {
                 continue;
             }
-            if (line.isEmpty()) {
+            if (line.trim().isEmpty()) {
                 continue;
             }
 
@@ -71,7 +71,7 @@ public class LibertyYaml  {
 
         String line = null;
         while ((line = reader.readLine()) != null) {
-            if (line.isEmpty()) {
+            if (line.trim().isEmpty()) {
                 break;
             }
 

@@ -32,7 +32,7 @@ public class LibertyYamlTest extends TestCase {
                 "  license: http://license1\n" +
                 "  webProfile7: http://webProfile1\n" +
                 "  kernel: http://kernel1\n" +
-                "\n" +
+                "  \n" +
                 "8.5.5_06:\n" +
                 "  uri: http://foobar2\n" +
                 "  license: http://license2\n" +
