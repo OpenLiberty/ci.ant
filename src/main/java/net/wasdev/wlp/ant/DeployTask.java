@@ -16,7 +16,9 @@
 package net.wasdev.wlp.ant;
 
 import java.io.IOException;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +39,15 @@ public class DeployTask extends AbstractTask {
     private String filePath;
     private String timeout;
     private static final long APP_START_TIMEOUT_DEFAULT = 30 * 1000;
+    // Deploy destination
+    private String deployTo = "dropins";
+    private long appStartTimeout;
 
     @Override
     public void execute() {
+        if (!deployTo.equals("dropins") && !deployTo.equals("configDropins")) {
+            throw new BuildException(MessageFormat.format(messages.getString("error.parameter.type.invalid"), "deployTo"));
+        }
 
         super.initTask();
 
@@ -50,11 +58,20 @@ public class DeployTask extends AbstractTask {
 
         final List<File> files = scanFileSets();
 
-        long appStartTimeout = APP_START_TIMEOUT_DEFAULT;
+        appStartTimeout = APP_START_TIMEOUT_DEFAULT;
         if (timeout != null && !timeout.equals("")) {
             appStartTimeout = Long.valueOf(timeout);
         }
+        
+        if (deployTo.equals("dropins")) {
+            deployToDropins(files);
+        } else {
+            deployToXml(files);
+        }
+    }
 
+    private void deployToDropins(List<File> files) {
+        // Copy the files to serverConfigDir/dropins
         File dropInFolder = new File(serverConfigDir, "dropins");
         for (File file : files) {
             File destFile = new File(dropInFolder, file.getName());
@@ -64,11 +81,73 @@ public class DeployTask extends AbstractTask {
             } catch (IOException e) {
                 throw new BuildException(messages.getString("error.deploy.fail"));
             }
-            // Check start message code
-            String startMessage = START_APP_MESSAGE_CODE_REG + getFileName(file.getName());
-            if (waitForStringInLog(startMessage, appStartTimeout, getLogFile()) == null) {
-                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), file.getPath()));
+            
+            // Check the deploy, if it is not correct, don't delete the app file.
+            checkDeploy(destFile, false);
+        }
+    }
+    
+    private void deployToXml(List<File> files) {
+        // Create a new file appName.extension.xml in serverConfigDir/configDropins/overrides
+        File overridesFolder = new File(serverConfigDir, "configDropins/overrides");
+        
+        if (!overridesFolder.exists()) {
+            // If directory does not exist, create it
+            if (!overridesFolder.mkdirs()) {
+                // Fail if it can not be created
+                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), overridesFolder.getPath()));
             }
+        }
+        
+        for (File app : files) {
+            // For each file...
+            String appName = app.getName();
+            String appLocation = app.getAbsolutePath();
+            
+            // Create a new file in the configDropins/overrides with extension xml
+            File xmlApp = new File(overridesFolder, appName + ".xml");
+            
+            if (xmlApp.exists()) {
+                // If app already deployed, send a log and continue to the next one
+                log(MessageFormat.format(messages.getString("info.app.already.deployed"), appName));
+                continue;
+            }
+            
+            // The xml code to put in the file
+            String xml = "<server>\n"
+                    + "<application name=\"" + appName + "\" location=\"" + appLocation + "\" />\n"
+                    + "</server>";
+            
+            try {
+                // Create the file and add the xml
+                xmlApp.createNewFile();
+                FileWriter fileWriter = new FileWriter(xmlApp.getAbsoluteFile());
+                BufferedWriter buffer = new BufferedWriter(fileWriter);
+                buffer.write(xml);
+                buffer.close();
+            } catch (IOException e) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), xmlApp.getPath()));
+            }
+            
+            // Check the deploy, if it is not correct, delete the xml file created
+            checkDeploy(xmlApp, true);
+            
+        }
+    }
+    
+    /**
+     * Checks the messages.log to verify the deploy of the app
+     * @param file The file deployed.
+     * @param deleteIfFail If the start log is not found, delete the app file.
+     */
+    private void checkDeploy(File file, boolean deleteIfFail) {
+        // Check start message code
+        String startMessage = START_APP_MESSAGE_CODE_REG + getFileName(file.getName());
+        if (waitForStringInLog(startMessage, appStartTimeout, getLogFile()) == null) {
+            if (deleteIfFail) {
+                file.delete();
+            }
+            throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), file.getPath()));
         }
     }
 
@@ -141,6 +220,22 @@ public class DeployTask extends AbstractTask {
      */
     public void setTimeout(String timeout) {
         this.timeout = timeout;
+    }
+    
+    /**
+     * @return the deploy location
+     */
+    public String getDeployTo() {
+        return deployTo;
+    }
+
+    /**
+     * @param deployTo The deploy destination. If it is set to 'dropins', the apps will be copied to the dropins folder.
+     * Else if the value is 'xml', an entry of type 'application' will be added in the configDropins/overrides/appName.xml
+     * file.
+     */
+    public void setDeployTo(String deployTo) {
+        this.deployTo = deployTo;
     }
 
 }

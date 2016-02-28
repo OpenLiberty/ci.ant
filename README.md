@@ -157,10 +157,11 @@ The `deploy` task supports deployment of one or more applications to the Liberty
 | file | Location of a single application to be deployed. See [file attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). The application type can be war, ear, rar, eba, zip , or jar. | Yes, only when the `fileset` attribute is not specified. |
 | fileset | Location of multiple applications to be deployed. See [fileset attribute in Apache Ant](http://ant.apache.org/manual/Types/fileset.html). | Yes, only when the `file` attribute is not specified.|
 | timeout| Waiting time before the deployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
+| deployTo| Specify the deploy destination. The possible values are `dropins` and `configDropins`. When deploying to `dropins`, the file will be copied to `${wlp_user_dir}/dropins`, but when deploying to `configDropins`, a new xml file _appName.extension.xml_ will be created in `${wlp_user_dir}/configDropins/overrides` (The directory will be created if it does not exist) containing the server _application_ entry with the file location and name. The default value is `dropins`. | No |
 
 #### Examples
 
-1. Using `fileset`.
+1. Deploy applications to the dropins folder using `fileset`.
 
  ```ant
  <wlp:deploy ref="wlp.ant.test">
@@ -170,11 +171,27 @@ The `deploy` task supports deployment of one or more applications to the Liberty
  </wlp:deploy>
  ```
 
-2. Using `file`.
+2. Deploy of a single application to the dropins folder using `file`.
 
  ```ant
 <wlp:deploy ref="wlp.ant.test" file="${basedir}/resources/SimpleOSGiApp.eba" timeout="40000"/>
-```
+ ```
+
+3. Deploy applications to the configDropins/overrides folder as _appName.extension.xml_ using `fileset`.
+
+ ```ant
+ <wlp:deploy ref="wlp.ant.test" deployTo="configDropins">
+     <fileset dir="${basedir}/resources/">
+         <include name="**/*.war"/>
+     </fileset>
+ </wlp:deploy>
+ ```
+
+4. Deploy of a single application to the configDropins/overrides folder as _appName.extension.xml_ using `file`.
+
+ ```ant
+<wlp:deploy ref="wlp.ant.test" file="${basedir}/resources/SimpleOSGiApp.eba" timeout="40000" deployTo="configDropins" />
+ ```
 
 ### undeploy task
 ---
@@ -193,17 +210,18 @@ The `undeploy` task supports undeployment of a single application from the Liber
 | file | Name of the application to be undeployed. The application type can be war, ear, rar, eba, zip , or jar. | No |
 | patternset | Includes and excludes patterns of applications to be undeployed. See [patternset attribute in Apache Ant](http://ant.apache.org/manual/Types/patternset.html). | No |
 | timeout | Waiting time before the undeployment completes successfully. The default value is 30 seconds. The unit is milliseconds. | No | 
+| from | From where the application will be undeployed. The possible values are `dropins` and `configDropins`. The default value is `dropins`. | No |
 
 When `file` has been set the `patternset` parameter will be ignored, also when the `file` and `patternset` parameters are not set the task will undeploy all the deployed applications.
 #### Examples
 
-1. Undeploy the `SimpleOSGiApp.eba` application.
+1. Undeploy the `SimpleOSGiApp.eba` application from the dropins folder.
 
  ```ant
 <wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000"/>
  ```
 
-2. Undeploy all the applications with the `.war` extension except the `example.war` file.
+2. Undeploy all the applications with the `.war` extension except the `example.war` file from the dropins folder.
 
  ```ant
  <patternset id="mypattern">
@@ -215,10 +233,34 @@ When `file` has been set the `patternset` parameter will be ignored, also when t
  </wlp:undeploy>
  ```
 
-3. Undeploy all the applications previously deployed on the server.
+3. Undeploy all the applications previously deployed on the dropins folder.
 
  ```ant
 <wlp:undeploy ref="wlp.ant.test" timeout="60000"/>
+ ```
+ 
+ 4. Undeploy the `SimpleOSGiApp.eba` application xml entry from the configDropins/overrides folder.
+
+ ```ant
+<wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000" from="configDropins" />
+ ```
+
+5. Undeploy all the applications with the `.war.xml` extension except the `example.war.xml` file from the configDropins/overrides folder.
+
+ ```ant
+ <patternset id="mypattern">
+     <include name="**/*.war.xml"/>
+     <exclude name="example.war.xml"/>
+ </patternset>
+ <wlp:undeploy ref="wlp.ant.test"  timeout="20000" from="configDropins">
+     <patternset refid="mypattern"/>
+ </wlp:undeploy>
+ ```
+
+6. Undeploy all the applications previously deployed on the configDropins/overrides folder.
+
+ ```ant
+<wlp:undeploy ref="wlp.ant.test" timeout="60000" from="configDropins"/>
  ```
 
 ### install-feature task
@@ -245,12 +287,12 @@ To install the features from the `server.xml` file, don't specify any features i
 #### Examples
 1. Install a single feature using the `name` parameter.
  ```ant
- <wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true"/>
+ <wlp:install-feature installDir="${wlp_install_dir}" name="mongodb-2.0" acceptLicense="true"/>
  ```
  
 2. Install one or more features using nested `feature` elements.
  ```ant
- <wlp:install-feature installDir="${wlp_install_dir}" whenFileExists="ignore" acceptLicense="true">
+ <wlp:install-feature installDir="${wlp_install_dir}" acceptLicense="true">
          <feature>mongodb-2.0</feature>
          <feature>oauth-2.0</feature>
  </wlp:install-feature>
@@ -258,7 +300,7 @@ To install the features from the `server.xml` file, don't specify any features i
 
 3. Install all the not-installed features from the server.
  ```ant
- <wlp:install-feature installDir="${wlp_install_dir}" whenFileExists="ignore" acceptLicense="true"
+ <wlp:install-feature installDir="${wlp_install_dir}" acceptLicense="true"
       serverName="${serverName}" />
  ```
 
