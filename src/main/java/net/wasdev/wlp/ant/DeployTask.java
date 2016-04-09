@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2015.
+ * (C) Copyright IBM Corporation 2014, 2015, 2016.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ public class DeployTask extends AbstractTask {
     private String filePath;
     private String timeout;
     private static final long APP_START_TIMEOUT_DEFAULT = 30 * 1000;
+    private String finalName;
+    private File fileToDeploy;
 
     @Override
     public void execute() {
@@ -47,7 +49,10 @@ public class DeployTask extends AbstractTask {
         if ((filePath == null) && (apps.size() == 0)) {
             throw new BuildException(messages.getString("error.fileset.set"), getLocation());
         }
-
+        if (finalName != null && filePath == null) {
+            throw new BuildException(messages.getString("error.file.set"), getLocation());
+        }
+        
         final List<File> files = scanFileSets();
 
         long appStartTimeout = APP_START_TIMEOUT_DEFAULT;
@@ -57,7 +62,14 @@ public class DeployTask extends AbstractTask {
 
         File dropInFolder = new File(serverConfigDir, "dropins");
         for (File file : files) {
-            File destFile = new File(dropInFolder, file.getName());
+            File destFile;
+            if (finalName != null) {
+                finalName = finalName + (filePath.substring(filePath.lastIndexOf("."), filePath.length()));
+                destFile = new File(dropInFolder, finalName);
+                finalName = null;
+            } else {
+                destFile = new File(dropInFolder, file.getName());
+            }
             log(MessageFormat.format(messages.getString("info.deploy.app"), file.getPath()));
             try {
                 FileUtils.getFileUtils().copyFile(file, destFile, null, true);
@@ -65,7 +77,7 @@ public class DeployTask extends AbstractTask {
                 throw new BuildException(messages.getString("error.deploy.fail"));
             }
             // Check start message code
-            String startMessage = START_APP_MESSAGE_CODE_REG + getFileName(file.getName());
+            String startMessage = START_APP_MESSAGE_CODE_REG + getFileName(destFile.getName());
             if (waitForStringInLog(startMessage, appStartTimeout, getLogFile()) == null) {
                 throw new BuildException(MessageFormat.format(messages.getString("error.deploy.fail"), file.getPath()));
             }
@@ -82,8 +94,17 @@ public class DeployTask extends AbstractTask {
         apps.add(fs);
     }
 
-    public void setFile(File app) {
+    public void setFile(File app) throws IOException {
         filePath = app.getAbsolutePath();
+        if (filePath != null) {
+            filePath = filePath.trim();
+            fileToDeploy = new File(filePath);
+            if (!fileToDeploy.exists()) {
+                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.file.noexist"), filePath), getLocation());
+            } else if (fileToDeploy.isDirectory()) {
+                throw new BuildException(messages.getString("error.deploy.file.isdirectory"), getLocation());
+            }
+        }
     }
 
     /**
@@ -94,20 +115,8 @@ public class DeployTask extends AbstractTask {
     private List<File> scanFileSets() {
         final List<File> list = new ArrayList<File>();
 
-        if (filePath != null) {
-            filePath = filePath.trim();
-            if (filePath.length() == 0) {
-                throw new BuildException(MessageFormat.format(messages.getString("error.parameter.invalid"), "file"), getLocation());
-            }
-            File fileToDeploy = new File(filePath);
-            if (!fileToDeploy.exists()) {
-                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.file.noexist"), filePath), getLocation());
-            } else if (fileToDeploy.isDirectory()) {
-                throw new BuildException(messages.getString("error.deploy.file.isdirectory"), getLocation());
-            } else {
-                list.add(fileToDeploy);
-            }
-        }
+        if (filePath != null)
+            list.add(fileToDeploy);
 
         for (int i = 0; i < apps.size(); i++) {
             final FileSet fs = apps.get(i);
@@ -141,6 +150,28 @@ public class DeployTask extends AbstractTask {
      */
     public void setTimeout(String timeout) {
         this.timeout = timeout;
+    }
+    
+    /**
+     * @return the finalName
+     */
+    public String getFinalName() {
+    	return finalName;
+    }
+
+    /**
+     * @param finalName the finalName to set
+     */
+    public void setFinalName(String finalName) {
+        if (finalName != null) {
+            if (finalName.trim().length() > 0) {
+                finalName = finalName.trim();
+                finalName = finalName.replace(" ", "_");
+            } else {
+                throw new BuildException(MessageFormat.format(messages.getString("error.deploy.final.name.invalid"), ""), getLocation());
+            }
+        }
+        this.finalName = finalName;
     }
 
 }
