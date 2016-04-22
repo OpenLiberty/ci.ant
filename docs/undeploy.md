@@ -19,10 +19,10 @@ The `undeploy` task supports undeployment of a single application from the Liber
 When `file` has been set the `patternset` parameter will be ignored, also when the `file` and `patternset` parameters are not set the task will undeploy all the deployed applications.
 #### Examples
 
-1. Undeploy the `SimpleOSGiApp.eba` application.
+1. Undeploy the `myapp.war` application.
 
  ```ant
-<wlp:undeploy ref="wlp.ant.test" file="SimpleOSGiApp.eba" timeout="60000"/>
+<wlp:undeploy ref="wlp.ant.test" file="myapp.war" timeout="60000"/>
  ```
 
 2. Undeploy all the applications with the `.war` extension except the `example.war` file.

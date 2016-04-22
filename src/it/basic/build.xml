@@ -58,7 +58,7 @@
                 <include name="*.war" />
             </fileset>
         </wlp:deploy>
-        <wlp:deploy ref="testServer" file="${basedir}/../setup/test-eba/target/test-eba.eba" timeout="40000" />
+        <wlp:deploy ref="testServer" file="${basedir}/../setup/test-eba/target/test-eba.eba" timeout="40000" deployName="my-test-eba.eba"/>
     </target>
 
     <target name="undeploy">
@@ -66,7 +66,7 @@
         <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
 
         <wlp:undeploy ref="testServer" file="test-war.war" timeout="50000" />
-        <wlp:undeploy ref="testServer" file="test-eba.eba" timeout="60000" />
+        <wlp:undeploy ref="testServer" file="my-test-eba.eba" timeout="60000" />
 
         <wlp:server ref="testServer" operation="stop" />
         <wlp:uninstall-feature ref="testServer" name="mongodb-2.0"/>

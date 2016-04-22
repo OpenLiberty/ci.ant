@@ -447,4 +447,8 @@ public abstract class AbstractTask extends Task {
         st.setOperation("stop");
         st.execute();
     }
+    
+    protected String getMessage(String key, Object... args) {
+        return MessageFormat.format(messages.getString(key), args);
+    }
 }
