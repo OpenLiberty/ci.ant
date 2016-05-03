@@ -83,6 +83,9 @@
                         </goals>
                         <projectsDirectory>src/it</projectsDirectory>
                         <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+                        <setupIncludes>
+                            <setupInclude>${project.build.directory}/it/setup/pom.xml</setupInclude>
+                        </setupIncludes>
                     </configuration>
                     <executions>
                         <execution>
