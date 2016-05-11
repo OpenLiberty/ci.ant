@@ -5,13 +5,10 @@ The `install-feature` task installs a feature packaged as a Subsystem Archive (E
 
 #### Parameters
 
+Parameters supported by this task in addition to the [common parameters](common-parameters.md#common-parameters).
+
 | Attribute | Description | Required |
 | --------- | ------------ | ----------|
-| installDir | Location of the Liberty profile server installation. | Yes, only if the `ref` attribute is not set. |
-| serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
-| userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No | 
-| outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No | 
-| ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No |
 | acceptLicense | Accept feature license terms and conditions. The default value is `false`. | No | 
 | to | Specifies feature installation location. Set to `usr` to install as a user feature. Otherwise, set it to any configured product extension location. The default value is `usr`. | No |
 | from | Specifies a single directory-based repository as the source of the assets. | No |
