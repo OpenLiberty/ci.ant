@@ -122,7 +122,7 @@ public class DeployTask extends AbstractTask {
 
             //Throw a BuildException if the directory specified as parameter is empty.
             if (names.length == 0) {
-                throw new BuildException(getMessage("error.deploy.fileset.invalid"), getLocation());
+                throw new BuildException(getMessage("error.deploy.fileset.empty"), getLocation());
             }
 
             for (String element : names) {
