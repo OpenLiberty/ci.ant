@@ -18,7 +18,7 @@ Parameters supported by this task in addition to the [common parameters](common-
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------| 
-| operation | Server operations available as options: `create`, `start`, `stop`, `status`, `package`, `dump`, and `javadump`. | Yes | 
+| operation | Server operations available as options: `create`, `start`, `stop`, `status`, `package`, `dump`, `run` and `javadump`. | Yes | 
 | clean | Clean all cached information on server start up. The default value is `false`. Only used with the `start` operation. | No | 
 | timeout | Waiting time before the server starts. The default value is 30 seconds. The unit is milliseconds. Only used with the `start` operation. | No | 
 | include | A comma-delimited list of values. The valid values vary depending on the operation. For the `package` operation the valid values are `all`, `usr`, and `minify`. For the `dump` operation the valid values are `heap`, `system`, and `thread`. For the `javadump` operation the valid values are `heap` and `system`. | Yes, only when the `os` option is set |

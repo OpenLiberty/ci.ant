@@ -86,7 +86,7 @@ public class UndeployTask extends AbstractTask {
             final String[] names = ds.getIncludedFiles();
 
             if (names.length == 0) {
-                throw new BuildException(messages.getString("error.undeploy.fileset.invalid"));
+                throw new BuildException(messages.getString("error.undeploy.fileset.empty"));
             }
 
             for (String element : names) {
