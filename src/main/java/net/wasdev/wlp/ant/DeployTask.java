@@ -114,17 +114,11 @@ public class DeployTask extends AbstractTask {
         final List<File> list = new ArrayList<File>();
 
         for (int i = 0; i < fileSets.size(); i++) {
-            final FileSet fs = fileSets.get(i);
-            final DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+            FileSet fs = fileSets.get(i);
+            DirectoryScanner ds = fs.getDirectoryScanner(getProject());
             ds.scan();
 
-            final String[] names = ds.getIncludedFiles();
-
-            //Throw a BuildException if the directory specified as parameter is empty.
-            if (names.length == 0) {
-                throw new BuildException(getMessage("error.deploy.fileset.invalid"), getLocation());
-            }
-
+            String[] names = ds.getIncludedFiles();
             for (String element : names) {
                 list.add(new File(ds.getBasedir(), element));
             }
