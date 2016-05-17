@@ -81,14 +81,9 @@ public class UndeployTask extends AbstractTask {
                 dropins.appendExcludes(pattern.getExcludePatterns(getProject()));
             }
 
-            final DirectoryScanner ds = dropins.getDirectoryScanner(getProject());
+            DirectoryScanner ds = dropins.getDirectoryScanner(getProject());
             ds.scan();
-            final String[] names = ds.getIncludedFiles();
-
-            if (names.length == 0) {
-                throw new BuildException(messages.getString("error.undeploy.fileset.invalid"));
-            }
-
+            String[] names = ds.getIncludedFiles();
             for (String element : names) {
                 list.add(new File(ds.getBasedir(), element));
             }
