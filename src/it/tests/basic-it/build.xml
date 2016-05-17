@@ -2,7 +2,7 @@
 <project xmlns:wlp="antlib:net.wasdev.wlp.ant" name="net.wasdev.wlp.ant.it">
 
     <path id="wlp-ant-tasks.classpath">
-        <fileset dir="${basedir}/../../../target" includes="wlp-anttasks-*.jar" />
+        <fileset dir="${basedir}/../../../../target" includes="wlp-anttasks-*.jar" />
     </path>
     <typedef resource="net/wasdev/wlp/ant/antlib.xml" uri="antlib:net.wasdev.wlp.ant" classpathref="wlp-ant-tasks.classpath" />
 
@@ -54,11 +54,11 @@
         <wlp:server ref="testServer" operation="start" />
 
         <wlp:deploy ref="testServer">
-            <fileset dir="${basedir}/../setup/test-war/target">
+            <fileset dir="${basedir}/../../setup/test-war/target">
                 <include name="*.war" />
             </fileset>
         </wlp:deploy>
-        <wlp:deploy ref="testServer" file="${basedir}/../setup/test-eba/target/test-eba.eba" timeout="40000" deployName="my-test-eba.eba"/>
+        <wlp:deploy ref="testServer" file="${basedir}/../../setup/test-eba/target/test-eba.eba" timeout="40000" deployName="my-test-eba.eba"/>
     </target>
 
     <target name="undeploy">

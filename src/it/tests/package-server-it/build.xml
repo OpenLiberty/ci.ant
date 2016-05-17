@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<project xmlns:wlp="antlib:net.wasdev.wlp.ant" name="net.wasdev.wlp.ant.it">
+
+    <path id="wlp-ant-tasks.classpath">
+        <fileset dir="${basedir}/../../../../target" includes="wlp-anttasks-*.jar" />
+    </path>
+    <typedef resource="net/wasdev/wlp/ant/antlib.xml" uri="antlib:net.wasdev.wlp.ant" classpathref="wlp-ant-tasks.classpath" />
+
+    <property name="target.dir" value="${basedir}/../install-server-it/target" />
+
+    <!-- Defining server configuration -->
+    <property name="wlp.install.dir" value="${target.dir}/wlp" />
+    <property name="wlp.usr.dir" value="${target.dir}/wlp_usr" />
+    <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
+    <property name="servername" value="wlp.ant.test" />
+
+    <target name="packageServer">
+        <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
+    	
+        <wlp:server operation="stop" ref="testServer" />
+    	
+        <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.zip" />
+        <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.os.zip" include="minify" os="OS/400,-z/OS" />
+    </target>
+	
+</project>
