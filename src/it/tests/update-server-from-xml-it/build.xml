@@ -12,7 +12,7 @@
     <property name="wlp.install.dir" value="${target.dir}/wlp" />
     <property name="wlp.usr.dir" value="${target.dir}/wlp_usr" />
     <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
-    <property name="servername" value="wlp.ant.test" />
+    <property name="servername" value="update.server.from.xml" />
 
     <property name="serverConfig" value="${basedir}/src/test/resources/server.xml" />
     <property name="bootProp" value="${basedir}/src/test/resources/bootstrap.properties" />

@@ -12,11 +12,15 @@
     <property name="wlp.install.dir" value="${target.dir}/wlp" />
     <property name="wlp.usr.dir" value="${target.dir}/wlp_usr" />
     <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
-    <property name="servername" value="wlp.ant.test" />
+    <property name="servername" value="deploy.eba" />
+
+    <property name="serverConfig" value="${basedir}/src/test/resources/server.xml" />
 
     <target name="deploy" depends="installFeatures">
     	<wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
         
+        <copy overwrite="true" file="${serverConfig}" toFile="${wlp.usr.dir}/servers/${servername}/server.xml" />
+
         <wlp:server ref="testServer" operation="start" />
 
     	<wlp:deploy ref="testServer" file="${basedir}/../../setup/test-eba/target/test-eba.eba" deployName="my-test-eba.eba" timeout="40000" />

@@ -12,12 +12,10 @@
     <property name="wlp.install.dir" value="${target.dir}/wlp" />
     <property name="wlp.usr.dir" value="${target.dir}/wlp_usr" />
     <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
-    <property name="servername" value="wlp.ant.test" />
+    <property name="servername" value="package.server" />
 
     <target name="packageServer">
-        <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
-    	
-        <wlp:server operation="stop" ref="testServer" />
+        <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="create" />
     	
         <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.zip" />
         <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.os.zip" include="minify" os="OS/400,-z/OS" />
