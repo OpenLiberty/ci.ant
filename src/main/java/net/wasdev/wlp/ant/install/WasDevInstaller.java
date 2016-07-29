@@ -68,7 +68,7 @@ public class WasDevInstaller implements Installer {
         }
 
         if (version == null) {
-            version = "8.5.+";
+            version = "16.+";
         }
 
         if (type == null) {
