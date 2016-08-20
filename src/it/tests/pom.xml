@@ -93,6 +93,7 @@
        <module>deploy-eba-it</module>
        <module>install-features-it</module>
        <module>package-server-it</module>
+       <module>compile-jsp-it</module>
        <module>basic-it</module>
     </modules>
 
