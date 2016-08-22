@@ -17,6 +17,7 @@ package net.wasdev.wlp.ant.install;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
@@ -67,10 +68,6 @@ public class WasDevInstaller implements Installer {
             url = "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml";
         }
 
-        if (version == null) {
-            version = "16.+";
-        }
-
         if (type == null) {
             type = (licenseCode == null) ? "webProfile7" : "webProfile6";
         }
@@ -87,7 +84,21 @@ public class WasDevInstaller implements Installer {
         List<LibertyInfo> versions = LibertyYaml.parse(ymlFile);
 
         // select version from yml
-        Version baseVersion = Version.parseVersion(version, true);
+        Version baseVersion;
+        if (version == null) {
+            // select the highest stable release
+            // trim off any monthly releases first
+            Iterator<LibertyInfo> iterator = versions.iterator();
+            while (iterator.hasNext()) {
+               LibertyInfo info = iterator.next();
+               if (info.getVersion().getMajor() > 2000) {
+                   iterator.remove();
+               }
+            }
+            baseVersion = Version.parseVersion("+", true);
+        } else {
+            baseVersion = Version.parseVersion(version, true);
+        }
         LibertyInfo selectedVersion = InstallUtils.selectVersion(baseVersion, versions);
 
         File versionCacheDir = new File(task.getCacheDir(), selectedVersion.getVersion().toString());
