@@ -119,9 +119,8 @@ public class CompileJSPs extends Task {
         Copy copy = new Copy();
         copy.setProject(getProject());
         copy.setTaskName(getTaskName());
-        File dir = new File(destdir, "com/ibm/_jsp");
-        dir.mkdirs();
-        copy.setTodir(dir);
+        destdir.mkdirs();
+        copy.setTodir(destdir);
         FileSet files = new FileSet();
         files.setDir(jspCompileDir);
         files.setIncludes("**/*.class");
@@ -142,16 +141,7 @@ public class CompileJSPs extends Task {
         // in the path, the war name minus the .war extension
         // (if present) will also be used.
         jspFiles.setDir(jspCompileDir);
-        // The JSPs are in the package com.ibm._jsp, but they
-        // are not compiled into that structure, so make sure it
-        // goes
-        // into the war with that prefix. Note we are calling
-        // addZipfileset here because using addClasses on the
-        // War task
-        // doesn't use the prefix, so instead we set a zip
-        // fileset and specify the full path into the war.
-        jspFiles.setPrefix("WEB-INF/classes/com/ibm/_jsp/");
-        warTask.addZipfileset(jspFiles);
+        warTask.addClasses(jspFiles);
         warTask.setTaskName(getTaskName());
         warTask.execute();
     }

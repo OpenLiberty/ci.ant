@@ -60,9 +60,9 @@ public class CompileJSPsTest {
         URI url = CompileJSPsTest.class.getResource("/goodJsps/good.jsp").toURI();
         createTask(url).execute();
         
-        File f = new File(compileDir, "com/ibm/_jsp/_good.class");
+        File f = new File(compileDir, "_good.class");
         assertTrue("The compiled JSP should exist: " + f, f.exists());
-        f = new File(compileDir, "com/ibm/_jsp/childDir/_good.class");
+        f = new File(compileDir, "childDir/_good.class");
         assertTrue("The compiled JSP should exist: " + f, f.exists());
     }
 
