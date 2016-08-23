@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class CompileJSPsTest {
             System.out.println(message);
         }
     }
-    
+
     @BeforeClass
     public static void setup() {
         InstallLibertyTask install = new InstallLibertyTask();
@@ -35,10 +36,15 @@ public class CompileJSPsTest {
         install.setType("webProfile7");
         install.execute();
     }
-    
+
     @AfterClass
     public static void tearDown() {
         delete(installDir);
+    }
+
+    @After
+    public void cleanCompileDir() {
+        delete(compileDir);
     }
 
     private static void delete(File f) {

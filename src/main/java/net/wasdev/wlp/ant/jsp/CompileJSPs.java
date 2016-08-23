@@ -51,7 +51,7 @@ public class CompileJSPs extends Task {
             // a directory
             File compileDir;
             if (destdir == null)  {
-                compileDir = File.createTempFile("precompileJsp", "");
+                compileDir = File.createTempFile("compileJsp", "");
                 compileDir.delete();
             } else {
                 compileDir = new File(destdir, ".wlp.jsp.tmp");
@@ -70,10 +70,10 @@ public class CompileJSPs extends Task {
                     server.setOperation("start");
                     server.execute();
 
-                    checkFeaturesExist(serverDir);
-
                     boolean compileSuccess = false;
                     try {
+                        checkFeaturesExist(serverDir);
+
                         compileSuccess = waitForCompilation(serverDir, jspCompileDir, war);
                     } finally {
                         // Stop the server
@@ -97,19 +97,6 @@ public class CompileJSPs extends Task {
                 delete(compileDir);
             }
         } catch (IOException e) {
-            try {
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(out);
-                e.printStackTrace(ps);
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(new ByteArrayInputStream(out.toByteArray())));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    log(line);
-                }
-            } catch (IOException ioe2) {
-
-            }
             throw new BuildException("A failure occurred: " + e.toString(), e);
         }
 
@@ -346,7 +333,7 @@ public class CompileJSPs extends Task {
         } else {
             ps.println("<webApplication name=\"jspCompile\" location=\"fake.war\"/>");
         }
-        ps.println("<httpEndpoint id=\"defaultHttpEndpoint\" httpPort=\"0\"/>");
+        ps.println("<httpEndpoint id=\"defaultHttpEndpoint\" host=\"localhost\" httpPort=\"0\"/>");
         ps.print("<jspEngine prepareJsps=\"0\" scratchdir=\"" + serverDir.getAbsolutePath()
                 + "/jsps\" jdkSourceLevel=\"" + source + "\"/>");
         ps.println("<webContainer deferServletLoad=\"false\"/>");
