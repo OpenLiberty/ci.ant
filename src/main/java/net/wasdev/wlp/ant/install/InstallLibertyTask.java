@@ -134,7 +134,7 @@ public class InstallLibertyTask extends AbstractTask {
             throw new BuildException("License code not found.");
         }
         if (!licenseCode.equals(actualLicenseCode)) {
-            throw new BuildException("License code does not match.");
+            throw new BuildException("License code does not match. Expected: " + licenseCode + ", Actual: " + actualLicenseCode);
         }
     }
 

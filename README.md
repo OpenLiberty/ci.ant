@@ -31,13 +31,13 @@ To use the Liberty Ant tasks in your build scripts you need to:
  * Using the `typedef` task to load the Liberty tasks, for example:
 
    ```ant
-   <typedef resource="net/wasdev/wlp/ant/antlib.xml" 
-         uri="antlib:net.wasdev.wlp.ant" 
+   <typedef resource="net/wasdev/wlp/ant/antlib.xml"
+         uri="antlib:net.wasdev.wlp.ant"
          classpath="target/wlp-anttasks.jar"/>
    ```
 
    The latest build of `wlp-anttasks.jar` can be obtained from the [Sonatype OSS Maven snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/net/wasdev/wlp/ant/wlp-anttasks/).
-                 
+
 ## Tasks
 
 The `wlp-anttasks.jar` provides the following tasks.
@@ -51,3 +51,5 @@ The `wlp-anttasks.jar` provides the following tasks.
 | [install-feature](docs/install-feature.md#install-feature-task) | The `install-feature` task installs a feature packaged as a Subsystem Archive (ESA file) to the Liberty runtime. |
 | [uninstall-feature](docs/uninstall-feature.md#uninstall-feature-task) | The `uninstall-feature` task uninstalls a feature from the Liberty runtime. |
 | [clean](docs/clean.md#clean-task) | The `clean` task deletes every file in the `${wlp_output_dir}/logs`, `${wlp_output_dir}/workarea`, `${wlp_user_dir}/dropins` or `${wlp_user_dir}/apps`. |
+| [compileJSPs](docs/compileJSPs.md#compileJSPs-task) | The `compileJSPs` task compiles JSPs so they wont be done on demand at runtime.
+=======
