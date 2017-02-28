@@ -45,6 +45,9 @@ public class CompileJSPs extends Task {
     private String classpathRef;
     private String source;
 
+    // By default allow 30 seconds to compile the jsps
+    private int timeout = 30;
+
     @Override
     public void execute() {
         validate();
@@ -223,10 +226,9 @@ public class CompileJSPs extends Task {
         Set<File> javaFiles = new HashSet<>();
 
         boolean equalDetected = false;
-        // Only check 30 times so we aren't waiting stupidly long. This
-        // might be bad for really big apps, but an escape is needed
-        // in case something goes horribly wrong.
-        for (int i = 0; i < 30; i++) {
+
+        // Allow timeout seconds to compile the jsps. 
+        for (int i = 0; i < timeout; i++) {
             if (jspCompileDir.exists()) {
                 // Look to see if the class file exists yet.
                 Iterator<File> it = jsps.iterator();
@@ -484,5 +486,9 @@ public class CompileJSPs extends Task {
         } else if ("1.8".equals(src) || "8".equals(src)) {
             source = "18";
         }
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 }
