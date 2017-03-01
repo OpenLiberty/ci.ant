@@ -3,7 +3,7 @@
 
 The 'compileJSPs' task will compile JSP files. It has two modes of operation. The first mode compiles the JSP files in a specified war file and merges the compiled JSP files back in the war file. The second mode compiles the JSP files from a source directory. To compile the JSP files, the task requires a running Liberty server. It creates and starts a server in order to compile the JSP files.
 
-#### Paramters
+#### Parameters
 
 Parameters supported by this task in addition to the [common parameters](common-parameters.md#common-parameters).
 
