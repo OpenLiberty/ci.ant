@@ -17,6 +17,13 @@ Parameters supported by this task in addition to the [common parameters](common-
 | features | A comma separated list of Liberty features that are required to compile the JSPs | No
 | classpath | The classpath required to compile the JSPs | No
 | classpathref | A ref to a path for compiling the JSPs | No
+| timeout | Stop the server if jsp compile isn't finish within the specified time (given in seconds). Default: 30 sec | No
+| tmpdir | The path where a temporary Liberty server directory is created. Default is system tmp directory. | No
+| cleanup | Whether the temporary Liberty server directory should be deleted afterwards. Default: `true` | No
+
+**Note:** If the attribute `tmpdir` is not given, this task will create a a random directory for the temporary Liberty server in the system tmp dir.
+Something line `/tmp/compileJsp7857999246295419245`. If `tmpdir` is given, the name is always `${tmpdir}/jspCompile` (without random digits).
+Short: If you set the attribute `tmpdir` it must be project-specific, so that multiple parallel builds don't influence each other.
 
 
 #### Examples

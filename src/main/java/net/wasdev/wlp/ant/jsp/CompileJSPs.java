@@ -35,29 +35,41 @@ public class CompileJSPs extends Task {
     private List<String> features = new ArrayList<>();
     private String featureVersion = "2.3";
 
+    // By default delete temporary server afterwards
+    private boolean cleanup = true;
+
     private File srcdir;
+    private File tmpdir;
     private File destdir;
     private String classpath = "";
     private String classpathRef;
     private String source;
 
+    // By default allow 30 seconds to compile the jsps
+    private int timeout = 30;
+
+    @Override
     public void execute() {
         validate();
+
         try {
             // Need somewhere to compile to so create a tmp file and turn it to
             // a directory
             File compileDir;
-            if (destdir == null)  {
+            if (tmpdir == null) {
                 compileDir = File.createTempFile("compileJsp", "");
                 compileDir.delete();
             } else {
-                compileDir = new File(destdir, ".wlp.jsp.tmp");
+                compileDir = new File(tmpdir, "compileJsp");
             }
+
             try {
                 File serverDir = new File(compileDir, "servers/defaultServer/");
                 String warSuffix = (war == null) ? "fake" : trimExtension(war.getName());
-                File jspCompileDir = new File(serverDir,
-                        "jsps/default_node/SMF_WebContainer/jspCompile/" + warSuffix);
+                File jspCompileDir = new File(serverDir, "jsps/default_node/SMF_WebContainer/jspCompile/" + warSuffix);
+                if (jspCompileDir.exists()) {
+                    delete(jspCompileDir);
+                }
                 if (serverDir.exists() || serverDir.mkdirs()) {
                     writeServerXML(serverDir);
                     createAppXML(serverDir);
@@ -91,7 +103,9 @@ public class CompileJSPs extends Task {
                     throw new BuildException("Unable to create folder for usr dir");
                 }
             } finally {
-                delete(compileDir);
+                if (cleanup) {
+                    delete(compileDir);
+                }
             }
         } catch (IOException e) {
             throw new BuildException("A failure occurred: " + e.toString(), e);
@@ -138,7 +152,7 @@ public class CompileJSPs extends Task {
         if (srcdir != null && destdir == null) {
             throw new BuildException("The destdir must be specified");
         }
-        
+
         if (wlpHome == null) {
             throw new BuildException("Liberty installation directory must be set");
         }
@@ -212,10 +226,9 @@ public class CompileJSPs extends Task {
         Set<File> javaFiles = new HashSet<>();
 
         boolean equalDetected = false;
-        // Only check 30 times so we aren't waiting stupidly long. This
-        // might be bad for really big apps, but an escape is needed
-        // in case something goes horribly wrong.
-        for (int i = 0; i < 30; i++) {
+
+        // Allow timeout seconds to compile the jsps. 
+        for (int i = 0; i < timeout; i++) {
             if (jspCompileDir.exists()) {
                 // Look to see if the class file exists yet.
                 Iterator<File> it = jsps.iterator();
@@ -257,6 +270,10 @@ public class CompileJSPs extends Task {
             }
         }
 
+        if (!jsps.isEmpty()) {
+            log("Failed to create: " + jsps, Project.MSG_ERR);
+        }
+
         return jsps.isEmpty();
 
     }
@@ -267,13 +284,33 @@ public class CompileJSPs extends Task {
             for (File file : files) {
                 String fileName = file.getName();
                 if (file.isFile() && fileName.endsWith(".jsp")) {
-                    String expectedJSPName = '_' + fileName.substring(0, fileName.length() - 4) + ".class";
+                    String expectedJSPName = jspToClassFileName(fileName);
                     jsps.add(new File(jspCompileDir, expectedJSPName));
                 } else if (file.isDirectory()) {
                     fillFromSource(jsps, file, new File(jspCompileDir, file.getName()));
                 }
             }
         }
+    }
+
+    private String jspToClassFileName(String name) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('_');
+        char[] chars = name.toCharArray();
+        for (int i = 0; i < name.length() - 4; i++) {
+            char c = chars[i];
+            if (Character.isLetterOrDigit(c)) {
+                sb.append(c);
+            } else {
+                sb.append('_');
+                sb.append(Integer.toHexString(c).toUpperCase());
+                sb.append('_');
+            }
+        }
+
+        sb.append(".class");
+
+        return sb.toString();
     }
 
     private void fillFromWar(List<File> jsps, File war2, File jspCompileDir) {
@@ -287,7 +324,7 @@ public class CompileJSPs extends Task {
             while ((entry = zipIn.getNextEntry()) != null) {
                 String entryName = entry.getName();
                 if (entryName.endsWith(".jsp")) {
-                    String expectedJSPName = '_' + entryName.substring(0, entryName.length() - 4) + ".class";
+                    String expectedJSPName = jspToClassFileName(entryName);
                     jsps.add(new File(jspCompileDir, expectedJSPName));
                 }
             }
@@ -331,8 +368,7 @@ public class CompileJSPs extends Task {
             ps.println("<webApplication name=\"jspCompile\" location=\"fake.war\"/>");
         }
         ps.println("<httpEndpoint id=\"defaultHttpEndpoint\" host=\"localhost\" httpPort=\"0\"/>");
-        ps.print("<jspEngine prepareJsps=\"0\" scratchdir=\"" + serverDir.getAbsolutePath()
-                + "/jsps\" jdkSourceLevel=\"" + source + "\"/>");
+        ps.print("<jspEngine prepareJsps=\"0\" scratchdir=\"" + serverDir.getAbsolutePath() + "/jsps\" jdkSourceLevel=\"" + source + "\"/>");
         ps.println("<webContainer deferServletLoad=\"false\"/>");
         ps.println("<keyStore password=\"dummyKeystore\"/>");
         ps.println("</server>");
@@ -356,12 +392,12 @@ public class CompileJSPs extends Task {
             String[] cp = p.toString().split(File.pathSeparator);
             for (String entry : cp) {
                 File f = new File(entry);
+                String basename = f.getName();
                 if (f.isFile() && f.exists() && f.getName().endsWith(".jar")) {
-                    ps.println(
-                            "  <file targetInArchive=\"WEB-INF/lib\" sourceOnDisk=\"" + f.getAbsolutePath() + "\"/>");
+                    ps.println("  <file targetInArchive=\"/WEB-INF/lib/" + basename + "\" sourceOnDisk=\"" + f.getAbsolutePath() + "\"/>");
                 } else if (f.isDirectory() && f.exists()) {
-                    ps.println("  <file targetInArchive=\"WEB-INF/classes\" sourceOnDisk=\"" + f.getAbsolutePath()
-                            + "\"/>");
+                    // TODO: What if basename is NOT "classes"?
+                    ps.println("  <dir targetInArchive=\"/WEB-INF/classes\" sourceOnDisk=\"" + f.getAbsolutePath() + "\"/>");
                 }
             }
 
@@ -389,6 +425,10 @@ public class CompileJSPs extends Task {
             }
             f.delete();
         }
+    }
+
+    public void setCleanup(boolean cleanup) {
+        this.cleanup = cleanup;
     }
 
     public void setInstallDir(File home) {
@@ -420,6 +460,10 @@ public class CompileJSPs extends Task {
         this.destdir = destdir;
     }
 
+    public void setTempdir(File tmpdir) {
+        this.tmpdir = tmpdir;
+    }
+
     public void setClasspath(String classpath) {
         this.classpath = classpath;
     }
@@ -442,5 +486,9 @@ public class CompileJSPs extends Task {
         } else if ("1.8".equals(src) || "8".equals(src)) {
             source = "18";
         }
+    }
+
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 }
