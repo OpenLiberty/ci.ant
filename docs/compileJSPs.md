@@ -1,7 +1,7 @@
 ## compileJSPs task
 ---
 
-The 'compileJSPs' task compiles JSP files. It has two modes of operation. The first mode compiles the JSP files in a specified war file and merges the compiled JSP files back in the war file. The second mode compiles the JSP files from a source directory. To compile the JSP files, the task requires a running Liberty server. It creates and starts a server in order to compile the JSP files.
+The `compileJSPs` task compiles JSP files. It has two modes of operation. The first mode compiles the JSP files in a specified war file and merges the compiled JSP classes back in the war file. The second mode compiles the JSP files from a source directory. To compile the JSP files, the task requires a running Liberty server which it creates and starts.
 
 #### Parameters
 
@@ -11,8 +11,8 @@ Parameters supported by this task in addition to the [common parameters](common-
 | --------- | ------------ | ----------|
 | war | The file path to a war file containing the JSP files to compile. | Required unless `srcdir` is set.
 | srcdir | The path to a directory containing the JSP files to compile. | Required unless `war` is set.
-| destdir | The path where the compiled JSP classes are saved. | Required if `srcdir` is set.
-| source | The version of Java the source JSP files use. Valid values are 1.5, 1.6, 6, 1.7, 7, 1.8, and 8. If not set, it defaults to the Ant Java version | No
+| destdir | The path where the compiled JSP classes are written. | Required if `srcdir` is set.
+| source | The version of Java the source JSP files use. Valid values are 1.5, 1.6, 6, 1.7, 7, 1.8, and 8. If not set, the default is the Ant Java version. | No
 | jspVersion | The JSP version of the JSP files. The installed Liberty server needs to support the required JSP version. Valid values are 2.2 and 2.3. The default is 2.3. | No
 | features | A comma separated list of Liberty features that are required to compile the JSP files. | No
 | classpath | The classpath to use to compile the JSP files. | No
