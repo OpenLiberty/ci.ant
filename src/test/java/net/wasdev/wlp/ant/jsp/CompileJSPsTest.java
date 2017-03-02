@@ -20,6 +20,7 @@ public class CompileJSPsTest {
 
     private static final File installDir = new File("target/wlp");
     private File compileDir = new File("target/compiledJSPs");;
+
     private static class MyProject extends Project {
 
         @Override
@@ -65,10 +66,25 @@ public class CompileJSPsTest {
     public void testBasicCompile() throws URISyntaxException {
         URI url = CompileJSPsTest.class.getResource("/goodJsps/good.jsp").toURI();
         createTask(url).execute();
-        
+
         File f = new File(compileDir, "_good.class");
         assertTrue("The compiled JSP should exist: " + f, f.exists());
         f = new File(compileDir, "childDir/_good.class");
+        assertTrue("The compiled JSP should exist: " + f, f.exists());
+
+        f = new File(compileDir, "_switch.class");
+        assertTrue("The compiled JSP should exist: " + f, f.exists());
+        f = new File(compileDir, "childDir/_switch.class");
+        assertTrue("The compiled JSP should exist: " + f, f.exists());
+
+        f = new File(compileDir, "_X_2D__5F__2B__2E__20AC__25_.class");
+        assertTrue("The compiled JSP should exist: " + f, f.exists());
+        f = new File(compileDir, "childDir/_X_2D__5F__2B__2E__20AC__25_.class");
+        assertTrue("The compiled JSP should exist: " + f, f.exists());
+
+        f = new File(compileDir, "_ÄÖÜäöüß.class");
+        assertTrue("The compiled JSP should exist: " + f, f.exists());
+        f = new File(compileDir, "childDir/_ÄÖÜäöüß.class");
         assertTrue("The compiled JSP should exist: " + f, f.exists());
     }
 
@@ -81,7 +97,7 @@ public class CompileJSPsTest {
         return compile;
     }
 
-    @Test(expected=BuildException.class)
+    @Test(expected = BuildException.class)
     public void testCompileFailure() throws URISyntaxException {
         URI url = CompileJSPsTest.class.getResource("/badJsps/good.jsp").toURI();
         createTask(url).execute();
