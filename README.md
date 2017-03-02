@@ -1,6 +1,6 @@
 # ci.ant [![Build Status](https://travis-ci.org/WASdev/ci.ant.svg?branch=master)](https://travis-ci.org/WASdev/ci.ant) [![Maven Central Latest](https://maven-badges.herokuapp.com/maven-central/net.wasdev.wlp.ant/wlp-anttasks/badge.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22net.wasdev.wlp.ant%22%20AND%20a%3A%22wlp-anttasks%22)
 
-Collection of Ant tasks for managing WebSphere Application Server Liberty Profile and applications.
+Collection of Ant tasks for managing WebSphere Application Server Liberty servers and applications.
 
 * [Build](#build)
 * [Configuration](#configuration)
@@ -44,12 +44,12 @@ The `wlp-anttasks.jar` provides the following tasks.
 
 | Task | Description |
 | --------- | ------------ |
-| [install-liberty](/docs/install-liberty.md#install-liberty-task) | The `install-liberty` task is used to download and install Liberty profile server. The task can download the Liberty runtime archive from a specified location (via `runtimeUrl`) or automatically resolve it from the [Liberty repository](https://developer.ibm.com/wasdev/downloads/) based on a version and a runtime type. |
+| [install-liberty](/docs/install-liberty.md#install-liberty-task) | The `install-liberty` task is used to download and install a Liberty server. The task can download the Liberty runtime archive from a specified location (via `runtimeUrl`) or automatically resolve it from the [Liberty repository](https://developer.ibm.com/wasdev/downloads/) based on a version and a runtime type. |
 | [server](docs/server.md#server-task) | The `server` task supports the operations: `create`, `start`, `run`, `stop`, `status`, `package`, `dump` and `javadump`. |
-| [deploy](docs/deploy.md#deploy-task) | The `deploy` task supports deployment of one or more applications to the Liberty Profile server. |
-| [undeploy](docs/undeploy.md#undeploy-task) | The `undeploy` task supports undeployment of a single application from the Liberty Profile server. |
+| [deploy](docs/deploy.md#deploy-task) | The `deploy` task supports deployment of one or more applications to the Liberty server. |
+| [undeploy](docs/undeploy.md#undeploy-task) | The `undeploy` task supports undeployment of a single application from the Liberty server. |
 | [install-feature](docs/install-feature.md#install-feature-task) | The `install-feature` task installs a feature packaged as a Subsystem Archive (ESA file) to the Liberty runtime. |
 | [uninstall-feature](docs/uninstall-feature.md#uninstall-feature-task) | The `uninstall-feature` task uninstalls a feature from the Liberty runtime. |
 | [clean](docs/clean.md#clean-task) | The `clean` task deletes every file in the `${wlp_output_dir}/logs`, `${wlp_output_dir}/workarea`, `${wlp_user_dir}/dropins` or `${wlp_user_dir}/apps`. |
-| [compileJSPs](docs/compileJSPs.md#compileJSPs-task) | The `compileJSPs` task compiles JSPs so they wont be done on demand at runtime.
+| [compileJSPs](docs/compileJSPs.md#compileJSPs-task) | The `compileJSPs` task compiles JSP files so they do not need to be compiled on demand at runtime.
 =======
