@@ -77,15 +77,25 @@ public class CompileJSPsTest {
         f = new File(compileDir, "childDir/_switch.class");
         assertTrue("The compiled JSP should exist: " + f, f.exists());
 
-        f = new File(compileDir, "_X_2D__5F__2B__2E__20AC__25_.class");
-        assertTrue("The compiled JSP should exist: " + f, f.exists());
-        f = new File(compileDir, "childDir/_X_2D__5F__2B__2E__20AC__25_.class");
-        assertTrue("The compiled JSP should exist: " + f, f.exists());
+        // On the Jenkins build, test resources with special characters in the 
+        // name are not extracted from github. Only check for the existence of 
+        // the class file if the JSP file exists.
+        File srcJspDir = new File(url).getParentFile();
+        if ((new File(srcJspDir, "X-_+.€%.jsp")).exists()) {
+            f = new File(compileDir, "_X_2D__5F__2B__2E__20AC__25_.class");
+            assertTrue("The compiled JSP should exist: " + f, f.exists());
+            f = new File(compileDir, "childDir/_X_2D__5F__2B__2E__20AC__25_.class");
+            assertTrue("The compiled JSP should exist: " + f, f.exists());
+        }
 
-        f = new File(compileDir, "_ÄÖÜäöüß.class");
-        assertTrue("The compiled JSP should exist: " + f, f.exists());
-        f = new File(compileDir, "childDir/_ÄÖÜäöüß.class");
-        assertTrue("The compiled JSP should exist: " + f, f.exists());
+        if ((new File(srcJspDir, "ÄÖÜäöüß.jsp")).exists()) {
+            f = new File(compileDir, "_ÄÖÜäöüß.class");
+            assertTrue("The compiled JSP should exist: " + f, f.exists());
+            f = new File(compileDir, "childDir/_ÄÖÜäöüß.class");
+            assertTrue("The compiled JSP should exist: " + f, f.exists());
+        }
+        
+
     }
 
     private CompileJSPs createTask(URI url) {
