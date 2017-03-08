@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2015.
+ * (C) Copyright IBM Corporation 2015, 2017.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,14 @@ public class UninstallFeatureTask extends FeatureManagerTask {
         command.add("--noPrompts");
         
         if (name != null && !name.isEmpty()) {
-            command.add(name);
+            // The name field can hold a comma separated list of features
+            // Remove any spaces at the beginning, end or around the separator
+            String[] names = name.trim().split("\\s*,\\s*");
+            for (String featureName : names) {
+                if (!name.isEmpty()) {
+                    command.add(featureName);
+                }
+            }
         }
         if (!features.isEmpty()) {
             for (Feature feature : features) {
