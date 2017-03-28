@@ -17,5 +17,5 @@ Parameters shared by all the tasks except install-liberty and compileJSPs.
 | --------- | ------------ | ----------|
 | serverName | Name of the Liberty profile server instance. The default value is `defaultServer`. | No |
 | userDir | Value of the `${wlp_user_dir}` variable. The default value is `${installDir}/usr/`. | No |
-| outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${installDir}/usr/servers/${serverName}`. | No |
+| outputDir | Value of the `${wlp_output_dir}` variable. The default value is `${userDir}/servers`. | No |
 
