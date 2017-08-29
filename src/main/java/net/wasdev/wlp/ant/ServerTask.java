@@ -98,6 +98,8 @@ public class ServerTask extends AbstractTask {
                   doRun();
               } else if ("start".equals(operation)) {
                   doStart();
+              } else if ("startWinService".equals(operation)) {
+            	  doStartWinService();
               } else if ("stop".equals(operation)) {
                   doStop();
               } else if ("status".equals(operation)) {
@@ -128,6 +130,21 @@ public class ServerTask extends AbstractTask {
             log(MessageFormat.format(messages.getString("info.server.create"), serverName));
             doCreate();
         }
+        List<String> command = getInitialCommand(operation);
+        addCleanOption(command);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.REDUNDANT_ACTION_STATUS.getValue());
+
+        // check server started message code.
+        long startTimeout = SERVER_START_TIMEOUT_DEFAULT;
+        if (timeout != null && !timeout.equals("")) {
+            startTimeout = Long.valueOf(timeout);
+        }
+        validateServerStarted(getLogFile(), startTimeout);
+    }
+    
+    private void doStartWinService() throws Exception {
         List<String> command = getInitialCommand(operation);
         addCleanOption(command);
         processBuilder.command(command);
