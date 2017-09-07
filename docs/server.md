@@ -5,6 +5,7 @@ The `server` task supports the following operations:
 
 * `create` - creates a named server instance.
 * `start` - starts the named server instance in background. If the server instance does not exist, this option creates one by default.
+* `startWinService` - starts the named server Windows service.
 * `run` - start the named service instance in foreground. If the server instance does not exist, this option creates one by default.
 * `stop` - stops the named server.
 * `status` - checks the server status.
@@ -18,7 +19,7 @@ Parameters supported by this task in addition to the [common parameters](common-
 
 | Attribute | Description | Required |
 | --------- | ------------ | ----------| 
-| operation | Server operations available as options: `create`, `start`, `run`, `stop`, `status`, `package`, `dump`, and `javadump`. | Yes | 
+| operation | Server operations available as options: `create`, `start`, `startWinService`, `run`, `stop`, `status`, `package`, `dump`, and `javadump`. | Yes | 
 | clean | Clean all cached information on server start up. The default value is `false`. Only used with the `start` operation. | No | 
 | timeout | Waiting time before the server starts. The default value is 30 seconds. The unit is milliseconds. Only used with the `start` operation. | No | 
 | include | A comma-delimited list of values. The valid values vary depending on the operation. For the `package` operation the valid values are `all`, `usr`, and `minify`. For the `dump` operation the valid values are `heap`, `system`, and `thread`. For the `javadump` operation the valid values are `heap` and `system`. | Yes, only when the `os` option is set |
@@ -26,6 +27,7 @@ Parameters supported by this task in addition to the [common parameters](common-
 | archive | Location of the target archive file. Only used with the `package` or `dump` operations. | No |
 | template | Name of the template to use when creating a new server. Only used with the `create` operation. | No |
 | resultProperty | Name of a property in which the server status will be stored. By default the server status will be stored under `wlp.<serverName>.status` property. Only used with the `status` operation. | No |
+| serverLogDir | Location of the server log where the message.log file can be found. | No |
 
 #### Examples
 

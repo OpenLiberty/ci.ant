@@ -39,19 +39,20 @@ public abstract class AbstractTask extends Task {
     protected File installDir;
     protected File userDir;
     protected File outputDir;
-    protected File serverConfigDir = null;
-    protected File serverOutputDir = null;
+    protected File serverLogDir;
     protected String serverName;
-
     protected String ref;
 
+    protected File serverConfigDir = null;
+    protected File serverOutputDir = null;
+    
     protected static String osName;
     protected static boolean isWindows;
 
     protected ProcessBuilder processBuilder;
 
     protected static final String DEFAULT_SERVER = "defaultServer";
-    protected static final String DEFAULT_LOG_FILE = "logs/messages.log";
+    protected static final String DEFAULT_LOG_FILE = "messages.log";
 
     protected static final String WLP_USER_DIR_VAR = "WLP_USER_DIR";
     protected static final String WLP_OUTPUT_DIR_VAR = "WLP_OUTPUT_DIR";
@@ -66,6 +67,7 @@ public abstract class AbstractTask extends Task {
                 setServerName(((ServerTask) serverRef).getServerName());
                 setUserDir(((ServerTask) serverRef).getUserDir());
                 setOutputDir(((ServerTask) serverRef).getOutputDir());
+                setServerLogDir(((ServerTask) serverRef).getServerLogDir());
             }
         }
 
@@ -122,6 +124,12 @@ public abstract class AbstractTask extends Task {
             }
 
             log(MessageFormat.format(messages.getString("info.variable"), "server.output.dir", serverOutputDir.getCanonicalPath()));
+            
+            if (serverLogDir == null) {
+            	serverLogDir = new File(serverOutputDir, "logs");
+            }
+            	
+            log(MessageFormat.format(messages.getString("info.variable"), "server.log.dir", serverLogDir.getCanonicalPath()));
         } catch (IOException e) {
             throw new BuildException(e);
         }
@@ -156,6 +164,14 @@ public abstract class AbstractTask extends Task {
         this.outputDir = outputDir;
     }
 
+    public File getServerLogDir() {
+        return serverLogDir;
+    }
+    
+    public void setServerLogDir(File serverLogDir) {
+        this.serverLogDir = serverLogDir;
+    }
+        
     /**
      * @return the serverName
      */
@@ -172,7 +188,7 @@ public abstract class AbstractTask extends Task {
     }
 
     public File getLogFile() {
-        return new File(serverOutputDir, DEFAULT_LOG_FILE);
+        return new File(serverLogDir, DEFAULT_LOG_FILE);
     }
 
     /**
