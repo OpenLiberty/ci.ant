@@ -9,4 +9,5 @@
     <taskdef classname="net.wasdev.wlp.ant.CleanTask" name="clean" />
     <taskdef classname="net.wasdev.wlp.ant.install.InstallLibertyTask" name="install-liberty" />
     <taskdef classname="net.wasdev.wlp.ant.jsp.CompileJSPs" name="compileJSPs"/>
+    <taskdef classname="net.wasdev.wlp.ant.ProductInfoTask" name="product-info" />
 </antlib>

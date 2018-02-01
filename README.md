@@ -51,5 +51,5 @@ The `wlp-anttasks.jar` provides the following tasks.
 | [install-feature](docs/install-feature.md#install-feature-task) | The `install-feature` task installs a feature packaged as a Subsystem Archive (ESA file) to the Liberty runtime. |
 | [uninstall-feature](docs/uninstall-feature.md#uninstall-feature-task) | The `uninstall-feature` task uninstalls a feature from the Liberty runtime. |
 | [clean](docs/clean.md#clean-task) | The `clean` task deletes every file in the `${wlp_output_dir}/logs`, `${wlp_output_dir}/workarea`, `${wlp_user_dir}/dropins` or `${wlp_user_dir}/apps`. |
-| [compileJSPs](docs/compileJSPs.md#compileJSPs-task) | The `compileJSPs` task compiles JSP files so they do not need to be compiled on demand at runtime.
-=======
+| [compileJSPs](docs/compileJSPs.md#compileJSPs-task) | The `compileJSPs` task compiles JSP files so they do not need to be compiled on demand at runtime. |
+| [product-info](docs/product-info.md#product-info-task) | The `product-info` task displays product information such as product name and version of the Liberty runtime and any installed product extensions. |

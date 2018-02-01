@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2014, 2018.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@ public abstract class AbstractTask extends Task {
     protected static boolean isWindows;
 
     protected ProcessBuilder processBuilder;
+
+    protected StringBuffer outputBuffer;
 
     protected static final String DEFAULT_SERVER = "defaultServer";
     protected static final String DEFAULT_LOG_FILE = "logs/messages.log";
@@ -234,6 +236,10 @@ public abstract class AbstractTask extends Task {
                             break;
                         }
                         log(line);
+                        if (outputBuffer == null) {
+                        	outputBuffer = new StringBuffer();
+                        }
+                        outputBuffer.append(line).append(System.lineSeparator());
                     }
                 }
             } catch (IOException ex) {
