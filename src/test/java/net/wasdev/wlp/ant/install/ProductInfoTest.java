@@ -45,7 +45,7 @@ public class ProductInfoTest {
     }
 
     @BeforeClass
-    public static void setup() {
+    public static void setUpBeforeClass() {
         InstallLibertyTask install = new InstallLibertyTask();
         install.setProject(new Project());
         install.setBaseDir(installDir.getAbsolutePath());
@@ -54,7 +54,7 @@ public class ProductInfoTest {
     }
 
     @AfterClass
-    public static void tearDown() {
+    public static void tearDownAfterClass() {
         delete(installDir);
     }
 
