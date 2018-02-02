@@ -1,0 +1,16 @@
+WebSphereApplicationServer.properties:
+	com.ibm.websphere.productId=com.ibm.websphere.appserver
+	com.ibm.websphere.productOwner=IBM
+	com.ibm.websphere.productVersion=17.0.0.4
+	com.ibm.websphere.productName=WebSphere Application Server
+	com.ibm.websphere.productInstallType=Archive
+	com.ibm.websphere.productEdition=BASE_ILAN
+	com.ibm.websphere.productLicenseType=ILAN
+
+myextension.properties:
+	com.ibm.websphere.productId=example.extension
+	com.ibm.websphere.productOwner=Example Company
+	com.ibm.websphere.productVersion=1.0.0
+	com.ibm.websphere.productName=Example Product
+	com.ibm.websphere.productInstallType=Archive
+	com.ibm.websphere.productEdition=Enterprise Edition
