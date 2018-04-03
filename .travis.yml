@@ -1,10 +1,11 @@
-sudo: false
+sudo: required
+dist: trusty
 language: java
-matrix:
-  include:
-    - jdk: oraclejdk7
-      env: WLP_VERSION=8.5.5_09 WLP_LICENSE=L-MCAO-9SYMVC
-    - jdk: oraclejdk8
-      env: WLP_VERSION=17.0.0_01 WLP_LICENSE=L-SWIS-AEPPZP
+jdk:
+    - openjdk7
+    - oraclejdk8
+env:
+    - WLP_VERSION=18.0.0_01 WLP_LICENSE=L-CTUR-AVDTCN
+    - WLP_VERSION=17.0.0_04 WLP_LICENSE=L-SWIS-ASNMK6
 script:
-  - travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE
+- travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE
