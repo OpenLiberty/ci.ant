@@ -15,10 +15,12 @@
  */
 package net.wasdev.wlp.ant;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 /**
  * Install feature task.
@@ -41,14 +43,21 @@ public class InstallFeatureTask extends FeatureManagerTask {
     public void execute() {
 
         initTask();
-
-        try {
-            doInstall();
-        } catch (BuildException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new BuildException(e);
+        
+        File f = new File(cmd);
+        if(f.exists()) {
+            try {
+                doInstall();
+            } catch (BuildException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new BuildException(e);
+            }
         }
+        else {
+            log("The installUtility is not available on this Liberty runtime. Any features specified in the build will not be installed.", Project.MSG_WARN);
+        }
+        
     }
 
     private void doInstall() throws Exception {
