@@ -1,0 +1,19 @@
+environment:
+    matrix:
+        - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
+          WLP_VERSION: 18.0.0_01
+          WLP_LICENSE: L-CTUR-AVDTCN
+        - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
+          WLP_VERSION: 17.0.0_04
+          WLP_LICENSE: L-SWIS-ASNMK6
+
+install:
+    - cmd: |
+        choco install maven
+        refreshenv
+        where mvn
+        cd C:\projects\ci-ant
+build_script:
+    - "mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=%WLP_VERSION% -DwlpLicense=%WLP_LICENSE%"
+
+test: off

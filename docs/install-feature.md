@@ -1,7 +1,7 @@
 ## install-feature task
 ---
 
-The `install-feature` task installs a feature packaged as a Subsystem Archive (ESA file) to the Liberty runtime.
+The `install-feature` task installs a feature packaged as a Subsystem Archive (ESA file) to the Liberty runtime. The task will do nothing and output a warning if `bin/installUtility` does not exist in the runtime. 
 
 #### Parameters
 
