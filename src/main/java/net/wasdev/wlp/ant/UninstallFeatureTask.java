@@ -15,11 +15,13 @@
  */
 package net.wasdev.wlp.ant;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 /**
  * Uninstall feature task.
@@ -34,12 +36,18 @@ public class UninstallFeatureTask extends FeatureManagerTask {
         
         initTask();
         
-        try {
-            doUninstall();
-        } catch (BuildException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new BuildException(e);
+        File f = new File(cmd);
+        if(f.exists()) {
+            try {
+                doUninstall();
+            } catch (BuildException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new BuildException(e);
+            }
+        }
+        else {
+            log("The installUtility is not available on this Liberty runtime. Any features specified in the build will not be uninstalled.", Project.MSG_WARN);
         }
     }
 
