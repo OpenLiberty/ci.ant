@@ -69,7 +69,7 @@ public class WasDevInstaller implements Installer {
         }
 
         if (type == null) {
-            type = (licenseCode == null) ? "webProfile7" : "webProfile6";
+            type = "webProfile7";
         }
 
         File cacheDir = new File(task.getCacheDir());
@@ -136,10 +136,9 @@ public class WasDevInstaller implements Installer {
     }
 
     private String getRuntimeURI(LibertyInfo selected) {
-        String propertyName = ("webProfile6".equalsIgnoreCase(type)) ? "uri" : type;
-        String value = selected.getProperty(propertyName);
+        String value = selected.getProperty(type);
         if (value == null) {
-            throw new BuildException("Archive type " + propertyName + " is not available for Liberty version " + selected.getVersion());
+            throw new BuildException("Archive type " + type + " is not available for Liberty version " + selected.getVersion());
         }
         return value;
     }
