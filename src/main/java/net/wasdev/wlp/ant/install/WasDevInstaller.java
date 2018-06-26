@@ -69,7 +69,7 @@ public class WasDevInstaller implements Installer {
         }
 
         if (type == null) {
-            type = (licenseCode == null) ? "webProfile7" : "webProfile6";
+            type = "webProfile7";
         }
 
         File cacheDir = new File(task.getCacheDir());

@@ -15,7 +15,7 @@
     <property name="servername" value="wlp.ant.test" />
 
     <target name="installServer">
-        <wlp:install-liberty licenseCode="${wlpLicense}" version="${wlpVersion}" basedir="${target.dir}" />
+        <wlp:install-liberty licenseCode="${wlpLicense}" version="${wlpVersion}" basedir="${target.dir}" type="kernel" />
 
         <delete dir="${wlp.usr.dir}" />
         <delete dir="${wlp.output.dir}" />
