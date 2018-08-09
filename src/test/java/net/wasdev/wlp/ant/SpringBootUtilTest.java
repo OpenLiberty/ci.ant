@@ -1,0 +1,133 @@
+package net.wasdev.wlp.ant;
+
+import java.io.File;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import junit.framework.Assert;
+import net.wasdev.wlp.ant.SpringBootUtilTask;
+import net.wasdev.wlp.ant.install.InstallLibertyTask;
+
+public class SpringBootUtilTest {
+	
+	static final Boolean isWindows;
+	static {
+        isWindows = System.getProperty("os.name", "unknown").toLowerCase().indexOf("windows") >= 0;
+	}
+	
+    private SpringBootUtilTask antTask;
+    
+    private static File wlpDir;
+       
+    @ClassRule
+    public static TemporaryFolder testFolder = new TemporaryFolder();
+	
+    @BeforeClass
+    public static void setupOpenLiberty() throws Exception {
+    	//Install open-liberty kernel 
+        InstallLibertyTask install = new InstallLibertyTask();
+        install.setProject(new Project());
+        install.setBaseDir(testFolder.getRoot().getAbsolutePath());
+    	wlpDir = new File(testFolder.getRoot(), "wlp");
+        install.setType("kernel");
+        install.execute();
+        
+        //Install springBoot-1.5 feature
+        ProcessBuilder pb = new ProcessBuilder();
+        if (isWindows) {
+            pb.environment().put("EXIT_ALL", "1");
+        }
+        Properties sysp = System.getProperties();
+        String javaHome = sysp.getProperty("java.home");
+        pb.directory(wlpDir);
+        pb.environment().put("JAVA_HOME", javaHome);
+        pb.redirectErrorStream(true);
+        String installUtility = "bin/installUtility" + (isWindows ? ".bat":""); 
+        pb.command(installUtility, "install", "springBoot-1.5", "--acceptLicense");
+        Process p = pb.start();
+    	/* wait for installUtility to install feature from Liberty repository. 
+    	   Normally takes 5-10 seconds. */ 
+        p.waitFor(90, TimeUnit.SECONDS); 
+        if (p.exitValue()!=0) {
+        	throw new Exception("Test setup failed installing springBoot-1.5 feature.");
+        }
+    }
+    
+    @Before
+    public void setUpNewTask() {
+    	antTask = new SpringBootUtilTask();
+		antTask.setInstallDir(wlpDir.getAbsoluteFile());
+    }
+    
+    @Test
+    public void testMissingRequiredArg1() throws Exception {
+    	try {
+    		antTask.execute();
+    	}
+    	catch (BuildException ex) {
+    		assertTrue("Unexpected error message: \"" + ex.getMessage() + "\"", 
+    		    ex.getMessage().contains("Internal build error. One or more required arguments are missing: sourceAppPath, targetLibCachePath, TargetThinAppPath."));
+    	}
+    }
+    
+    @Test
+    public void testMissingRequiredArg2() throws Exception {
+    	try {
+    		antTask.setTargetLibCachePath("");
+    		antTask.execute();
+    	}
+    	catch (BuildException ex) {
+    		assertTrue("Unexpected error message: \"" + ex.getMessage() + "\"", 
+    		    ex.getMessage().contains("Internal build error. One or more required arguments are missing: sourceAppPath, TargetThinAppPath."));
+    	}
+    }
+
+    @Test
+    public void testMissingRequiredArg3() throws Exception {
+    	try {
+    		antTask.setTargetLibCachePath("");
+    		antTask.setSourceAppPath("");
+    		antTask.execute();
+    	}
+    	catch (BuildException ex) {
+    		assertTrue("Unexpected error message: \"" + ex.getMessage() + "\"", 
+    		    ex.getMessage().contains("Internal build error. One or more required arguments are missing: TargetThinAppPath."));
+    	}
+    }
+    
+    @Test
+    public void testOnSpringBootSampleApp() throws Exception {
+    	File app = new File(this.getClass().getResource("/testApp/wasdev.springBoot-1.0-SNAPSHOT.jar").toURI());
+    	File libCache = new File(wlpDir, "usr/shared/resources/libIndexCache");
+    	antTask.setTargetLibCachePath(libCache.getAbsolutePath());
+    	antTask.setSourceAppPath(app.getAbsolutePath());
+    	antTask.setTargetThinAppPath(wlpDir.getAbsolutePath()+"/wasdev.springBoot-1.0-SNAPSHOT.spring");
+    	antTask.execute();
+    	// Check  SpringBootUtil outputs. Just verify that the tool has created _some_  outputs in the expected locations.
+    	// using a stripped down, small jar which will not start but is sufficient to test the repackaging utility  
+    	File thin = new File(wlpDir, "wasdev.springBoot-1.0-SNAPSHOT.spring");
+    	assertTrue("Thin spring boot jar not found", thin.exists());
+    	
+    	String libCacheFilesToVerify[] = {
+    	"09/f2ee1404726a06ddd7beeb061a58c0dfe15d6b7c516542d28b6e3521f5589e/spring-boot-starter-web-1.5.15.RELEASE.jar",
+    	"18/c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79/slf4j-api-1.7.25.jar",
+    	"2c/5d9ed201011c4a1bbe1c4d983645f3c68e6db9ed6267066d204cc1d12e4758/spring-boot-starter-1.5.15.RELEASE.jar",
+    	"41/6c5a0c145ad19526e108d44b6bf77b75412d47982cce6ce8d43abdbdbb0fac/jul-to-slf4j-1.7.25.jar",
+    	"f3/9d7ba7253e35f5ac48081ec1bc28c5df9b32ac4b7db20853e5a8e76bf7b0ed/validation-api-1.1.0.Final.jar"};
+    	
+    	for (String p : libCacheFilesToVerify ) {
+    		if (!new File(libCache, p).exists()) {
+    			fail("Did not find expected file " + wlpDir + "/" + p + " in the libIndexCache");
+    		}
+    	}
+    }
+}
