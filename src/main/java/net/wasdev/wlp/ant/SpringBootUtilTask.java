@@ -72,7 +72,7 @@ public class SpringBootUtilTask extends AbstractTask {
         File f = new File(cmd);
         if (f.exists()) {
             try {
-            	processCommand(validateAndBuildCommand());
+            	processCommand(buildCommand());
             } catch (BuildException e) {
                 throw e;
             } catch (Exception e) {
@@ -85,29 +85,11 @@ public class SpringBootUtilTask extends AbstractTask {
         }
         
     }
-
     
     /** Build up a command string to launch in new process
      */
-    private List<String> validateAndBuildCommand(){
+    private List<String> buildCommand(){
         List<String> command = new ArrayList<String>();
-        
-        String missingRequiredArgsError = "";
-        if (getSourceAppPath()==null) {
-        	missingRequiredArgsError = "sourceAppPath";
-        }
-        if (getTargetLibCachePath()==null) {
-        	String sep = missingRequiredArgsError.length()==0 ? "" : ", ";
-        	missingRequiredArgsError +=  sep + "targetLibCachePath";
-        }
-        if (getTargetThinAppPath()==null) {
-        	String sep = missingRequiredArgsError.length()==0 ? "" : ", ";
-        	missingRequiredArgsError += sep + "TargetThinAppPath";        	
-        }
-        if (missingRequiredArgsError.length()>0) {
-        	throw new BuildException("Internal build error. One or more required arguments are missing: " + missingRequiredArgsError + ".");
-        }
-        
         command.add(cmd);
         command.add("thin");
         command.add("--sourceAppPath=" + getSourceAppPath());

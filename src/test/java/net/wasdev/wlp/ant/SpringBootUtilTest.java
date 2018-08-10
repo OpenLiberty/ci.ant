@@ -1,28 +1,24 @@
 package net.wasdev.wlp.ant;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import junit.framework.Assert;
-import net.wasdev.wlp.ant.SpringBootUtilTask;
 import net.wasdev.wlp.ant.install.InstallLibertyTask;
+import net.wasdev.wlp.common.plugins.util.OSUtil;
 
 public class SpringBootUtilTest {
 	
-	static final Boolean isWindows;
-	static {
-        isWindows = System.getProperty("os.name", "unknown").toLowerCase().indexOf("windows") >= 0;
-	}
+	static private final Boolean isWindows = OSUtil.isWindows();
 	
     private SpringBootUtilTask antTask;
     
@@ -56,9 +52,9 @@ public class SpringBootUtilTest {
         Process p = pb.start();
     	/* wait for installUtility to install feature from Liberty repository. 
     	   Normally takes 5-10 seconds. */ 
-        p.waitFor(90, TimeUnit.SECONDS); 
+        p.waitFor(); 
         if (p.exitValue()!=0) {
-        	throw new Exception("Test setup failed installing springBoot-1.5 feature.");
+        	fail("Test setup failed installing springBoot-1.5 feature.");
         }
     }
     
@@ -68,41 +64,6 @@ public class SpringBootUtilTest {
 		antTask.setInstallDir(wlpDir.getAbsoluteFile());
     }
     
-    @Test
-    public void testMissingRequiredArg1() throws Exception {
-    	try {
-    		antTask.execute();
-    	}
-    	catch (BuildException ex) {
-    		assertTrue("Unexpected error message: \"" + ex.getMessage() + "\"", 
-    		    ex.getMessage().contains("Internal build error. One or more required arguments are missing: sourceAppPath, targetLibCachePath, TargetThinAppPath."));
-    	}
-    }
-    
-    @Test
-    public void testMissingRequiredArg2() throws Exception {
-    	try {
-    		antTask.setTargetLibCachePath("");
-    		antTask.execute();
-    	}
-    	catch (BuildException ex) {
-    		assertTrue("Unexpected error message: \"" + ex.getMessage() + "\"", 
-    		    ex.getMessage().contains("Internal build error. One or more required arguments are missing: sourceAppPath, TargetThinAppPath."));
-    	}
-    }
-
-    @Test
-    public void testMissingRequiredArg3() throws Exception {
-    	try {
-    		antTask.setTargetLibCachePath("");
-    		antTask.setSourceAppPath("");
-    		antTask.execute();
-    	}
-    	catch (BuildException ex) {
-    		assertTrue("Unexpected error message: \"" + ex.getMessage() + "\"", 
-    		    ex.getMessage().contains("Internal build error. One or more required arguments are missing: TargetThinAppPath."));
-    	}
-    }
     
     @Test
     public void testOnSpringBootSampleApp() throws Exception {
