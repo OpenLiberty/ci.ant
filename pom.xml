@@ -54,6 +54,11 @@
                 <artifactId>ant</artifactId>
                 <version>1.8.4</version>
             </dependency>
+            <dependency>
+                <groupId>net.wasdev.wlp.common</groupId>
+                <artifactId>ci.common</artifactId>
+                <version>1.2.2-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -66,6 +71,10 @@
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.wasdev.wlp.common</groupId>
+            <artifactId>ci.common</artifactId>
         </dependency>
     </dependencies>
 
@@ -97,11 +106,38 @@
                         </execution>
                     </executions>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <excludes>
+                            <exclude>${jdk.7.excludes}</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
 
     <profiles>
+        <profile>
+            <id>1.7.excludes</id>
+            <activation>
+                <jdk>1.7</jdk>
+            </activation>
+            <properties>
+                <jdk.7.excludes>**/SpringBootUtilTest.java</jdk.7.excludes>
+            </properties>
+        </profile>
+        <profile> 
+            <id>1.8+excludes</id>          
+            <activation>
+                <jdk>[1.8,10)</jdk>
+            </activation>
+            <properties>
+                <jdk.7.excludes>none</jdk.7.excludes>
+            </properties>
+        </profile>
         <profile>
             <id>online-its</id>
             <build>
