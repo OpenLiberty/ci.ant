@@ -10,7 +10,7 @@ Parameters shared by all the tasks except install-liberty.
 | installDir | Location of the Liberty profile server installation. | Yes, only if the `ref` attribute is not set. |
 | ref | Reference to an existing server task definition to reuse its server configuration. Configuration such as `installDir`, `userDir`, `outputDir`, and `serverName` are reused from the referenced server task. | No |
 
-Parameters shared by all the tasks except install-liberty and compileJSPs.
+Parameters shared by all the tasks except install-liberty, compileJSPs and springBootUtil.
 
 #### Parameters
 | Attribute | Description | Required |

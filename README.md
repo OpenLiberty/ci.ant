@@ -52,4 +52,6 @@ The `wlp-anttasks.jar` provides the following tasks.
 | [uninstall-feature](docs/uninstall-feature.md#uninstall-feature-task) | The `uninstall-feature` task uninstalls a feature from the Liberty runtime. |
 | [clean](docs/clean.md#clean-task) | The `clean` task deletes every file in the `${wlp_output_dir}/logs`, `${wlp_output_dir}/workarea`, `${wlp_user_dir}/dropins` or `${wlp_user_dir}/apps`. |
 | [compileJSPs](docs/compileJSPs.md#compileJSPs-task) | The `compileJSPs` task compiles JSP files so they do not need to be compiled on demand at runtime.
+| [springBootUtil](docs/springBootUtil.md#SpringBootUtilTask) | The `SpringBootUtilTask` task thins a spring boot fat jar, pulling out the runtime dependencies into a local library and producing a much smaller jar containing only the application logic. Use this capability to create efficient Docker layers for your Spring Boot application.
+
 =======
