@@ -4,7 +4,7 @@ language: java
 jdk:
     - openjdk7
     - oraclejdk8
-    - oraclejdk9
+    - oraclejdk10
 env:
     - WLP_VERSION=18.0.0_01 WLP_LICENSE=L-CTUR-AVDTCN
     - WLP_VERSION=18.0.0_02 WLP_LICENSE=L-CTUR-AYBK6Z
