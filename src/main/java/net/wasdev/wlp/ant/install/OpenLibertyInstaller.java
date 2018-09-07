@@ -94,9 +94,7 @@ public class OpenLibertyInstaller implements Installer {
         URL runtimeUrl = new URL(runtimeUrlString);
         File runtimeFile = new File(versionCacheDir, InstallUtils.getFile(runtimeUrl));
         task.downloadFile(runtimeUrl, runtimeFile);
-        
-        System.out.println("runtime file: " + runtimeFile.getAbsolutePath());
-        
+                
         if(runtimeUrlString.endsWith(".jar")) {
             task.installLiberty(runtimeFile);
         }
