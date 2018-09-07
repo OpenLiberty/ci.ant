@@ -23,21 +23,12 @@ import java.util.List;
 import org.apache.tools.ant.BuildException;
 
 public class WasDevInstaller implements Installer {
-
+    
     private static final String LICENSE_REGEX = "D/N:\\s*(.*?)\\s*\\<";
 
-    private String url;
     private String licenseCode;
     private String version;
     private String type;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     public String getLicenseCode() {
         return licenseCode;
@@ -64,9 +55,8 @@ public class WasDevInstaller implements Installer {
     }
 
     public void install(InstallLibertyTask task) throws Exception {
-        if (url == null) {
-            url = "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml";
-        }
+        task.log("Installing from Wasdev repository...");
+        String url = "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml";
 
         if (type == null) {
             type = "webProfile7";
@@ -105,6 +95,7 @@ public class WasDevInstaller implements Installer {
         InstallUtils.createDirectory(versionCacheDir);
 
         String uri = getRuntimeURI(selectedVersion);
+        task.setRuntimeUrl(uri);
         if (uri.endsWith(".jar")) {
             // ensure licenseCode is set
             task.checkLicenseSet();
@@ -124,7 +115,7 @@ public class WasDevInstaller implements Installer {
 
             // install Liberty jar
             task.installLiberty(libertyFile);
-        } else {
+        } else if(uri.endsWith(".zip")) {
             // download zip file
             URL libertyURL = new URL(uri);
             File libertyFile = new File(versionCacheDir, InstallUtils.getFile(libertyURL));
@@ -132,6 +123,9 @@ public class WasDevInstaller implements Installer {
 
             // unzip
             task.unzipLiberty(libertyFile);
+        }
+        else {
+            throw new BuildException("Invalid runtime extension.");
         }
     }
 

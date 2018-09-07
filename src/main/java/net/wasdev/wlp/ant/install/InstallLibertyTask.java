@@ -43,6 +43,8 @@ public class InstallLibertyTask extends AbstractTask {
     private String password;
     private long maxDownloadTime;
     private boolean offline;
+    private boolean useOpenLiberty;
+    
 
     @Override
     public void execute() throws BuildException {
@@ -70,11 +72,19 @@ public class InstallLibertyTask extends AbstractTask {
         }
 
         if (runtimeUrl == null) {
-            WasDevInstaller installer = new WasDevInstaller();
-            installer.setVersion(version);
-            installer.setLicenseCode(licenseCode);
-            installer.setType(type);
-            installer.install(this);
+            if(useOpenLiberty) { // Download from the Open Liberty repo
+                OpenLibertyInstaller installer = new OpenLibertyInstaller();
+                installer.setVersion(version);
+                installer.setType(type);
+                installer.install(this);
+            }
+            else { // Download from the Wasdev repo
+                WasDevInstaller installer = new WasDevInstaller();
+                installer.setVersion(version);
+                installer.setLicenseCode(licenseCode);
+                installer.setType(type);
+                installer.install(this);
+            }
         } else {
             ArchiveInstaller installer = new ArchiveInstaller();
             installer.setRuntimeUrl(runtimeUrl);
@@ -230,5 +240,13 @@ public class InstallLibertyTask extends AbstractTask {
 
     public boolean isOffline() {
         return offline;
+    }
+    
+    public void setUseOpenLiberty(boolean useOpenLiberty) {
+        this.useOpenLiberty = useOpenLiberty;
+    }
+    
+    public boolean getUseOpenLiberty() {
+        return useOpenLiberty;
     }
 }
