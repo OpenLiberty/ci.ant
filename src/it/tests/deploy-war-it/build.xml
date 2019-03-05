@@ -14,24 +14,22 @@
     <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
     <property name="servername" value="deploy.war" />
 
-    <target name="deploy">
+    <target name="test">
         <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
 
-        <wlp:server ref="testServer" operation="start" />
+        <wlp:server ref="testServer" operation="start" useEmbeddedServer="true" />
 
         <wlp:deploy ref="testServer">
             <fileset dir="${basedir}/../../setup/test-war/target">
                 <include name="*.war" />
             </fileset>
         </wlp:deploy>
-    </target>
 
-    <target name="undeploy">
         <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
 
         <wlp:undeploy ref="testServer" file="test-war.war" timeout="50000" />
 
-        <wlp:server ref="testServer" operation="stop" />
+        <wlp:server ref="testServer" operation="stop" useEmbeddedServer="true" />
 
         <wlp:clean ref="testServer" apps="true" dropins="true" />
     </target>
