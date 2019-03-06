@@ -89,9 +89,9 @@ public class ServerTask extends AbstractTask {
                 
         String binDirectory;
         if (isWindows) {
-            binDirectory = "\"" + installDir + "\\bin\\";
-            embeddedServerJar = binDirectory + "tools\\ws-server.jar\"";
-            wlp = binDirectory + "server.bat\"";
+            binDirectory = installDir + "\\bin\\";
+            embeddedServerJar = binDirectory + "tools\\ws-server.jar";
+            wlp = "\"" + binDirectory + "server.bat" + "\"";
             processBuilder.environment().put("EXIT_ALL", "1");
         } else {
             binDirectory = installDir + "/bin/";
