@@ -1,11 +1,11 @@
 environment:
     matrix:
         - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
-          WLP_VERSION: 18.0.0_01
-          WLP_LICENSE: L-CTUR-AVDTCN
+          WLP_VERSION: 18.0.0_04
+          WLP_LICENSE: L-CTUR-B4WNHE
         - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
-          WLP_VERSION: 18.0.0_02
-          WLP_LICENSE: L-CTUR-AYBK6Z
+          WLP_VERSION: 19.0.0_02
+          WLP_LICENSE: L-CTUR-B8GJRP
 
 install:
     - cmd: |
@@ -14,6 +14,6 @@ install:
         where mvn
         cd C:\projects\ci-ant
 build_script:
-    - "mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=%WLP_VERSION% -DwlpLicense=%WLP_LICENSE%"
+    - "mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=%WLP_VERSION% -DwlpLicense=%WLP_LICENSE% -e"
 
 test: off

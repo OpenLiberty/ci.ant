@@ -16,30 +16,54 @@
 package net.wasdev.wlp.ant;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+
+import net.wasdev.wlp.ant.types.EmbeddedServerInfo;
 
 /**
  * server operations task: start/stop/package/create/status/debug
  */
 public class ServerTask extends AbstractTask {
 
+    
     private String operation;
     private String timeout;
+    private boolean useEmbeddedServer;
 
     private String wlp;
+    
+    private static final String[] EMPTY_ARRAY = new String[0];
+    private static URLClassLoader embeddedServerClassLoader = null;
+    private String embeddedServerJar = null;
+    
+    // The embedded server instance
+    private Object embeddedServer;
+    
+    // Server methods
+    private Method embeddedServerStart;
+    private Method embeddedServerStop;
+    private Method embeddedServerIsRunning;
+    
+    // Future result methods
+    private Method embeddedServerResultSuccessful;
+    private Method embeddedServerResultReturnCode;
+    private Method embeddedServerResultException;
 
     private static final String START_MESSAGE_CODE = "CWWKF0011I";
-    private static final String STOP_MESSAGE_CODE = "CWWKE0036I";
     
     private static final long SERVER_START_TIMEOUT_DEFAULT = 30 * 1000;
-    private static final long SERVER_STOP_TIMEOUT_DEFAULT = 30 * 1000;
     
     // used with 'start' and 'debug' operations
     private boolean clean = false;
@@ -62,12 +86,17 @@ public class ServerTask extends AbstractTask {
     @Override
     protected void initTask() {
         super.initTask();
-
+                
+        String binDirectory;
         if (isWindows) {
-            wlp = "\"" + installDir + "\\bin\\server.bat\"";
+            binDirectory = installDir + "\\bin\\";
+            embeddedServerJar = binDirectory + "tools\\ws-server.jar";
+            wlp = "\"" + binDirectory + "server.bat" + "\"";
             processBuilder.environment().put("EXIT_ALL", "1");
         } else {
-            wlp = installDir + "/bin/server";
+            binDirectory = installDir + "/bin/";
+            embeddedServerJar = binDirectory + "tools/ws-server.jar";
+            wlp = binDirectory + "server";
         }
 
         Properties sysp = System.getProperties();
@@ -93,23 +122,56 @@ public class ServerTask extends AbstractTask {
         if (operation != null) {
             try {
               if ("create".equals(operation)) {
+                  if(useEmbeddedServer) {
+                      throw new BuildException("Server cannot be created in embedded mode.");
+                  }
                   doCreate();
               } else if ("run".equals(operation)) {
-                  doRun();
+                  if(useEmbeddedServer) {
+                      doEmbeddedRun();
+                  }
+                  else {
+                      doRun();
+                  }
               } else if ("start".equals(operation)) {
-                  doStart();
+                  if(useEmbeddedServer) {
+                      doEmbeddedStart();
+                  }
+                  else {
+                      doStart();
+                  }
               } else if ("stop".equals(operation)) {
-                  doStop();
+                  if(useEmbeddedServer) {
+                      doEmbeddedStop();
+                  }
+                  else {
+                      doStop();
+                  }
               } else if ("status".equals(operation)) {
+                  if(useEmbeddedServer) {
+                      throw new BuildException("Server status cannot be retrieved in embedded mode.");
+                  }
                   doStatus();
               } else if ("debug".equals(operation)) {
                   // Debug seems useless in ant tasks, but still keep it.
+                  if(useEmbeddedServer) {
+                      throw new BuildException("Server debug cannot be run in embedded mode. Please debug from the JVM.");
+                  }
                   doDebug();
               } else if ("package".equals(operation)) {
+                  if(useEmbeddedServer) {
+                      throw new BuildException("Server cannot be packaged in embedded mode.");
+                  }
                   doPackage();
               } else if ("dump".equals(operation)) {
+                  if(useEmbeddedServer) {
+                      throw new BuildException("Server cannot be dumped in embedded mode.");
+                  }
                   doDump();
               } else if ("javadump".equals(operation)) {
+                  if(useEmbeddedServer) {
+                      throw new BuildException("Server cannot be dumped in embedded mode.");
+                  }
                   doJavaDump();
               } else {
                   throw new BuildException("Unsupported operation: " + operation);
@@ -119,6 +181,113 @@ public class ServerTask extends AbstractTask {
           } catch (Exception e) {
               throw new BuildException(e);
           }
+        }
+    }
+    
+    private void initEmbeddedServer() {
+        URL embeddedServerJarFile;
+        try {
+            embeddedServerJarFile = new File(embeddedServerJar).toURI().toURL();
+        } catch(IllegalArgumentException | MalformedURLException e) {
+            throw new BuildException("Unable to locate ws-server.jar", e);
+        }
+        
+        // Get the classloader instance for the runtime if we've already created it
+        embeddedServerClassLoader = EmbeddedServerInfo.EmbeddedServerClassLoaders.get(embeddedServerJarFile);
+        if(embeddedServerClassLoader == null) {
+            // Otherwise create a new classloader and add it to our map of classloaders
+            embeddedServerClassLoader = new URLClassLoader(new URL[] {embeddedServerJarFile}, this.getClass().getClassLoader());
+            EmbeddedServerInfo.EmbeddedServerClassLoaders.put(embeddedServerJarFile, embeddedServerClassLoader);
+        }
+
+        try {
+            String embeddedServerClassName = "com.ibm.wsspi.kernel.embeddable.Server";
+            
+            Class<?> embeddedServerClass = Class.forName(embeddedServerClassName, true, embeddedServerClassLoader);
+            Class<?> embeddedServerBuilderClass = Class.forName("com.ibm.wsspi.kernel.embeddable.ServerBuilder", true, embeddedServerClassLoader);
+            Class<?> embeddedServerFutureResultClass = null;
+            
+            // Server methods
+            embeddedServerStart = embeddedServerClass.getMethod("start", new Class[] {String[].class});
+            embeddedServerStop = embeddedServerClass.getMethod("stop", new Class[] {String[].class});
+            embeddedServerIsRunning = embeddedServerClass.getMethod("isRunning");
+            
+            // Future result methods
+            Class<?>[] embeddedServerDeclaredClasses = embeddedServerClass.getDeclaredClasses();
+            for(Class<?> declaredClass : embeddedServerDeclaredClasses) {
+                if((embeddedServerClassName + "$Result").equals(declaredClass.getName())) {
+                    embeddedServerFutureResultClass = declaredClass;
+                }
+            }
+            
+            if(embeddedServerFutureResultClass == null) {
+                throw new BuildException("Unable to load embedded server Result interface");
+            }
+            
+            embeddedServerResultSuccessful = embeddedServerFutureResultClass.getMethod("successful");
+            embeddedServerResultReturnCode = embeddedServerFutureResultClass.getMethod("getReturnCode");
+            embeddedServerResultException = embeddedServerFutureResultClass.getMethod("getException");
+            
+            // Server builder methods
+            Method serverBuilderSetName = embeddedServerBuilderClass.getMethod("setName", new Class[] {String.class});
+            Method serverBuilderSetUserDir = embeddedServerBuilderClass.getMethod("setUserDir", new Class[] {File.class});
+            Method serverBuilderSetOutputDir = embeddedServerBuilderClass.getMethod("setOutputDir", new Class[] {File.class});
+            Method serverBuilderBuild = embeddedServerBuilderClass.getMethod("build");
+            
+            // Look for an existing embedded server
+            EmbeddedServerInfo info = new EmbeddedServerInfo(getServerName(), getUserDir(), getOutputDir());
+            embeddedServer = EmbeddedServerInfo.EmbeddedServers.get(info);
+            if(embeddedServer == null) {
+                // If there is no existing server, create one...
+                Object serverBuilder = embeddedServerBuilderClass.newInstance(); // ServerBuilder sb = new ServerBuilder();
+                serverBuilder = serverBuilderSetName.invoke(serverBuilder, getServerName()); // sb.setName(serverName)
+                serverBuilder = serverBuilderSetUserDir.invoke(serverBuilder, getUserDir()); // sb.setUserDir(userDir)
+                serverBuilder = serverBuilderSetOutputDir.invoke(serverBuilder, getOutputDir()); // sb.setOutputDir(outputDir)
+                embeddedServer = serverBuilderBuild.invoke(serverBuilder); // sb.build()
+                
+                // ...and add it to the map of embedded servers
+                EmbeddedServerInfo.EmbeddedServers.put(info, embeddedServer);
+            }
+
+        } catch(Exception e) {
+            throw new BuildException("Unable to load embedded Server and ServerBuilder classes", e);
+        }
+    }
+        
+    private void doEmbeddedStart() throws Exception {
+        initEmbeddedServer();
+        Future<?> startFuture = (Future<?>) embeddedServerStart.invoke(embeddedServer, (Object)EMPTY_ARRAY);
+        getEmbeddedServerResult("start", startFuture);
+    }
+    
+    private void doEmbeddedRun() throws Exception {
+        initEmbeddedServer();
+        Future<?> startFuture = (Future<?>) embeddedServerStart.invoke(embeddedServer, (Object)EMPTY_ARRAY);
+        getEmbeddedServerResult("run", startFuture);
+        while(isEmbeddedServerRunning()) {
+            Thread.sleep(100);
+        }
+    }
+    
+    private void doEmbeddedStop() throws Exception {
+        initEmbeddedServer();
+        Future<?> stopFuture = (Future<?>) embeddedServerStop.invoke(embeddedServer, (Object)EMPTY_ARRAY);
+        getEmbeddedServerResult("stop", stopFuture);
+    }
+    
+    private boolean isEmbeddedServerRunning() throws Exception {
+        return (boolean) embeddedServerIsRunning.invoke(embeddedServer);
+    }
+    
+    private void getEmbeddedServerResult(String action, Future<?> future) throws Exception {
+        Object result = future.get();
+        
+        boolean success = (Boolean) embeddedServerResultSuccessful.invoke(result);
+        int returnCode = (Integer) embeddedServerResultReturnCode.invoke(result);
+        Object exception = embeddedServerResultException.invoke(result);
+        
+        if(!success) {
+            throw new BuildException("Embedded " + action + " failed: rc=" + returnCode + ", ex=" + exception);
         }
     }
         
@@ -392,6 +561,10 @@ public class ServerTask extends AbstractTask {
     
     public void setTemplate(String template) {
         this.template = template;
+    }
+    
+    public void setUseEmbeddedServer(boolean useEmbeddedServer) {
+        this.useEmbeddedServer = useEmbeddedServer;
     }
 
     /* server's exit codes  */

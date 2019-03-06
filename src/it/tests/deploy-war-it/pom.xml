@@ -24,26 +24,14 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>deploy</id>
-                                <phase>pre-integration-test</phase>
+                                <id>test</id>
+                                <phase>integration-test</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <ant dir="${basedir}" antfile="${basedir}\build.xml" target="deploy" />
-                                    </target>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>undeploy</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target>
-                                        <ant dir="${basedir}" antfile="${basedir}\build.xml" target="undeploy" />
+                                        <ant dir="${basedir}" antfile="${basedir}\build.xml" target="test" />
                                     </target>
                                 </configuration>
                             </execution>

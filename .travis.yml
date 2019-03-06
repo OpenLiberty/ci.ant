@@ -6,7 +6,7 @@ jdk:
     - oraclejdk8
     - oraclejdk9
 env:
-    - WLP_VERSION=18.0.0_01 WLP_LICENSE=L-CTUR-AVDTCN
-    - WLP_VERSION=18.0.0_02 WLP_LICENSE=L-CTUR-AYBK6Z
+    - WLP_VERSION=18.0.0_04 WLP_LICENSE=L-CTUR-B4WNHE
+    - WLP_VERSION=19.0.0_02 WLP_LICENSE=L-CTUR-B8GJRP
 script:
-- travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE
+- travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE -e
