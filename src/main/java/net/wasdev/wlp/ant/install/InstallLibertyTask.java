@@ -44,6 +44,7 @@ public class InstallLibertyTask extends AbstractTask {
     private long maxDownloadTime;
     private boolean offline;
     private boolean useOpenLiberty;
+    private boolean useWlpCache = true;
     
 
     @Override
@@ -163,11 +164,19 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     public String getCacheDir() {
-        return cacheDir;
+        if (useWlpCache) {
+            return cacheDir;
+        } else {
+            return baseDir;
+        }
     }
 
     public void setCacheDir(String cacheDir) {
         this.cacheDir = cacheDir;
+    }
+
+    public boolean useCacheDir() {
+        return useWlpCache;
     }
 
     public String getLicenseCode() {

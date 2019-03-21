@@ -64,15 +64,15 @@ public class ArchiveInstaller implements Installer {
         InstallUtils.createDirectory(cacheDir);
 
         // download & install runtime file
-        install(task, cacheDir, runtimeUrl);
+        install(task, cacheDir, runtimeUrl, task.useCacheDir());
 
         // download & install extended file
         if (extendedUrl != null) {
-            install(task, cacheDir, extendedUrl);
+            install(task, cacheDir, extendedUrl, task.useCacheDir());
         }
     }
 
-    private void install(InstallLibertyTask task, File cacheDir, String url) throws Exception {
+    private void install(InstallLibertyTask task, File cacheDir, String url, boolean useWlpCache) throws Exception {
         // download file
         URL downloadURL = new URL(url);
         File cachedFile = new File(cacheDir, InstallUtils.getFile(downloadURL));
@@ -90,11 +90,17 @@ public class ArchiveInstaller implements Installer {
             // install Liberty jar
             task.installLiberty(cachedFile);
         } else {
-            // download zip file
-            task.downloadFile(downloadURL, cachedFile);
+            if (useWlpCache) {
+                // download zip file
+                task.downloadFile(downloadURL, cachedFile);
 
-            // unzip
-            task.unzipLiberty(cachedFile);
+                // unzip
+                task.unzipLiberty(cachedFile);
+            } else {
+                // unzipping straight from runtimeUrl
+                // must have file on file system to skip caching
+                task.unzipLiberty(new File(task.getRuntimeUrl()));
+            }
         }
     }
 
