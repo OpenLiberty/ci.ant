@@ -28,6 +28,7 @@ The following additional parameters are available when downloading a runtime via
 | licenseCode | Liberty profile license code. See [above](#install-liberty-task). | No |
 | username | Username needed for basic authentication. | No | 
 | password | Password needed for basic authentication. | No | 
+| useWlpCache | Enables caching of a Liberty `zip`. Defaults to `true`. Only disable caching if the runtimeUrl points to a local Liberty `zip`. | No |
 
 #### Parameters when installing from Wasdev repository (WebSphere Liberty runtimes)
 
