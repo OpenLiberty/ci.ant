@@ -99,7 +99,13 @@ public class ArchiveInstaller implements Installer {
             } else {
                 // unzipping straight from runtimeUrl
                 // must have file on file system to skip caching
-                task.unzipLiberty(new File(task.getRuntimeUrl()));
+                File runtimeFile = new File(task.getRuntimeUrl());
+
+                if (runtimeFile.exists()) {
+                    task.unzipLiberty(runtimeFile);
+                } else {
+                    throw new BuildException("Liberty runtime zip not found at: " + task.getRuntimeUrl());
+                }
             }
         }
     }
