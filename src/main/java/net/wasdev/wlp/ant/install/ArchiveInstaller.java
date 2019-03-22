@@ -17,6 +17,7 @@ package net.wasdev.wlp.ant.install;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -64,15 +65,15 @@ public class ArchiveInstaller implements Installer {
         InstallUtils.createDirectory(cacheDir);
 
         // download & install runtime file
-        install(task, cacheDir, runtimeUrl, task.useCacheDir());
+        install(task, cacheDir, runtimeUrl);
 
         // download & install extended file
         if (extendedUrl != null) {
-            install(task, cacheDir, extendedUrl, task.useCacheDir());
+            install(task, cacheDir, extendedUrl);
         }
     }
 
-    private void install(InstallLibertyTask task, File cacheDir, String url, boolean useWlpCache) throws Exception {
+    private void install(InstallLibertyTask task, File cacheDir, String url) throws Exception {
         // download file
         URL downloadURL = new URL(url);
         File cachedFile = new File(cacheDir, InstallUtils.getFile(downloadURL));
@@ -90,7 +91,7 @@ public class ArchiveInstaller implements Installer {
             // install Liberty jar
             task.installLiberty(cachedFile);
         } else {
-            if (useWlpCache) {
+            if (task.getUseWlpChache()) {
                 // download zip file
                 task.downloadFile(downloadURL, cachedFile);
 
@@ -99,7 +100,7 @@ public class ArchiveInstaller implements Installer {
             } else {
                 // unzipping straight from runtimeUrl
                 // must have file on file system to skip caching
-                File runtimeFile = new File(task.getRuntimeUrl());
+                File runtimeFile = new File(new URI(task.getRuntimeUrl()));
 
                 if (runtimeFile.exists()) {
                     task.unzipLiberty(runtimeFile);

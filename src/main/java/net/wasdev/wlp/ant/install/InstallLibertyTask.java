@@ -164,7 +164,7 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     public String getCacheDir() {
-        if (useWlpCache) {
+        if (getUseWlpChache()) {
             return cacheDir;
         } else {
             return baseDir;
@@ -175,8 +175,12 @@ public class InstallLibertyTask extends AbstractTask {
         this.cacheDir = cacheDir;
     }
 
-    public boolean useCacheDir() {
+    public boolean getUseWlpChache() {
         return useWlpCache;
+    }
+
+    public void setUseWlpCache(boolean useWlpCache) {
+        this.useWlpCache = useWlpCache;
     }
 
     public String getLicenseCode() {
