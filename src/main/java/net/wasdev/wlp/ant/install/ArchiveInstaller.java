@@ -103,7 +103,11 @@ public class ArchiveInstaller implements Installer {
                 File runtimeFile = new File(new URI(task.getRuntimeUrl()));
 
                 if (runtimeFile.exists()) {
+
+                    long startTime = System.currentTimeMillis();
                     task.unzipLiberty(runtimeFile);
+                    long totalTime = System.currentTimeMillis() - startTime;
+                    System.out.println("Unzip took " + totalTime + " milliseconds." );
                 } else {
                     throw new BuildException("Liberty runtime zip not found at: " + task.getRuntimeUrl());
                 }
