@@ -21,14 +21,12 @@ import java.net.URL;
 
 import net.wasdev.wlp.ant.AbstractTask;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Get;
 import org.apache.tools.ant.taskdefs.Get.DownloadProgress;
 import org.apache.tools.ant.taskdefs.Java;
-
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.core.ZipFile;
 
 /*
  * Install Liberty profile server task.
@@ -140,7 +138,11 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     protected void unzipLiberty(File zipFile) throws Exception {
-        new ZipFile(zipFile).extractAll(baseDir);
+        Unzip.unzipToDirectory(zipFile, new File(baseDir));
+    }
+
+    protected void copyLiberty(File libertyFolder) throws Exception {
+        FileUtils.copyDirectory(libertyFolder, new File(baseDir));
     }
 
     protected void checkLicense(String actualLicenseCode) {
@@ -167,11 +169,7 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     public String getCacheDir() {
-        if (getUseWlpChache()) {
-            return cacheDir;
-        } else {
-            return baseDir;
-        }
+        return cacheDir;
     }
 
     public void setCacheDir(String cacheDir) {

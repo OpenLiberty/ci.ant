@@ -91,27 +91,21 @@ public class ArchiveInstaller implements Installer {
             // install Liberty jar
             task.installLiberty(cachedFile);
         } else {
-            if (task.getUseWlpChache()) {
-                // download zip file
+            // download zip file
+            if (!cachedFile.exists()) {
                 task.downloadFile(downloadURL, cachedFile);
-
-                // unzip
-                task.unzipLiberty(cachedFile);
-            } else {
-                // unzipping straight from runtimeUrl
-                // must have file on file system to skip caching
-                File runtimeFile = new File(new URI(task.getRuntimeUrl()));
-
-                if (runtimeFile.exists()) {
-
-                    long startTime = System.currentTimeMillis();
-                    task.unzipLiberty(runtimeFile);
-                    long totalTime = System.currentTimeMillis() - startTime;
-                    System.out.println("Unzip took " + totalTime + " milliseconds." );
-                } else {
-                    throw new BuildException("Liberty runtime zip not found at: " + task.getRuntimeUrl());
-                }
             }
+            long startTime = System.currentTimeMillis();
+
+            File unzippedCachedFile = new File (cacheDir, cachedFile.getName().substring(0, cachedFile.getName().length() - 4));
+            //Unzip file in cacheDir
+            if (!unzippedCachedFile.exists()) {
+                Unzip.unzipToDirectory(cachedFile, unzippedCachedFile);
+            }
+            
+            task.copyLiberty(unzippedCachedFile);
+            long totalTime = System.currentTimeMillis() - startTime;
+            System.out.println("Unzip and copy took " + totalTime + " milliseconds." );
         }
     }
 
