@@ -27,6 +27,9 @@ import org.apache.tools.ant.taskdefs.Get;
 import org.apache.tools.ant.taskdefs.Get.DownloadProgress;
 import org.apache.tools.ant.taskdefs.Java;
 
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.core.ZipFile;
+
 /*
  * Install Liberty profile server task.
  */
@@ -137,7 +140,7 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     protected void unzipLiberty(File zipFile) throws Exception {
-        Unzip.unzipToDirectory(zipFile, new File(baseDir));
+        new ZipFile(zipFile).extractAll(baseDir);
     }
 
     protected void checkLicense(String actualLicenseCode) {
