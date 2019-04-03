@@ -444,7 +444,7 @@ public class ServerTask extends AbstractTask {
             if (archive.isDirectory()) {
                 throw new BuildException("The archive attribute must specify a file");
             }
-            command.add("--archive=" + archive);
+            command.add("--archive=" + archive.toString().replaceAll(" ", "\\\\ "));
         }
     }
     
