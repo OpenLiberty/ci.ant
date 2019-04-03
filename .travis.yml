@@ -8,7 +8,7 @@ jdk:
     - oraclejdk11
 env:
     - WLP_VERSION=18.0.0_04 WLP_LICENSE=L-CTUR-B4WNHE
-    - WLP_VERSION=19.0.0_02 WLP_LICENSE=L-CTUR-B8GJRP
+    - WLP_VERSION=19.0.0_03 WLP_LICENSE=L-CTUR-B9JQES
 matrix:
     exclude:
     - jdk: oraclejdk11
