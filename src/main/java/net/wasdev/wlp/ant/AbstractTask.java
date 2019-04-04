@@ -34,6 +34,8 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
+import net.wasdev.wlp.common.plugins.util.OSUtil;
+
 public abstract class AbstractTask extends Task {
 
     protected File installDir;
@@ -45,7 +47,6 @@ public abstract class AbstractTask extends Task {
 
     protected String ref;
 
-    protected static String osName;
     protected static boolean isWindows;
 
     protected ProcessBuilder processBuilder;
@@ -127,8 +128,7 @@ public abstract class AbstractTask extends Task {
         }
 
         // Check for windows..
-        osName = System.getProperty("os.name", "unknown").toLowerCase();
-        isWindows = osName.indexOf("windows") >= 0;
+        isWindows = OSUtil.isWindows();
 
     }
 
