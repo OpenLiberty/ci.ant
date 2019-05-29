@@ -352,12 +352,13 @@ public abstract class AbstractTask extends Task {
      *            a regular expression (or just a text snippet) to search for
      * @param fileToSearch
      *            the file to search
+     * @param msgLevel the log level for the match number message
      * @return List of Strings which match the pattern. No match results in an
      *         empty list.
      * @throws Exception
      */
-    protected List<String> findStringsInFileCommon(String regexp,
-                                                   boolean stopOnFirst, int searchLimit, File fileToSearch)
+    private List<String> findStringsInFileCommon(String regexp,
+                                                   boolean stopOnFirst, int searchLimit, File fileToSearch, int msgLevel)
                     throws Exception {
         if (fileToSearch == null) {
             log(messages.getString("info.file.validated"));
@@ -398,7 +399,7 @@ public abstract class AbstractTask extends Task {
                 if (pattern.matcher(line).find()) {
                     foundString = line;
                     matches.add(line);
-                    log(MessageFormat.format(messages.getString("info.match.string"), matches.size(), line));
+                    log(MessageFormat.format(messages.getString("info.match.string"), matches.size(), line), msgLevel);
                 }
             }
         } catch (Exception e) {
@@ -425,6 +426,88 @@ public abstract class AbstractTask extends Task {
         }
 
         return matches;
+    }
+
+    /**
+     * Searches the given file for the given regular expression.
+     *
+     * @param regexp
+     *            a regular expression (or just a text snippet) to search for
+     * @param fileToSearch
+     *            the file to search
+     * @return List of Strings which match the pattern. No match results in an
+     *         empty list.
+     * @throws Exception
+     */
+    protected List<String> findStringsInFileCommon(String regexp,
+                                                   boolean stopOnFirst, int searchLimit, File fileToSearch)
+                    throws Exception {
+        return findStringsInFileCommon(regexp, stopOnFirst, searchLimit, fileToSearch, Project.MSG_INFO);
+    }
+
+    /**
+     * Searches the given file for the given regular expression, and returns the number of times it occurs.
+     * 
+     * @param regexp
+     *            a regular expression (or just a text snippet) to search for
+     * @param fileToSearch
+     *            the file to search
+     * @return the number of occurrences of the regular expression
+     * @throws Exception
+     */
+    public int countStringOccurrencesInFile(String regexp, File fileToSearch) throws Exception {
+        List<String> lines = findStringsInFileCommon(regexp, false, -1, fileToSearch, Project.MSG_VERBOSE);
+
+        if (lines == null) {
+            return 0;
+        }
+        return lines.size();
+    }
+
+    /**
+     * Wait until the number of occurrences of the regular expression in the file increases
+     * above the given number of previous occurrences.
+     *
+     * @param regexp
+     *            a regular expression to search for
+     * @param timeout
+     *            a timeout, in milliseconds
+     * @param outputFile
+     *            file to check
+     * @param the previous number of occurrences of the regular expression
+     * @return updated line that matched the regexp
+     */
+    public String waitForUpdatedStringInLog(String regexp, long timeout,
+                                     File outputFile, int previousOccurrences) {
+        int waited = 0;
+        final int waitIncrement = 500;
+
+        log(MessageFormat.format(messages.getString("info.search.string"), regexp, outputFile.getAbsolutePath(), timeout / 1000));
+
+        try {
+            while (waited <= timeout) {
+                List<String> matches = findStringsInFileCommon(regexp, false, -1, outputFile, Project.MSG_VERBOSE);
+                if (matches == null || matches.size() <= previousOccurrences) {
+                    try {
+                        Thread.sleep(waitIncrement);
+                    } catch (InterruptedException e) {
+                        // Ignore and carry on
+                    }
+                    waited += waitIncrement;
+                } else {
+                    String line = matches.get(matches.size() - 1);
+                    log(MessageFormat.format(messages.getString("info.match.string"), matches.size(), line), Project.MSG_INFO);
+                    return line;
+                }
+            }
+            log(MessageFormat.format(messages.getString("error.serch.string.timeout"), regexp, outputFile.getAbsolutePath()));
+        } catch (Exception e) {
+            // I think we can assume if we can't read the file it doesn't
+            // contain our string
+            throw new BuildException(e);
+        }
+        return null;
+
     }
 
     /*
