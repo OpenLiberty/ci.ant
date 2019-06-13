@@ -26,7 +26,7 @@ Parameters supported by this task in addition to the [common parameters](common-
 | archive | Location of the target archive file. Only used with the `package` or `dump` operations. | No |
 | template | Name of the template to use when creating a new server. Only used with the `create` operation. | No |
 | resultProperty | Name of a property in which the server status will be stored. By default the server status will be stored under `wlp.<serverName>.status` property. Only used with the `status` operation. | No |
-| noPassword | Disable generation of keystore password. The default value is `false`. Only used with the `create` operation. | No | 
+| noPassword | Disable generation of default keystore password. The default value is `false`. Only used with the `create` operation. | No | 
 
 
 #### Examples
