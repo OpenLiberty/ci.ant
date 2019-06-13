@@ -128,7 +128,7 @@ public abstract class AbstractTask extends Task {
 
         // Check for windows..
         osName = System.getProperty("os.name", "unknown").toLowerCase();
-        isWindows = osName.indexOf("windows") >= 0;
+        isWindows = osName.indexOf("windows") >= 0 && System.getenv("SHELL") == null;
 
     }
 
