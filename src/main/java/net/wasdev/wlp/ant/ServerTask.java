@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2015.
+ * (C) Copyright IBM Corporation 2014, 2019.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,8 @@ public class ServerTask extends AbstractTask {
     
     // used with 'create' operation
     private String template;
-    
+    private boolean noPassword = false;
+   
     // used with 'package' operation
     private String os;
     
@@ -416,6 +417,7 @@ public class ServerTask extends AbstractTask {
         if (template != null) {
             command.add("--template=" + template);
         }
+        addNoPasswordOption(command);
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
@@ -467,6 +469,12 @@ public class ServerTask extends AbstractTask {
     private void addCleanOption(List<String> command) {
         if (clean) {
             command.add("--clean");
+        }
+    }
+
+    private void addNoPasswordOption(List<String> command) {
+        if (noPassword) {
+            command.add("--no-password");
         }
     }
 
@@ -567,6 +575,21 @@ public class ServerTask extends AbstractTask {
         this.template = template;
     }
     
+    /**
+     * @return the noPassword setting
+     */
+    public boolean isNoPassword() {
+        return noPassword;
+    }
+
+    /**
+     * @param noPassword
+     *            the noPassword option value to set
+     */
+    public void setNoPassword(boolean noPassword) {
+        this.noPassword = noPassword;
+    }
+
     public void setUseEmbeddedServer(boolean useEmbeddedServer) {
         this.useEmbeddedServer = useEmbeddedServer;
     }
