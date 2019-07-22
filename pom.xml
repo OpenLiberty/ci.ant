@@ -12,7 +12,7 @@
 
     <groupId>net.wasdev.wlp.ant</groupId>
     <artifactId>wlp-anttasks</artifactId>
-    <version>1.8-SNAPSHOT</version>
+    <version>1.8</version>
     <name>WebSphere Liberty Ant Tasks</name>
     <description>Parent pom for Ant tasks supporting development with WebSphere Liberty.</description>
     <url>https://github.com/wasdev/ci.ant</url>
@@ -29,7 +29,7 @@
         <connection>scm:git:git@github.com:WASdev/ci.ant.git</connection>
         <developerConnection>scm:git:git@github.com:WASdev/ci.ant.git</developerConnection>
         <url>git@github.com:WASdev/ci.ant.git</url>
-        <tag>HEAD</tag>
+        <tag>wlp-anttasks-1.8</tag>
     </scm>
 
     <repositories>
