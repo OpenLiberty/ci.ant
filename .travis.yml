@@ -3,10 +3,9 @@ dist: trusty
 language: java
 jdk:
     - oraclejdk8
-    - oraclejdk9
     - oraclejdk11
 env:
-    - WLP_VERSION=19.0.0_03 WLP_LICENSE=L-CTUR-B9JQES
     - WLP_VERSION=19.0.0_06 WLP_LICENSE=L-CTUR-BCTPHF
+    - WLP_VERSION=19.0.0_03 WLP_LICENSE=L-CTUR-B9JQES
 script:
-- travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE -e
+    - travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE -e
