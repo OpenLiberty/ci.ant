@@ -299,7 +299,7 @@ public abstract class AbstractTask extends Task {
         log(MessageFormat.format(messages.getString("info.search.string"), regexp, outputFile.getAbsolutePath(), timeout / 1000));
 
         while (waited <= timeout) {
-            String string = findStringInFile(regexp, outputFile);
+            String string = findStringInFile(regexp, outputFile, Project.MSG_INFO);
             if (string == null) {
                 try {
                     Thread.sleep(waitIncrement);
@@ -327,16 +327,8 @@ public abstract class AbstractTask extends Task {
      * @return The first line which includes the pattern, or null if the pattern
      *         isn't found or if the file doesn't exist
      */
-    protected String findStringInFile(String regexp, File fileToSearch) {
-        String foundString = null;
-        List<String> matches = findStringsInFileCommon(regexp, true, -1, fileToSearch);
-
-        if (matches != null && !matches.isEmpty()) {
-            foundString = matches.get(0);
-        }
-
-        return foundString;
-
+    public String findStringInFile(String regexp, File fileToSearch) {
+        return findStringInFile(regexp, fileToSearch, Project.MSG_VERBOSE);
     }
 
     /**
@@ -346,7 +338,45 @@ public abstract class AbstractTask extends Task {
      *            a regular expression (or just a text snippet) to search for
      * @param fileToSearch
      *            the file to search
-     * @param msgLevel the log level for the match number message
+     * @return List of lines which includes the pattern, or null if the pattern
+     *         isn't found or if the file doesn't exist
+     */
+    public List<String> findStringsInFile(String regexp, File fileToSearch) {
+        return findStringsInFileCommon(regexp, false, -1, fileToSearch, Project.MSG_VERBOSE);
+    }
+
+    /**
+     * Searches the given file for the given regular expression.
+     *
+     * @param regexp
+     *            a regular expression (or just a text snippet) to search for
+     * @param fileToSearch
+     *            the file to search
+     * @param msgLevel
+     *            the log level for the match number message
+     * @return The first line which includes the pattern, or null if the pattern
+     *         isn't found or if the file doesn't exist
+     */
+    private String findStringInFile(String regexp, File fileToSearch, int msgLevel) {
+        String foundString = null;
+        List<String> matches = findStringsInFileCommon(regexp, true, -1, fileToSearch, msgLevel);
+
+        if (matches != null && !matches.isEmpty()) {
+            foundString = matches.get(0);
+        }
+
+        return foundString;
+    }
+
+    /**
+     * Searches the given file for the given regular expression.
+     *
+     * @param regexp
+     *            a regular expression (or just a text snippet) to search for
+     * @param fileToSearch
+     *            the file to search
+     * @param msgLevel
+     *            the log level for the match number message
      * @return List of Strings which match the pattern. No match results in an
      *         empty list.
      */
@@ -423,21 +453,6 @@ public abstract class AbstractTask extends Task {
         }
 
         return matches;
-    }
-
-    /**
-     * Searches the given file for the given regular expression.
-     *
-     * @param regexp
-     *            a regular expression (or just a text snippet) to search for
-     * @param fileToSearch
-     *            the file to search
-     * @return List of Strings which match the pattern. No match results in an
-     *         empty list.
-     */
-    protected List<String> findStringsInFileCommon(String regexp,
-                                                   boolean stopOnFirst, int searchLimit, File fileToSearch) {
-        return findStringsInFileCommon(regexp, stopOnFirst, searchLimit, fileToSearch, Project.MSG_INFO);
     }
 
     /**
