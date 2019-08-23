@@ -19,6 +19,9 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.List;
 
+import io.openliberty.tools.ant.install.LibertyInfo;
+import io.openliberty.tools.ant.install.LibertyYaml;
+import io.openliberty.tools.ant.install.Version;
 import junit.framework.TestCase;
 
 public class LibertyYamlTest extends TestCase {

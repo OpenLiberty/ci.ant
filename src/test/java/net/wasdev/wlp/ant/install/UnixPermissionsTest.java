@@ -15,6 +15,7 @@
  */
 package net.wasdev.wlp.ant.install;
 
+import io.openliberty.tools.ant.install.UnixPermissions;
 import junit.framework.TestCase;
 
 public class UnixPermissionsTest extends TestCase {
