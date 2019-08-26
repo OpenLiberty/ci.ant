@@ -10,25 +10,25 @@
         <relativePath />
     </parent>
 
-    <groupId>net.wasdev.wlp.ant</groupId>
-    <artifactId>wlp-anttasks</artifactId>
+    <groupId>io.openliberty.tools</groupId>
+    <artifactId>liberty-ant-tasks</artifactId>
     <version>1.9-SNAPSHOT</version>
-    <name>WebSphere Liberty Ant Tasks</name>
-    <description>Parent pom for Ant tasks supporting development with WebSphere Liberty.</description>
-    <url>https://github.com/wasdev/ci.ant</url>
+    <name>Open Liberty and WebSphere Liberty Ant Tasks</name>
+    <description>Parent pom for Ant tasks supporting development with Open Liberty and WebSphere Liberty.</description>
+    <url>https://github.com/openliberty/ci.ant</url>
 
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>https://raw.github.com/WASdev/ci.ant/master/LICENSE</url>
+            <url>https://raw.github.com/openliberty/ci.ant/master/LICENSE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com:WASdev/ci.ant.git</connection>
-        <developerConnection>scm:git:git@github.com:WASdev/ci.ant.git</developerConnection>
-        <url>git@github.com:WASdev/ci.ant.git</url>
+        <connection>scm:git:git@github.com:openliberty/ci.ant.git</connection>
+        <developerConnection>scm:git:git@github.com:openliberty/ci.ant.git</developerConnection>
+        <url>git@github.com:openliberty/ci.ant.git</url>
         <tag>HEAD</tag>
     </scm>
 

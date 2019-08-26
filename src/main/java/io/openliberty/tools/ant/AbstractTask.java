@@ -56,7 +56,7 @@ public abstract class AbstractTask extends Task {
     protected static final String WLP_USER_DIR_VAR = "WLP_USER_DIR";
     protected static final String WLP_OUTPUT_DIR_VAR = "WLP_OUTPUT_DIR";
 
-    protected static final ResourceBundle messages = ResourceBundle.getBundle("net.wasdev.wlp.ant.AntMessages");
+    protected static final ResourceBundle messages = ResourceBundle.getBundle("io.openliberty.tools.ant.AntMessages");
 
     protected void initTask() {
         if (ref != null) {
