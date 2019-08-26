@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<project xmlns:wlp="antlib:net.wasdev.wlp.ant" name="net.wasdev.wlp.ant.it">
+<project xmlns:wlp="antlib:io.openliberty.tools.ant" name="net.wasdev.wlp.ant.it">
 
-    <path id="wlp-ant-tasks.classpath">
+    <path id="liberty-ant-tasks.classpath">
         <fileset dir="${basedir}/../../../../target" includes="liberty-ant-tasks-*.jar" />
     </path>
-    <typedef resource="net/wasdev/wlp/ant/antlib.xml" uri="antlib:net.wasdev.wlp.ant" classpathref="wlp-ant-tasks.classpath" />
+    <typedef resource="io/openliberty/tools/ant/antlib.xml" uri="antlib:io.openliberty.tools.ant" classpathref="liberty-ant-tasks.classpath" />
 
     <property name="target.dir" value="${basedir}/../install-server-it/target" />
 
