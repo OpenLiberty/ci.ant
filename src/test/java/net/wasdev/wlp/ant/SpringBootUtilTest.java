@@ -30,7 +30,6 @@ import org.junit.rules.TemporaryFolder;
 
 import io.openliberty.tools.ant.SpringBootUtilTask;
 import io.openliberty.tools.ant.install.InstallLibertyTask;
-import net.wasdev.wlp.common.plugins.util.OSUtil;
 
 public class SpringBootUtilTest {
 
