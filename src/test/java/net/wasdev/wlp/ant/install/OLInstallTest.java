@@ -12,6 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import io.openliberty.tools.ant.install.InstallLibertyTask;
+
 public class OLInstallTest {
     
     private InstallLibertyTask install;

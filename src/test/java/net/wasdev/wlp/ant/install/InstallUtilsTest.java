@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.openliberty.tools.ant.install.InstallUtils;
+import io.openliberty.tools.ant.install.LibertyInfo;
+import io.openliberty.tools.ant.install.Version;
 import junit.framework.TestCase;
 
 public class InstallUtilsTest extends TestCase {

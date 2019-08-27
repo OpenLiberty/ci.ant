@@ -1,4 +1,4 @@
-# ci.ant [![Build Status](https://travis-ci.org/WASdev/ci.ant.svg?branch=master)](https://travis-ci.org/WASdev/ci.ant) [![Maven Central Latest](https://maven-badges.herokuapp.com/maven-central/net.wasdev.wlp.ant/wlp-anttasks/badge.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22net.wasdev.wlp.ant%22%20AND%20a%3A%22wlp-anttasks%22)
+# ci.ant [![Build Status](https://travis-ci.org/WASdev/ci.ant.svg?branch=master)](https://travis-ci.org/WASdev/ci.ant) [![Maven Central Latest](https://maven-badges.herokuapp.com/maven-central/io.openliberty.tools/liberty-ant-tasks/badge.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22io.openliberty.tools%22%20AND%20a%3A%22liberty-ant-tasks%22)
 
 Collection of Ant tasks for managing WebSphere Application Server Liberty servers and applications.
 
@@ -22,25 +22,25 @@ To use the Liberty Ant tasks in your build scripts you need to:
 1. Declare the `antlib` namespace in your `build.xml` file:
 
  ```ant
-<project xmlns:wlp="antlib:net.wasdev.wlp.ant">
+<project xmlns:wlp="antlib:io.openliberty.tools">
 </project>
  ```
 
 2. Make Liberty Ant tasks available in your build script by:
- * Copying `wlp-anttasks.jar` into `$ANT_HOME/lib` directory, or
+ * Copying `liberty-ant-tasks.jar` into `$ANT_HOME/lib` directory, or
  * Using the `typedef` task to load the Liberty tasks, for example:
 
    ```ant
-   <typedef resource="net/wasdev/wlp/ant/antlib.xml"
-         uri="antlib:net.wasdev.wlp.ant"
-         classpath="target/wlp-anttasks.jar"/>
+   <typedef resource="io/openliberty/tools/antlib.xml"
+         uri="antlib:io.openliberty.tools"
+         classpath="target/liberty-ant-tasks.jar"/>
    ```
 
-   The latest build of `wlp-anttasks.jar` can be obtained from the [Sonatype OSS Maven snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/net/wasdev/wlp/ant/wlp-anttasks/).
+   The latest build of `liberty-ant-tasks.jar` can be obtained from the [Sonatype OSS Maven snapshot repository](https://oss.sonatype.org/content/repositories/snapshots/io/openliberty/tools/liberty-ant-tasks/).
 
 ## Tasks
 
-The `wlp-anttasks.jar` provides the following tasks.
+The `liberty-ant-tasks.jar` provides the following tasks.
 
 | Task | Description |
 | --------- | ------------ |

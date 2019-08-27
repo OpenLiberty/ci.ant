@@ -14,7 +14,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import net.wasdev.wlp.ant.install.InstallLibertyTask;
+import io.openliberty.tools.ant.install.InstallLibertyTask;
+import io.openliberty.tools.ant.jsp.CompileJSPs;
 
 public class CompileJSPsTest {
 

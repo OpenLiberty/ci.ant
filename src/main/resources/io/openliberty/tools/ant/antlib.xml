@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<antlib>
+    <!-- Task -->
+    <taskdef classname="io.openliberty.tools.ant.ServerTask" name="server"/>
+    <taskdef classname="io.openliberty.tools.ant.DeployTask" name="deploy" />
+    <taskdef classname="io.openliberty.tools.ant.UndeployTask" name="undeploy"/>
+    <taskdef classname="io.openliberty.tools.ant.InstallFeatureTask" name="install-feature" />
+    <taskdef classname="io.openliberty.tools.ant.UninstallFeatureTask" name="uninstall-feature" />
+    <taskdef classname="io.openliberty.tools.ant.CleanTask" name="clean" />
+    <taskdef classname="io.openliberty.tools.ant.install.InstallLibertyTask" name="install-liberty" />
+    <taskdef classname="io.openliberty.tools.ant.jsp.CompileJSPs" name="compileJSPs"/>
+    <taskdef classname="io.openliberty.tools.ant.SpringBootUtilTask" name="springBootUtil"/>
+</antlib>
