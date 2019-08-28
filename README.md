@@ -1,6 +1,6 @@
-# ci.ant [![Build Status](https://travis-ci.org/WASdev/ci.ant.svg?branch=master)](https://travis-ci.org/WASdev/ci.ant) [![Maven Central Latest](https://maven-badges.herokuapp.com/maven-central/io.openliberty.tools/liberty-ant-tasks/badge.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22io.openliberty.tools%22%20AND%20a%3A%22liberty-ant-tasks%22)
+# ci.ant [![Build Status](https://travis-ci.com/OpenLiberty/ci.ant.svg?branch=master)](https://travis-ci.org/WASdev/ci.ant) [![Maven Central Latest](https://maven-badges.herokuapp.com/maven-central/io.openliberty.tools/liberty-ant-tasks/badge.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22io.openliberty.tools%22%20AND%20a%3A%22liberty-ant-tasks%22)
 
-Collection of Ant tasks for managing WebSphere Application Server Liberty servers and applications.
+Collection of Ant tasks for managing Open Liberty and WebSphere Liberty servers and applications.
 
 * [Build](#build)
 * [Configuration](#configuration)
@@ -22,7 +22,7 @@ To use the Liberty Ant tasks in your build scripts you need to:
 1. Declare the `antlib` namespace in your `build.xml` file:
 
  ```ant
-<project xmlns:wlp="antlib:io.openliberty.tools">
+<project xmlns:wlp="antlib:io.openliberty.tools.ant">
 </project>
  ```
 
@@ -31,8 +31,8 @@ To use the Liberty Ant tasks in your build scripts you need to:
  * Using the `typedef` task to load the Liberty tasks, for example:
 
    ```ant
-   <typedef resource="io/openliberty/tools/antlib.xml"
-         uri="antlib:io.openliberty.tools"
+   <typedef resource="io/openliberty/tools/ant/antlib.xml"
+         uri="antlib:io.openliberty.tools.ant"
          classpath="target/liberty-ant-tasks.jar"/>
    ```
 
