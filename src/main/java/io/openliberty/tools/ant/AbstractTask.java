@@ -518,6 +518,10 @@ public abstract class AbstractTask extends Task {
      * Returns file name without the extension.
      */
     protected String getFileName(String fileName) {
+        if (fileName.endsWith(".xml")) { //Handle loose app case for deploy
+            fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+        }
+
         int index = fileName.lastIndexOf('.');
         return (index == -1) ? fileName : fileName.substring(0, index);
     }
