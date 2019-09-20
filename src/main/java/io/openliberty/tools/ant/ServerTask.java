@@ -83,6 +83,7 @@ public class ServerTask extends AbstractTask {
    
     // used with 'package' operation
     private String os;
+    private String serverRoot;
     
     @Override
     protected void initTask() {
@@ -407,6 +408,7 @@ public class ServerTask extends AbstractTask {
         addArchiveOption(command);
         addIncludeOption(command);
         addOsOption(command);
+        addServerRootOption(command);
         processBuilder.command(command);
         Process p = processBuilder.start();
         checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
@@ -463,6 +465,12 @@ public class ServerTask extends AbstractTask {
     private void addOsOption(List<String> command) {
         if (os != null) {
             command.add("--os=" + os);
+        }
+    }
+    
+    private void addServerRootOption(List<String> command) {
+        if (serverRoot != null) {
+            command.add("--server-root=" + serverRoot);
         }
     }
     
@@ -549,6 +557,20 @@ public class ServerTask extends AbstractTask {
      */
     public void setOs(String os) {
         this.os = os;
+    }
+    
+     /**
+     * @return the serverRoot
+     */
+    public String getServerRoot() {
+        return serverRoot;
+    }
+
+    /**
+     * @param serverRoot the server root to set
+     */
+    public void setServerRoot(String serverRoot) {
+        this.serverRoot = serverRoot;
     }
     
     public String getResultProperty() {
