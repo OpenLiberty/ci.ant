@@ -105,7 +105,7 @@ public abstract class AbstractTask extends Task {
                 }
             }
 
-            log(MessageFormat.format(messages.getString("info.variable"), "server.config.dir", serverConfigDir.getCanonicalPath()));
+            log(MessageFormat.format(messages.getString("info.variable"), "server.config.dir", serverConfigDir.getCanonicalPath()), Project.MSG_VERBOSE);
 
             if (outputDir != null) {
                 log(MessageFormat.format(messages.getString("info.variable"), "outputDir", outputDir.getCanonicalPath()), Project.MSG_VERBOSE);
@@ -121,7 +121,7 @@ public abstract class AbstractTask extends Task {
                 }
             }
 
-            log(MessageFormat.format(messages.getString("info.variable"), "server.output.dir", serverOutputDir.getCanonicalPath()));
+            log(MessageFormat.format(messages.getString("info.variable"), "server.output.dir", serverOutputDir.getCanonicalPath()), Project.MSG_VERBOSE);
         } catch (IOException e) {
             throw new BuildException(e);
         }
