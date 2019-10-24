@@ -156,6 +156,10 @@ public abstract class AbstractTask extends Task {
         this.outputDir = outputDir;
     }
 
+    public File getServerOutputDir() {
+        return serverOutputDir;
+    }
+
     /**
      * @return the serverName
      */
