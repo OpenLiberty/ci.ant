@@ -459,13 +459,13 @@ public class ServerTask extends AbstractTask {
             }
             if (isWindows) {
                 String archivePath = archive.toString();
-                if (archivePath.contains(" ")) {
+                //if (archivePath.contains(" ")) {
                     // command arguments that contain spaces will get surrounded by quotes by ProcessBuilder on Windows, 
                     // so we need to escape the embedded quotes properly
-                    command.add("\"--archive=\\\"" + archivePath + "\\\"\"");
-                } else {
+                //    command.add("\"--archive=\\\"" + archivePath + "\\\"\"");
+                //} else {
                     command.add("--archive=" + "\"" + archivePath + "\"");
-                }
+                //}
             } else {
                 command.add("--archive=" + archive.toString().replaceAll(" ", "\\\\ "));
             }
