@@ -458,7 +458,14 @@ public class ServerTask extends AbstractTask {
                 throw new BuildException("The archive attribute must specify a file");
             }
             if (isWindows) {
-                command.add("--archive=" + "\"" + archive.toString() + "\"");
+                String archivePath = archive.toString();
+                if (archivePath.contains(" ")) {
+                    // command arguments that contain spaces will get surrounded by quotes by ProcessBuilder on Windows, 
+                    // so we need to escape the embedded quotes properly
+                    command.add("--archive=" + "\\\"" + archivePath + "\\\"");
+                } else {
+                    command.add("--archive=" + "\"" + archivePath + "\"");
+                }
             } else {
                 command.add("--archive=" + archive.toString().replaceAll(" ", "\\\\ "));
             }
