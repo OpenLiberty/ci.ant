@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2019.
+ * (C) Copyright IBM Corporation 2014, 2020.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
+import java.lang.StringBuilder;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -201,6 +202,7 @@ public abstract class AbstractTask extends Task {
 
         int exitVal = p.waitFor();
         copier.doJoin();
+
         return exitVal;
     }
 
@@ -216,10 +218,31 @@ public abstract class AbstractTask extends Task {
         throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, Arrays.toString(expectedExitCodes)));
     }
 
+    public void checkReturnCodeAndError(Process p, String commandLine, int expectedExitCode, int allowedExitCode, String allowedErrorMessage) throws InterruptedException {
+        log(MessageFormat.format(messages.getString("info.variable"), "Invoke command", commandLine, Project.MSG_VERBOSE));
+
+        StreamCopier copier = new StreamCopier(p.getInputStream());
+        copier.start();
+
+        int exitVal = p.waitFor();
+        copier.doJoin();
+        String stdOutAndError = copier.getOutput();
+
+        if (exitVal == expectedExitCode) {
+            return;
+        } else if ((exitVal == allowedExitCode) && stdOutAndError.startsWith(allowedErrorMessage)) {
+            log("The command "+commandLine+" failed with return code 21 with this error message: "+copier.getOutput(), Project.MSG_WARN);
+            return;
+        }
+
+        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, expectedExitCode));
+    }
+
     private class StreamCopier extends Thread {
         private final BufferedReader reader;
         private boolean joined;
         private boolean terminated;
+        private StringBuilder sb;
 
         StreamCopier(InputStream input) {
             this.reader = new BufferedReader(new InputStreamReader(input));
@@ -229,6 +252,7 @@ public abstract class AbstractTask extends Task {
         @Override
         public void run() {
             try {
+                sb = new StringBuilder();
                 for (String line; (line = reader.readLine()) != null;) {
                     synchronized (this) {
                         if (joined) {
@@ -237,6 +261,7 @@ public abstract class AbstractTask extends Task {
                             // output from the foreground process.
                             break;
                         }
+                        sb.append(line);
                         log(line);
                     }
                 }
@@ -250,6 +275,13 @@ public abstract class AbstractTask extends Task {
                     }
                 }
             }
+        }
+  
+        public String getOutput() {
+            if (sb != null) {
+                return sb.toString();
+            }
+            return "";
         }
 
         public void doJoin() throws InterruptedException {

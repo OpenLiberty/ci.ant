@@ -1,11 +1,11 @@
 environment:
     matrix:
         - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
-          WLP_VERSION: 19.0.0_09
-          WLP_LICENSE: L-CTUR-BEN4AJ
+          WLP_VERSION: 20.0.0_03
+          WLP_LICENSE: L-CTUR-BLWMST
         - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
-          WLP_VERSION: 19.0.0_06
-          WLP_LICENSE: L-CTUR-BCTPHF
+          WLP_VERSION: 19.0.0_12
+          WLP_LICENSE: L-CTUR-BHRRPY
 
 install:
     - cmd: |

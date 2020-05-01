@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2015, 2017.
+ * (C) Copyright IBM Corporation 2015, 2020.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,10 @@ public class UninstallFeatureTask extends FeatureManagerTask {
         }
         
         processBuilder.command(command);
+        processBuilder.redirectErrorStream(true);
         Process p = processBuilder.start();
-        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue());
+
+        checkReturnCodeAndError(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode. RUNTIME_EXCEPTION.getValue(), "CWWKF1207E");
     }
 
 }
