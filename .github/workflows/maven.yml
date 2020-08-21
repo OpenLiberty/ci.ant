@@ -20,7 +20,11 @@ jobs:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         os: [ubuntu-16.04, windows-latest]
         java: [ 8, 11 ]
-        WLP_VERSION: [ 20.0.0.3, 20.0.0.6 ]
+        include:
+          - WLP_VERSION: 20.0.0_03
+            WLP_LICENSE: L-CTUR-BLWMST
+          - WLP_VERSION: 20.0.0_06
+            WLP_LICENSE: L-CTUR-BPKJTD
 
     steps:
     - name: Setup Java ${{ matrix.java }}
@@ -30,4 +34,4 @@ jobs:
     - name: Checkout ci.ant
       uses: actions/checkout@v2
     - name: Run tests with maven
-      run: mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE -e
+      run: mvn verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
