@@ -5,7 +5,7 @@ jdk:
     - oraclejdk8
     - oraclejdk11
 env:
-    - WLP_VERSION=19.0.0_12 WLP_LICENSE=L-CTUR-BHRRPY
-    - WLP_VERSION=20.0.0_03 WLP_LICENSE=L-CTUR-BLWMST
+    - WLP_VERSION=20.0.0_03 WLP_LICENSE=L-CTUR-BHRRPY
+    - WLP_VERSION=20.0.0_06 WLP_LICENSE=L-CTUR-BLWMST
 script:
     - travis_wait mvn verify -Ponline-its -Dinvoker.streamLogs=true -DwlpVersion=$WLP_VERSION -DwlpLicense=$WLP_LICENSE -e
