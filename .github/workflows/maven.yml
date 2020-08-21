@@ -1,0 +1,39 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: CI with Maven
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    strategy:
+      fail-fast: false
+      matrix:
+        # test against latest update of each major Java version, as well as specific updates of LTS versions:
+        os: [ubuntu-16.04, windows-latest]
+        java: [ 8, 11 ]
+        WLP_VERSION: [ 20.0.0_03, 20.0.0_06 ]
+        include:
+          # match up licenses to WLP versions
+          - WLP_VERSION: 20.0.0_03
+            WLP_LICENSE: L-CTUR-BLWMST
+          - WLP_VERSION: 20.0.0_06
+            WLP_LICENSE: L-CTUR-BPKJTD
+
+    steps:
+    - name: Setup Java ${{ matrix.java }}
+      uses: joschi/setup-jdk@v2
+      with:
+        java-version: ${{ matrix.java }}
+    - name: Checkout ci.ant
+      uses: actions/checkout@v2
+    - name: Run tests with maven
+      run: mvn verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
