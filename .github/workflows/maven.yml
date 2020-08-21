@@ -20,8 +20,7 @@ jobs:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         os: [ubuntu-16.04, windows-latest]
         java: [ 8, 11 ]
-        RUNTIME: wlp
-        RUNTIME_VERSION: [ 20.0.0.3, 20.0.0.6 ]
+        WLP_VERSION: [ 20.0.0.3, 20.0.0.6 ]
 
     steps:
     - name: Setup Java ${{ matrix.java }}
