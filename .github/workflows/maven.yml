@@ -5,7 +5,7 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: '**'
   pull_request:
     branches: [ master ]
 
@@ -35,5 +35,11 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Checkout ci.ant
       uses: actions/checkout@v2
+    - name: Cache maven packages
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
     - name: Run tests with maven
       run: mvn verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
