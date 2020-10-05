@@ -1,8 +1,8 @@
 environment:
     matrix:
         - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
-          WLP_VERSION: 20.0.0_03
-          WLP_LICENSE: L-CTUR-BLWMST
+          WLP_VERSION: 20.0.0_09
+          WLP_LICENSE: L-CTUR-BS3K2V
         - jdk: "C:\\Program Files\\Java\\jdk1.8.0\\bin:"
           WLP_VERSION: 20.0.0_06
           WLP_LICENSE: L-CTUR-BPKJTD
