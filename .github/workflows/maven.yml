@@ -20,7 +20,7 @@ jobs:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         os: [ubuntu-16.04, windows-latest]
         java: [ 8, 11 ]
-        WLP_VERSION: [ 20.0.0_03, 20.0.0_06 ]
+        WLP_VERSION: [ 20.0.0_09, 20.0.0_06 ]
         include:
           # match up licenses to WLP versions
           - WLP_VERSION: 20.0.0_09
