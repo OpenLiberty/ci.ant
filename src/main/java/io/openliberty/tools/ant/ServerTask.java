@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2019.
+ * (C) Copyright IBM Corporation 2014, 2020.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -381,18 +381,41 @@ public class ServerTask extends AbstractTask {
         List<String> command = getInitialCommand(operation);
         processBuilder.command(command);
         Process p = processBuilder.start();
-        checkReturnCode(p, processBuilder.command().toString(), ReturnCode.OK.getValue(), ReturnCode.REDUNDANT_ACTION_STATUS.getValue());
+
+        String cmdLine = processBuilder.command().toString();
+        int returnCode = getReturnCode(p, cmdLine);
+        boolean serverStopped = false;
+
+        if (returnCode >= 20) {
+            // May have gotten an error on the stop command because it took too long to stop.
+            // Use the status command to see if the server actually stopped before returning an error.
+            int exitCode = doStatusCmd("status");
+            if (exitCode == ReturnCode.REDUNDANT_ACTION_STATUS.getValue()) {
+                serverStopped = true;
+            }
+        } else if ((returnCode == ReturnCode.OK.getValue()) ||
+                   (returnCode == ReturnCode.REDUNDANT_ACTION_STATUS.getValue())) {
+            serverStopped = true;
+        }
+
+        if (!serverStopped) {
+            sendErrorInvokeCommand(cmdLine, returnCode, ReturnCode.OK.getValue(), ReturnCode.REDUNDANT_ACTION_STATUS.getValue());
+        }
     }
     
     private void doStatus() throws Exception {
-        List<String> command = getInitialCommand(operation);
-        processBuilder.command(command);
-        Process p = processBuilder.start();
-        int exitCode = getReturnCode(p, processBuilder.command().toString());
+        int exitCode = doStatusCmd(operation);
         if (resultProperty == null) {
             resultProperty = "wlp." + serverName + ".status";                                       
         }
         getProject().setUserProperty(resultProperty, String.valueOf(exitCode));
+    }
+    
+    private int doStatusCmd(String cmd) throws Exception {
+        List<String> command = getInitialCommand(cmd);
+        processBuilder.command(command);
+        Process p = processBuilder.start();
+        return getReturnCode(p, processBuilder.command().toString());
     }
     
     private void doDump() throws Exception {
