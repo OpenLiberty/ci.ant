@@ -215,7 +215,7 @@ public abstract class AbstractTask extends Task {
             }
         }
 
-        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, Arrays.toString(expectedExitCodes)));
+        sendErrorInvokeCommand(commandLine, exitVal, expectedExitCodes);
     }
 
     public void checkReturnCodeAndError(Process p, String commandLine, int expectedExitCode, int allowedExitCode, String allowedErrorMessage) throws InterruptedException {
@@ -235,7 +235,11 @@ public abstract class AbstractTask extends Task {
             return;
         }
 
-        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, exitVal, expectedExitCode));
+        sendErrorInvokeCommand(commandLine, exitVal, expectedExitCode);
+    }
+
+    public void sendErrorInvokeCommand(String commandLine, int returnCode, int... expectedExitCodes) {
+        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, returnCode, Arrays.toString(expectedExitCodes)));
     }
 
     private class StreamCopier extends Thread {
