@@ -31,7 +31,7 @@
 
         <wlp:server ref="testServer" operation="stop" useEmbeddedServer="true" />
 
-        <wlp:clean ref="testServer" apps="true" dropins="true" />
+        <wlp:clean ref="testServer" workarea="false" apps="true" dropins="true" />
     </target>
 
 </project>
