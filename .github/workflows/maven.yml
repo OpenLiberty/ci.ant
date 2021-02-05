@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
-        os: [ubuntu-18.04, windows-latest]
+        os: [ubuntu-20.04, windows-latest]
         WLP_VERSION: [20.0.0_12, 20.0.0_09]
         java: [11, 8]
         include:
