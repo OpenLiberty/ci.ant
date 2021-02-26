@@ -61,12 +61,6 @@ public class InstallLibertyTask extends AbstractTask {
             baseDir = ".";
         }
 
-        // File wlpDir = new File(baseDir, "wlp");
-        // // if (wlpDir.exists()) {
-        // //     log("Liberty profile is already installed.");
-        // //     return;
-        // // }
-
         if (cacheDir == null) {
             File dir = new File(System.getProperty("java.io.tmpdir"), "wlp-cache");
             cacheDir = dir.getAbsolutePath();
