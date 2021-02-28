@@ -46,6 +46,7 @@ public class InstallLibertyTask extends AbstractTask {
     private boolean offline;
     private boolean useOpenLiberty;
     
+    private boolean skipAlreadyInstalledCheck = false;
 
     @Override
     public void execute() throws BuildException {
@@ -61,10 +62,12 @@ public class InstallLibertyTask extends AbstractTask {
             baseDir = ".";
         }
 
-        File wlpDir = new File(baseDir, "wlp");
-        if (wlpDir.exists()) {
-            log("Liberty profile is already installed.");
-            return;
+        if(!skipAlreadyInstalledCheck) {
+            File wlpDir = new File(baseDir, "wlp");
+            if (wlpDir.exists()) {
+                log("Liberty profile is already installed.");
+                return;
+            }
         }
 
         if (cacheDir == null) {
@@ -249,5 +252,13 @@ public class InstallLibertyTask extends AbstractTask {
     
     public boolean getUseOpenLiberty() {
         return useOpenLiberty;
+    }
+
+    public void setSkipAlreadyInstalledCheck(boolean skipAlreadyInstalledCheck) {
+        this.skipAlreadyInstalledCheck = skipAlreadyInstalledCheck;
+    }
+
+    public boolean getSkipAlreadyInstalledCheck() {
+        return skipAlreadyInstalledCheck;
     }
 }
