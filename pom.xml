@@ -20,7 +20,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>https://raw.github.com/openliberty/ci.ant/master/LICENSE</url>
+            <url>https://raw.github.com/openliberty/ci.ant/release/LICENSE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
