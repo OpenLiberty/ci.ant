@@ -4,4 +4,4 @@ We welcome contributions but request that you follow [these guidelines](https://
 
 [Issue tracker][].
 
-[issue tracker]: https://github.com/WASdev/ci.ant/issues
+[issue tracker]: https://github.com/OpenLiberty/ci.ant/issues
