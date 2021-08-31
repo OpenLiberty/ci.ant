@@ -17,17 +17,17 @@
     <target name="installFeatures">
         <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="create" />
 
-    	<wlp:install-feature ref="testServer" acceptLicense="true" name="jsonp-1.0" />
+    	<wlp:install-feature ref="testServer" acceptLicense="true" name="oauth-2.0" />
     	
-        <wlp:install-feature ref="testServer" acceptLicense="true" name="jacc-1.5,jaspic-1.1" />
+        <wlp:install-feature ref="testServer" acceptLicense="true" name="wab-1.0,openid-2.0" />
 
     	<wlp:install-feature ref="testServer" acceptLicense="true">
-            <feature>jdbc-4.1</feature>
+            <feature>mongodb-2.0</feature>
         </wlp:install-feature>
     	
-    	<wlp:uninstall-feature ref="testServer" name=" jacc-1.5 , jaspic-1.1 " >
-    	    <feature>jsonp-1.0</feature>
-    	    <feature>jdbc-4.1</feature>
+    	<wlp:uninstall-feature ref="testServer" name=" mongodb-2.0 , wab-1.0 " >
+    	    <feature>openid-2.0</feature>
+    	    <feature>oauth-2.0</feature>
     	</wlp:uninstall-feature>
 
     </target>
