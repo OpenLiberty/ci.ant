@@ -78,8 +78,7 @@ public class SpringBootUtilTask extends AbstractTask {
                 throw new BuildException(e);
             }
         } else {
-            throw new BuildException("An invocation of the " + command_name
-                    + " command failed because it requires a Spring Boot feature to be configured in the server.xml file");
+            throw new BuildException("The " + command_name + " command could not be invoked because it does not exist. Add the Spring Boot feature to the Liberty server configuration and try again.");
         }
 
     }
