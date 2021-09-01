@@ -78,8 +78,7 @@ public class SpringBootUtilTask extends AbstractTask {
                 throw new BuildException(e);
             }
         } else {
-            throw new BuildException("An invocation of the " + command_name
-                    + " command failed. The command is not available on the targeted Liberty runtime.");
+            throw new BuildException("The " + command_name + " command could not be invoked because it does not exist. Add the Spring Boot feature to the Liberty server configuration and try again.");
         }
 
     }
