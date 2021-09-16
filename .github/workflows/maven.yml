@@ -33,17 +33,17 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: WL ${{ matrix.WLP_VERSION }}, Java ${{ matrix.java }}, ${{ matrix.os }}
     steps:
-    - name: Setup Java ${{ matrix.java }}
-      uses: joschi/setup-jdk@v2
-      with:
-        java-version: ${{ matrix.java }}
     - name: Checkout ci.ant
       uses: actions/checkout@v2
-    - name: Cache maven packages
-      uses: actions/cache@v2
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v4.2
       with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
+        maven-version: 3.8.1
+    - name: Setup Java ${{ matrix.java }}
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.java }}
+        cache: 'maven'
     - name: Run tests with maven
       run: mvn verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
