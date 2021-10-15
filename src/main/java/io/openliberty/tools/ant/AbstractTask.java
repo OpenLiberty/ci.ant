@@ -75,7 +75,7 @@ public abstract class AbstractTask extends Task {
             if (installDir != null) {
                 installDir = installDir.getCanonicalFile();
 
-                // Quick sanity check
+                // Quick check to ensure a Liberty installation exists at installDir
                 File file = new File(installDir, "lib/ws-launch.jar");
                 if (!file.exists()) {
                     throw new BuildException(messages.getString("error.installDir.set"));
