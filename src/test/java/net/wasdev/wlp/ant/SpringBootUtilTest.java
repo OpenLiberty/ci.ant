@@ -87,25 +87,30 @@ public class SpringBootUtilTest {
 
     @Test
     public void testOnSpringBootSampleApp() throws Exception {
-        File app = new File(this.getClass().getResource("/testApp/wasdev.springBoot-1.0-SNAPSHOT.jar").toURI());
+        File app = new File(this.getClass().getResource("/testApp/testapp-0.0.1-SNAPSHOT.jar").toURI());
         File libCache = new File(wlpDir, "usr/shared/resources/libIndexCache");
         antTask.setTargetLibCachePath(libCache.getAbsolutePath());
         antTask.setSourceAppPath(app.getAbsolutePath());
-        antTask.setTargetThinAppPath(wlpDir.getAbsolutePath() + "/wasdev.springBoot-1.0-SNAPSHOT.spring");
+        antTask.setTargetThinAppPath(wlpDir.getAbsolutePath() + "/testapp-0.0.1-SNAPSHOT.spring");
         antTask.execute();
         // Check SpringBootUtil outputs. Just verify that the tool has created _some_
-        // outputs in the expected locations.
-        // using a stripped down, small jar which will not start but is sufficient to
-        // test the repackaging utility
-        File thin = new File(wlpDir, "wasdev.springBoot-1.0-SNAPSHOT.spring");
+        // outputs in the expected locations. Use a test app created with spring initializr and then 
+        // stripped down in size by removing content. The resulting test app will not start but is sufficient 
+        // to test the repackaging utility. 
+        File thin = new File(wlpDir, "testapp-0.0.1-SNAPSHOT.spring");
         assertTrue("Thin spring boot jar not found", thin.exists());
 
+        //check generated libIndexCache. Expected results were determined by executing the open liberty utility
+        //    bin/springBootUtility thin --sourceAppPath=testapp-0.0.1-SNAPSHOT.jar
+        // and examining the files output.
         String libCacheFilesToVerify[] = {
-                "09/f2ee1404726a06ddd7beeb061a58c0dfe15d6b7c516542d28b6e3521f5589e/spring-boot-starter-web-1.5.15.RELEASE.jar",
-                "18/c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79/slf4j-api-1.7.25.jar",
-                "2c/5d9ed201011c4a1bbe1c4d983645f3c68e6db9ed6267066d204cc1d12e4758/spring-boot-starter-1.5.15.RELEASE.jar",
-                "41/6c5a0c145ad19526e108d44b6bf77b75412d47982cce6ce8d43abdbdbb0fac/jul-to-slf4j-1.7.25.jar",
-                "f3/9d7ba7253e35f5ac48081ec1bc28c5df9b32ac4b7db20853e5a8e76bf7b0ed/validation-api-1.1.0.Final.jar" };
+                "00/26cff293bdba389fbbbc67a20fdd5f73e091554ab46671efa654c25c807ee6/jackson-core-2.12.6.jar",
+                "35/446a1421435d45e4c6ac0de3b5378527d5cc2446c07183e24447730ce1fffa/snakeyaml-1.28.jar",
+                "36/02428cafcef7819ac1fc718fe5b2ab933944f9f781874cbd44a50273bbcee2/jackson-datatype-jdk8-2.12.6.jar",
+                "85/fb03fc054cdf4efca8efd9b6712bbb418e1ab98241c4539c8585bbc23e1b8a/jakarta.annotation-api-1.3.5.jar",
+                "b4/539d431f019239699691820dfea70a65cf8e882120a72b3a7713ed1dc66fcb/jackson-datatype-jsr310-2.12.6.jar", 
+                "bc/d0e6411465100f2b90c9d7c940d191ef037079662fe82d8aba995511206d42/jackson-module-parameter-names-2.12.6.jar",
+                "dd/f46e401a7d9ea3b481c263fa192285d13c50982a5882b22f806639b9645ee4/jackson-annotations-2.12.6.jar" };
 
         for (String p : libCacheFilesToVerify) {
             if (!new File(libCache, p).exists()) {
