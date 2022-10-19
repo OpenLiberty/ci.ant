@@ -121,6 +121,33 @@
                             </properties>
                             <profiles>
                                 <profile>online-test</profile>
+                                <profile>online-test-unix</profile>
+                            </profiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>windows-online-its</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-invoker-plugin</artifactId>
+                        <configuration>
+                            <properties>
+                                <wlpVersion>${wlpVersion}</wlpVersion>
+                                <wlpLicense>${wlpLicense}</wlpLicense>
+                            </properties>
+                            <profiles>
+                                <profile>online-test</profile>
+                                <profile>online-test-windows</profile>
                             </profiles>
                         </configuration>
                     </plugin>

@@ -53,6 +53,43 @@
             </build>
         </profile>
         <profile>
+            <id>online-test-windows</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <ant dir="${basedir}" antfile="${basedir}\windows\build.xml" target="deploy" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>undeploy</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <ant dir="${basedir}" antfile="${basedir}\windows\build.xml" target="undeploy" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>offline-test</id>
             <build>
                 <plugins>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project xmlns:wlp="antlib:io.openliberty.tools.ant" name="net.wasdev.wlp.ant.it">
+
+    <path id="liberty-ant-tasks.classpath">
+        <fileset dir="${basedir}/../../../../target" includes="liberty-ant-tasks-*.jar" />
+    </path>
+    <typedef resource="io/openliberty/tools/ant/antlib.xml" uri="antlib:io.openliberty.tools.ant" classpathref="liberty-ant-tasks.classpath" />
+
+    <property name="target.dir" value="${basedir}/../install-server-it/target" />
+
+    <!-- Defining server configuration -->
+    <property name="wlp.install.dir" value="${target.dir}/wlp" />
+    <property name="wlp.usr.dir" value="${target.dir}/wlp_usr" />
+    <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
+    <property name="servername" value="install.features" />
+
+    <target name="installFeatures">
+        <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="create" />
+
+    	<wlp:install-feature ref="testServer" acceptLicense="true" name="oauth-2.0" />
+    	
+        <wlp:install-feature ref="testServer" acceptLicense="true" name="wab-1.0,openid-2.0" />
+
+    	<wlp:install-feature ref="testServer" acceptLicense="true">
+            <feature>mongodb-2.0</feature>
+        </wlp:install-feature>
+    	
+    </target>
+
+</project>

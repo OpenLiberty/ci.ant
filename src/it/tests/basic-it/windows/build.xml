@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<project xmlns:wlp="antlib:io.openliberty.tools.ant" name="net.wasdev.wlp.ant.it">
+
+    <path id="liberty-ant-tasks.classpath">
+        <fileset dir="${basedir}/../../../../target" includes="liberty-ant-tasks-*.jar" />
+    </path>
+    <typedef resource="io/openliberty/tools/ant/antlib.xml" uri="antlib:io.openliberty.tools.ant" classpathref="liberty-ant-tasks.classpath" />
+
+    <property name="target.dir" value="${basedir}/target" />
+
+    <!-- Defining server configuration -->
+    <property name="wlp.install.dir" value="${target.dir}/wlp" />
+    <property name="wlp.usr.dir" value="${target.dir}/wlp_usr" />
+    <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
+    <property name="servername" value="basic" />
+
+    <property name="serverConfig" value="${basedir}/src/test/resources/server.xml" />
+    <property name="bootProp" value="${basedir}/src/test/resources/bootstrap.properties" />
+
+    <target name="installServer">
+        <wlp:install-liberty licenseCode="${wlp.license}" version="${wlp.version}" basedir="${target.dir}" />
+    </target>
+
+    <target name="createServer">
+        <delete dir="${wlp.usr.dir}" />
+        <delete dir="${wlp.output.dir}" />
+        <mkdir dir="${wlp.usr.dir}" />
+        <mkdir dir="${wlp.output.dir}" />
+
+        <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
+
+        <wlp:server operation="create" ref="testServer" />
+
+        <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
+        <!-- install the same feature twice - should not cause an error -->
+        <wlp:install-feature ref="testServer" name="mongodb-2.0" whenFileExists="ignore" acceptLicense="true" />
+        
+        <!-- install features in nested elements -->
+        <wlp:install-feature ref="testServer" acceptLicense="true">
+            <!-- install the same feature again - should not cause an error -->
+            <feature>mongodb-2.0</feature>
+            <feature>oauth-2.0</feature>
+        </wlp:install-feature>
+
+        <copy overwrite="true" file="${serverConfig}" toFile="${wlp.usr.dir}/servers/${servername}/server.xml" />
+        <copy file="${bootProp}" toFile="${wlp.usr.dir}/servers/${servername}/bootstrap.properties" />
+        
+        <!-- install the features from the server.xml file that are not installed (openid-2-0) -->
+        <wlp:install-feature ref="testServer" acceptLicense="true" />
+    </target>
+
+    <target name="deploy" depends="createServer">
+
+        <wlp:server ref="testServer" operation="start" />
+
+        <wlp:deploy ref="testServer">
+            <fileset dir="${basedir}/../../setup/test-war/target">
+                <include name="*.war" />
+            </fileset>
+        </wlp:deploy>
+        <wlp:deploy ref="testServer" file="${basedir}/../../setup/test-eba/target/test-eba.eba" timeout="40000" deployName="my-test-eba.eba"/>
+    </target>
+
+    <target name="undeploy">
+
+        <wlp:server id="testServer" installDir="${wlp.install.dir}" serverName="${servername}" userDir="${wlp.usr.dir}" outputDir="${wlp.output.dir}" operation="status" />
+
+        <wlp:undeploy ref="testServer" file="test-war.war" timeout="50000" />
+        <wlp:undeploy ref="testServer" file="my-test-eba.eba" timeout="60000" />
+
+        <wlp:server ref="testServer" operation="stop" />
+        
+        <wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.zip" />
+    	<wlp:server ref="testServer" operation="package" archive="${target.dir}/wlp.ant.test.os.zip" include="minify" os="OS/400,-z/OS"/>
+        <wlp:clean ref="testServer" apps="true" dropins="true" />
+    </target>
+
+</project>
