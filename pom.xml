@@ -130,11 +130,6 @@
         </profile>
         <profile>
             <id>windows-online-its</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
             <build>
                 <plugins>
                     <plugin>
