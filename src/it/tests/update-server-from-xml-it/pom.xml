@@ -16,7 +16,7 @@
 
     <profiles>
         <profile>
-            <id>online-test</id>
+            <id>online-test-unix</id>
             <build>
                 <plugins>
                     <plugin>
@@ -32,6 +32,31 @@
                                 <configuration>
                                     <target>
                                         <ant dir="${basedir}" antfile="${basedir}\build.xml" target="updateServer" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>online-test-windows</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>installFeatures</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <ant dir="${basedir}" antfile="${basedir}\windows\build.xml" target="updateServer" />
                                     </target>
                                 </configuration>
                             </execution>
