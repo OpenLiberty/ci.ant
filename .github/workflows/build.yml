@@ -31,20 +31,16 @@ jobs:
     name: WL ${{ matrix.WLP_VERSION }}, Java ${{ matrix.java }}, ${{ matrix.os }}
     steps:
     - name: Checkout ci.ant
-      uses: actions/checkout@v2
-    - name: Set up Maven
-      uses: stCarolas/setup-maven@v4.2
-      with:
-        maven-version: 3.8.5
+      uses: actions/checkout@v3
     - name: Setup Java ${{ matrix.java }}
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
         cache: 'maven'
     - name: Run tests with maven for ubuntu
       if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: mvn verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
+      run: ./mvnw verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
     - name: Run tests with maven for windows
       if: ${{ matrix.os == 'windows-latest' }}
-      run: mvn verify -Pwindows-online-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
+      run: ./mvnw verify -Pwindows-online-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
