@@ -202,6 +202,7 @@ public abstract class AbstractTask extends Task {
 
         int exitVal = p.waitFor();
         copier.doJoin();
+        copier.cleanup();
 
         return exitVal;
     }
@@ -227,11 +228,12 @@ public abstract class AbstractTask extends Task {
         int exitVal = p.waitFor();
         copier.doJoin();
         String stdOutAndError = copier.getOutput();
+        copier.cleanup();
 
         if (exitVal == expectedExitCode) {
             return;
         } else if ((exitVal == allowedExitCode) && stdOutAndError.startsWith(allowedErrorMessage)) {
-            log("The command "+commandLine+" failed with return code 21 with this error message: "+copier.getOutput(), Project.MSG_WARN);
+            log("The command "+commandLine+" failed with return code 21 with this error message: "+stdOutAndError, Project.MSG_WARN);
             return;
         }
 
@@ -270,6 +272,7 @@ public abstract class AbstractTask extends Task {
                     }
                 }
             } catch (IOException ex) {
+                sb.setLength(0);
                 throw new BuildException(ex);
             } finally {
                 if (isWindows) {
@@ -277,6 +280,10 @@ public abstract class AbstractTask extends Task {
                         terminated = true;
                         notifyAll();
                     }
+                }
+                try {
+                    this.reader.close();
+                } catch (IOException e) {
                 }
             }
         }
@@ -286,6 +293,12 @@ public abstract class AbstractTask extends Task {
                 return sb.toString();
             }
             return "";
+        }
+
+        public void cleanup() {
+            if (sb != null) {
+                sb.setLength(0);
+            }
         }
 
         public void doJoin() throws InterruptedException {
