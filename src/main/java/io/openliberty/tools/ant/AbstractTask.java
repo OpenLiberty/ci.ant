@@ -536,7 +536,8 @@ public abstract class AbstractTask extends Task {
      *            a timeout, in milliseconds
      * @param outputFile
      *            file to check
-     * @param the previous number of occurrences of the regular expression
+     * @param previousOccurrences 
+     *.           the previous number of occurrences of the regular expression
      * @return updated line that matched the regexp
      */
     public String waitForUpdatedStringInLog(String regexp, long timeout,

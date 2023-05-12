@@ -142,6 +142,7 @@ public class InstallFeatureTask extends FeatureManagerTask {
     
     /**
      * @deprecated installUtility does not have a whenFileExist parameter.
+     * @return the whenFileExists boolean
      */
     @Deprecated
     public String getWhenFileExists() {
@@ -150,6 +151,7 @@ public class InstallFeatureTask extends FeatureManagerTask {
 
     /**
      * @deprecated installUtility does not have a whenFileExist parameter.
+     * @param whenFileExists A boolean for whenFileExists
      */
     @Deprecated
     public void setWhenFileExists(String whenFileExists) {
