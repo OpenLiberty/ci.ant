@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2020.
+ * (C) Copyright IBM Corporation 2014, 2023.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,11 @@ public abstract class AbstractTask extends Task {
     protected static boolean isWindows;
 
     protected ProcessBuilder processBuilder;
+
+    private static final String errorRegex = ".*\\[ERROR.*\\].*";
+    private static final Pattern errorPattern = Pattern.compile(errorRegex);
+    private static final String warnRegex = ".*\\[WARN.*\\].*";
+    private static final Pattern warnPattern = Pattern.compile(warnRegex);
 
     protected static final String DEFAULT_SERVER = "defaultServer";
     protected static final String DEFAULT_LOG_FILE = "logs/messages.log";
@@ -268,7 +273,14 @@ public abstract class AbstractTask extends Task {
                             break;
                         }
                         sb.append(line);
-                        log(line);
+                        // Check if the log message should be warning or error instead of info.
+                        if (errorPattern.matcher(line).find()) {
+                            log(line, Project.MSG_ERR);
+                        } else if (warnPattern.matcher(line).find()) {
+                            log(line, Project.MSG_WARN);
+                        } else {
+                            log(line);
+                        }                    
                     }
                 }
             } catch (IOException ex) {
