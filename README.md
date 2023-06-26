@@ -8,12 +8,16 @@ Collection of Ant tasks for managing Open Liberty and WebSphere Liberty servers 
 
 ## Build
 
-Use Maven 2.x or 3.x to build the Ant tasks.
+Use Maven 3.x to build the Ant tasks.
 
 * `mvn install` : builds the Ant tasks.
 * `mvn install -Poffline-its -DwlpInstallDir=<liberty_install_directory>` : builds the Ant tasks and runs the integration tests by providing an existing installation.
 * `mvn install -Ponline-its -DwlpVersion=<liberty_version> -DwlpLicense=<liberty_license_code>` : builds the Ant tasks and runs the integration tests by downloading a new server.
   * Liberty versions and their respective link to the license code can be found in the [index.yml](http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml) file. You can obtain the license code by reading the current license and looking for the D/N: <license code> line.
+
+### Java Support
+
+The Ant tasks are tested with Long-Term-Support (LTS) releases of Java. The Ant tasks, as of release 1.9.11, are supported on Java 8, 11 and 17. Prior to this version, the Ant tasks are supported on Java 8 and 11.
 
 ## Configuration
 
