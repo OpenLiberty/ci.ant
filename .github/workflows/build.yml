@@ -39,9 +39,13 @@ jobs:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
         cache: 'maven'
+    - name: Set up Maven
+      uses: stCarolas/setup-maven@v4.5
+      with:
+        maven-version: 3.9.2
     - name: Run tests with maven for ubuntu
       if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: ./mvnw verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
+      run: ./mvnw -V verify -Ponline-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
     - name: Run tests with maven for windows
       if: ${{ matrix.os == 'windows-latest' }}
-      run: ./mvnw verify -Pwindows-online-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
+      run: ./mvnw -V verify -Pwindows-online-its -D"invoker.streamLogs"=true -DwlpVersion="${{ matrix.WLP_VERSION }}" -DwlpLicense="${{ matrix.WLP_LICENSE }}" -e
