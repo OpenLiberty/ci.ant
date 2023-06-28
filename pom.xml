@@ -12,7 +12,7 @@
 
     <groupId>io.openliberty.tools</groupId>
     <artifactId>liberty-ant-tasks</artifactId>
-    <version>1.9.13-fixLoggingForTasks</version>
+    <version>1.9.13-SNAPSHOT</version>
     <name>Open Liberty and WebSphere Liberty Ant Tasks</name>
     <description>Parent pom for Ant tasks supporting development with Open Liberty and WebSphere Liberty.</description>
     <url>https://github.com/openliberty/ci.ant</url>

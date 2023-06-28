@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.StringBuilder;
 
@@ -65,6 +66,8 @@ public abstract class AbstractTask extends Task {
     private static final Pattern errorPattern = Pattern.compile(errorRegex);
     private static final String warnRegex = ".*\\[WARN.*\\].*";
     private static final Pattern warnPattern = Pattern.compile(warnRegex);
+    private static final String LIBERTY_MESSAGE_TYPE_REGEX = "(.*\\[)(.*)(\\] [\\S]*?(\\S):.*)";
+    private static final Pattern LIBERTY_MESSAGE_TYPE_PATTERN = Pattern.compile(LIBERTY_MESSAGE_TYPE_REGEX);
 
     protected static final String DEFAULT_SERVER = "defaultServer";
     protected static final String DEFAULT_LOG_FILE = "logs/messages.log";
@@ -288,14 +291,7 @@ public abstract class AbstractTask extends Task {
                             break;
                         }
                         sb.append(line);
-                        // Check if the log message should be warning or error instead of info.
-                        if (errorPattern.matcher(line).find()) {
-                            log(ANSI_RED + line + ANSI_RESET);
-                        } else if (warnPattern.matcher(line).find()) {
-                            log(ANSI_YELLOW + line + ANSI_RESET);
-                        } else {
-                            log(line);
-                        }
+                        logWithColor(line);
                     }
                 }
             } catch (IOException ex) {
@@ -311,6 +307,25 @@ public abstract class AbstractTask extends Task {
                 try {
                     this.reader.close();
                 } catch (IOException e) {
+                }
+            }
+        }
+
+        private void logWithColor(String line) {
+            Matcher m = LIBERTY_MESSAGE_TYPE_PATTERN.matcher(line);
+            // Group 2 - liberty log severity text
+            // Group 4 - liberty log identifier code
+            if (m.find()) {
+                String identifier = m.group(4);
+                switch (identifier) {
+                    case "E":
+                        log(m.group(1) + ANSI_RED + m.group(2) + ANSI_RESET + m.group(3));
+                        break;
+                    case "W":
+                        log(m.group(1) + ANSI_YELLOW + m.group(2) + ANSI_RESET + m.group(3));
+                        break;
+                    default:
+                        log(line);
                 }
             }
         }
