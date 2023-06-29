@@ -258,8 +258,9 @@ public abstract class AbstractTask extends Task {
     }
 
     /**
-     * Check the last letter of Liberty server message code to determine severity, and log with appropriate color
+     * Check the last letter of Liberty server message code to determine severity, and add ANSI colors to the log message
      * @param line - Liberty server message
+     * @return - Liberty server message with appropriate color based on severity
      */
     public static String addColor(String line) {
         Matcher m = LIBERTY_MESSAGE_TYPE_PATTERN.matcher(line);
