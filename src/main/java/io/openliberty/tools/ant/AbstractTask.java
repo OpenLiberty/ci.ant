@@ -39,14 +39,8 @@ import org.apache.tools.ant.Task;
 public abstract class AbstractTask extends Task {
 
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
     public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
 
     protected File installDir;
     protected File userDir;
@@ -62,7 +56,7 @@ public abstract class AbstractTask extends Task {
 
     protected ProcessBuilder processBuilder;
 
-    private static final String LIBERTY_MESSAGE_TYPE_REGEX = ".*\\[.*\\] [\\S]*?(\\S):.*";
+    private static final String LIBERTY_MESSAGE_TYPE_REGEX = ".*\\[.*\\]\\s*[\\S]*?(\\S):.*";
     private static final Pattern LIBERTY_MESSAGE_TYPE_PATTERN = Pattern.compile(LIBERTY_MESSAGE_TYPE_REGEX);
 
     protected static final String DEFAULT_SERVER = "defaultServer";
@@ -263,6 +257,31 @@ public abstract class AbstractTask extends Task {
                 Arrays.toString(expectedExitCodes)));
     }
 
+    /**
+     * Check the last letter of Liberty server message code to determine severity, and log with appropriate color
+     * @param line - Liberty server message
+     */
+    public static String addColor(String line) {
+        Matcher m = LIBERTY_MESSAGE_TYPE_PATTERN.matcher(line);
+        // Group 1 - liberty log identifier code
+        String color = null;
+        if (m.find()) {
+            String identifier = m.group(1);
+            switch (identifier) {
+                case "E":
+                    color = ANSI_RED;
+                    break;
+                case "W":
+                    color = ANSI_YELLOW;
+                    break;
+            }
+        }
+        if (color != null) {
+            line = color + line + ANSI_RESET;
+        }
+        return line;
+    }
+
     private class StreamCopier extends Thread {
         private final BufferedReader reader;
         private boolean joined;
@@ -287,7 +306,7 @@ public abstract class AbstractTask extends Task {
                             break;
                         }
                         sb.append(line);
-                        logWithColor(line);
+                        log(addColor(line));
                     }
                 }
             } catch (IOException ex) {
@@ -304,31 +323,6 @@ public abstract class AbstractTask extends Task {
                     this.reader.close();
                 } catch (IOException e) {
                 }
-            }
-        }
-
-        /**
-         * Check the last letter of Liberty server message code to determine severity, and log with appropriate color
-         * @param line - Liberty server message
-         */
-        private void logWithColor(String line) {
-            Matcher m = LIBERTY_MESSAGE_TYPE_PATTERN.matcher(line);
-            // Group 1 - liberty log identifier code
-            if (m.find()) {
-                String identifier = m.group(1);
-                switch (identifier) {
-                    case "E":
-                        log(ANSI_RED + line + ANSI_RESET);
-                        break;
-                    case "W":
-                        log(ANSI_YELLOW + line + ANSI_RESET);
-                        break;
-                    default:
-                        log(line);
-                        break;
-                }
-            } else { // could not find Liberty server message identifier
-                log(line);
             }
         }
 
