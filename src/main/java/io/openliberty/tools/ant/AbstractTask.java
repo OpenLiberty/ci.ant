@@ -62,11 +62,7 @@ public abstract class AbstractTask extends Task {
 
     protected ProcessBuilder processBuilder;
 
-    private static final String errorRegex = ".*\\[ERROR.*\\].*";
-    private static final Pattern errorPattern = Pattern.compile(errorRegex);
-    private static final String warnRegex = ".*\\[WARN.*\\].*";
-    private static final Pattern warnPattern = Pattern.compile(warnRegex);
-    private static final String LIBERTY_MESSAGE_TYPE_REGEX = "(.*\\[)(.*)(\\] [\\S]*?(\\S):.*)";
+    private static final String LIBERTY_MESSAGE_TYPE_REGEX = ".*\\[.*\\] [\\S]*?(\\S):.*";
     private static final Pattern LIBERTY_MESSAGE_TYPE_PATTERN = Pattern.compile(LIBERTY_MESSAGE_TYPE_REGEX);
 
     protected static final String DEFAULT_SERVER = "defaultServer";
@@ -311,22 +307,28 @@ public abstract class AbstractTask extends Task {
             }
         }
 
+        /**
+         * Check the last letter of Liberty server message code to determine severity, and log with appropriate color
+         * @param line - Liberty server message
+         */
         private void logWithColor(String line) {
             Matcher m = LIBERTY_MESSAGE_TYPE_PATTERN.matcher(line);
-            // Group 2 - liberty log severity text
-            // Group 4 - liberty log identifier code
+            // Group 1 - liberty log identifier code
             if (m.find()) {
-                String identifier = m.group(4);
+                String identifier = m.group(1);
                 switch (identifier) {
                     case "E":
-                        log(m.group(1) + ANSI_RED + m.group(2) + ANSI_RESET + m.group(3));
+                        log(ANSI_RED + line + ANSI_RESET);
                         break;
                     case "W":
-                        log(m.group(1) + ANSI_YELLOW + m.group(2) + ANSI_RESET + m.group(3));
+                        log(ANSI_YELLOW + line + ANSI_RESET);
                         break;
                     default:
                         log(line);
+                        break;
                 }
+            } else { // could not find Liberty server message identifier
+                log(line);
             }
         }
 
