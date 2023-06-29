@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2020.
+ * (C) Copyright IBM Corporation 2014, 2023.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.StringBuilder;
 
@@ -36,6 +37,10 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 
 public abstract class AbstractTask extends Task {
+
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
 
     protected File installDir;
     protected File userDir;
@@ -50,6 +55,9 @@ public abstract class AbstractTask extends Task {
     protected static boolean isWindows;
 
     protected ProcessBuilder processBuilder;
+
+    private static final String LIBERTY_MESSAGE_TYPE_REGEX = ".*\\[.*\\]\\s*[\\S]*?(\\S):.*";
+    private static final Pattern LIBERTY_MESSAGE_TYPE_PATTERN = Pattern.compile(LIBERTY_MESSAGE_TYPE_REGEX);
 
     protected static final String DEFAULT_SERVER = "defaultServer";
     protected static final String DEFAULT_LOG_FILE = "logs/messages.log";
@@ -81,7 +89,8 @@ public abstract class AbstractTask extends Task {
                     throw new BuildException(messages.getString("error.installDir.set"));
                 }
 
-                log(MessageFormat.format(messages.getString("info.variable"), "installDir", installDir.getCanonicalPath()), Project.MSG_VERBOSE);
+                log(MessageFormat.format(messages.getString("info.variable"), "installDir", installDir.getCanonicalPath()),
+                        Project.MSG_VERBOSE);
             } else {
                 throw new BuildException("Liberty installation directory must be set.");
             }
@@ -106,10 +115,12 @@ public abstract class AbstractTask extends Task {
                 }
             }
 
-            log(MessageFormat.format(messages.getString("info.variable"), "server.config.dir", serverConfigDir.getCanonicalPath()), Project.MSG_VERBOSE);
+            log(MessageFormat.format(messages.getString("info.variable"), "server.config.dir", serverConfigDir.getCanonicalPath()),
+                    Project.MSG_VERBOSE);
 
             if (outputDir != null) {
-                log(MessageFormat.format(messages.getString("info.variable"), "outputDir", outputDir.getCanonicalPath()), Project.MSG_VERBOSE);
+                log(MessageFormat.format(messages.getString("info.variable"), "outputDir", outputDir.getCanonicalPath()),
+                        Project.MSG_VERBOSE);
                 processBuilder.environment().put(WLP_OUTPUT_DIR_VAR, outputDir.getCanonicalPath());
                 serverOutputDir = new File(outputDir, serverName);
             } else {
@@ -122,7 +133,8 @@ public abstract class AbstractTask extends Task {
                 }
             }
 
-            log(MessageFormat.format(messages.getString("info.variable"), "server.output.dir", serverOutputDir.getCanonicalPath()), Project.MSG_VERBOSE);
+            log(MessageFormat.format(messages.getString("info.variable"), "server.output.dir", serverOutputDir.getCanonicalPath()),
+                    Project.MSG_VERBOSE);
         } catch (IOException e) {
             throw new BuildException(e);
         }
@@ -169,8 +181,7 @@ public abstract class AbstractTask extends Task {
     }
 
     /**
-     * @param serverName
-     *            the serverName to set
+     * @param serverName the serverName to set
      */
     public void setServerName(String serverName) {
         this.serverName = serverName;
@@ -219,7 +230,8 @@ public abstract class AbstractTask extends Task {
         sendErrorInvokeCommand(commandLine, exitVal, expectedExitCodes);
     }
 
-    public void checkReturnCodeAndError(Process p, String commandLine, int expectedExitCode, int allowedExitCode, String allowedErrorMessage) throws InterruptedException {
+    public void checkReturnCodeAndError(Process p, String commandLine, int expectedExitCode, int allowedExitCode,
+            String allowedErrorMessage) throws InterruptedException {
         log(MessageFormat.format(messages.getString("info.variable"), "Invoke command", commandLine, Project.MSG_VERBOSE));
 
         StreamCopier copier = new StreamCopier(p.getInputStream());
@@ -233,7 +245,7 @@ public abstract class AbstractTask extends Task {
         if (exitVal == expectedExitCode) {
             return;
         } else if ((exitVal == allowedExitCode) && stdOutAndError.startsWith(allowedErrorMessage)) {
-            log("The command "+commandLine+" failed with return code 21 with this error message: "+stdOutAndError, Project.MSG_WARN);
+            log("The command " + commandLine + " failed with return code 21 with this error message: " + stdOutAndError, Project.MSG_WARN);
             return;
         }
 
@@ -241,7 +253,34 @@ public abstract class AbstractTask extends Task {
     }
 
     public void sendErrorInvokeCommand(String commandLine, int returnCode, int... expectedExitCodes) {
-        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, returnCode, Arrays.toString(expectedExitCodes)));
+        throw new BuildException(MessageFormat.format(messages.getString("error.invoke.command"), commandLine, returnCode,
+                Arrays.toString(expectedExitCodes)));
+    }
+
+    /**
+     * Check the last letter of Liberty server message code to determine severity, and add ANSI colors to the log message
+     * @param line - Liberty server message
+     * @return - Liberty server message with appropriate color based on severity
+     */
+    public static String addColor(String line) {
+        Matcher m = LIBERTY_MESSAGE_TYPE_PATTERN.matcher(line);
+        // Group 1 - liberty log identifier code
+        String color = null;
+        if (m.find()) {
+            String identifier = m.group(1);
+            switch (identifier) {
+                case "E":
+                    color = ANSI_RED;
+                    break;
+                case "W":
+                    color = ANSI_YELLOW;
+                    break;
+            }
+        }
+        if (color != null) {
+            line = color + line + ANSI_RESET;
+        }
+        return line;
     }
 
     private class StreamCopier extends Thread {
@@ -268,7 +307,7 @@ public abstract class AbstractTask extends Task {
                             break;
                         }
                         sb.append(line);
-                        log(line);
+                        log(addColor(line));
                     }
                 }
             } catch (IOException ex) {
@@ -287,7 +326,7 @@ public abstract class AbstractTask extends Task {
                 }
             }
         }
-  
+
         public String getOutput() {
             if (sb != null) {
                 return sb.toString();
@@ -312,8 +351,7 @@ public abstract class AbstractTask extends Task {
 
                 synchronized (this) {
                     long begin = System.nanoTime();
-                    long end = begin
-                               + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
+                    long end = begin + TimeUnit.NANOSECONDS.convert(1, TimeUnit.SECONDS);
                     long duration = end - begin;
                     while (!terminated && duration > 0) {
                         TimeUnit.NANOSECONDS.timedWait(this, duration);
@@ -336,16 +374,13 @@ public abstract class AbstractTask extends Task {
     /**
      * Check for a number of strings in a potentially remote file
      *
-     * @param regexp
-     *            a regular expression to search for
-     * @param timeout
-     *            a timeout, in milliseconds
-     * @param outputFile
-     *            file to check
+     * @param regexp a regular expression to search for
+     * @param timeout a timeout, in milliseconds
+     * @param outputFile file to check
+     * 
      * @return line that matched the regexp
      */
-    public String waitForStringInLog(String regexp, long timeout,
-                                     File outputFile) {
+    public String waitForStringInLog(String regexp, long timeout, File outputFile) {
         long waited = 0;
         final long waitIncrement = 500;
 
@@ -373,12 +408,10 @@ public abstract class AbstractTask extends Task {
     /**
      * Searches the given file for the given regular expression.
      *
-     * @param regexp
-     *            a regular expression (or just a text snippet) to search for
-     * @param fileToSearch
-     *            the file to search
-     * @return The first line which includes the pattern, or null if the pattern
-     *         isn't found or if the file doesn't exist
+     * @param regexp a regular expression (or just a text snippet) to search for
+     * @param fileToSearch the file to search
+     * 
+     * @return The first line which includes the pattern, or null if the pattern isn't found or if the file doesn't exist
      */
     public String findStringInFile(String regexp, File fileToSearch) {
         return findStringInFile(regexp, fileToSearch, Project.MSG_VERBOSE);
@@ -387,12 +420,10 @@ public abstract class AbstractTask extends Task {
     /**
      * Searches the given file for the given regular expression.
      *
-     * @param regexp
-     *            a regular expression (or just a text snippet) to search for
-     * @param fileToSearch
-     *            the file to search
-     * @return List of lines which includes the pattern, or null if the pattern
-     *         isn't found or if the file doesn't exist
+     * @param regexp a regular expression (or just a text snippet) to search for
+     * @param fileToSearch the file to search
+     * 
+     * @return List of lines which includes the pattern, or null if the pattern isn't found or if the file doesn't exist
      */
     public List<String> findStringsInFile(String regexp, File fileToSearch) {
         return findStringsInFileCommon(regexp, false, -1, fileToSearch, Project.MSG_VERBOSE);
@@ -401,14 +432,11 @@ public abstract class AbstractTask extends Task {
     /**
      * Searches the given file for the given regular expression.
      *
-     * @param regexp
-     *            a regular expression (or just a text snippet) to search for
-     * @param fileToSearch
-     *            the file to search
-     * @param msgLevel
-     *            the log level for the match number message
-     * @return The first line which includes the pattern, or null if the pattern
-     *         isn't found or if the file doesn't exist
+     * @param regexp a regular expression (or just a text snippet) to search for
+     * @param fileToSearch the file to search
+     * @param msgLevel the log level for the match number message
+     * 
+     * @return The first line which includes the pattern, or null if the pattern isn't found or if the file doesn't exist
      */
     private String findStringInFile(String regexp, File fileToSearch, int msgLevel) {
         String foundString = null;
@@ -424,17 +452,13 @@ public abstract class AbstractTask extends Task {
     /**
      * Searches the given file for the given regular expression.
      *
-     * @param regexp
-     *            a regular expression (or just a text snippet) to search for
-     * @param fileToSearch
-     *            the file to search
-     * @param msgLevel
-     *            the log level for the match number message
-     * @return List of Strings which match the pattern. No match results in an
-     *         empty list.
+     * @param regexp a regular expression (or just a text snippet) to search for
+     * @param fileToSearch the file to search
+     * @param msgLevel the log level for the match number message
+     * 
+     * @return List of Strings which match the pattern. No match results in an empty list.
      */
-    private List<String> findStringsInFileCommon(String regexp,
-                                                   boolean stopOnFirst, int searchLimit, File fileToSearch, int msgLevel) {
+    private List<String> findStringsInFileCommon(String regexp, boolean stopOnFirst, int searchLimit, File fileToSearch, int msgLevel) {
         if (fileToSearch == null) {
             log(messages.getString("info.file.validated"));
             return null;
@@ -500,7 +524,7 @@ public abstract class AbstractTask extends Task {
             try {
                 in.close();
             } catch (Exception e) {
-                //Ignore
+                // Ignore
             }
 
         }
@@ -511,10 +535,9 @@ public abstract class AbstractTask extends Task {
     /**
      * Searches the given file for the given regular expression, and returns the number of times it occurs.
      * 
-     * @param regexp
-     *            a regular expression (or just a text snippet) to search for
-     * @param fileToSearch
-     *            the file to search
+     * @param regexp a regular expression (or just a text snippet) to search for
+     * @param fileToSearch the file to search
+     * 
      * @return the number of occurrences of the regular expression
      */
     public int countStringOccurrencesInFile(String regexp, File fileToSearch) {
@@ -527,21 +550,17 @@ public abstract class AbstractTask extends Task {
     }
 
     /**
-     * Wait until the number of occurrences of the regular expression in the file increases
-     * above the given number of previous occurrences.
+     * Wait until the number of occurrences of the regular expression in the file increases above the given number of previous
+     * occurrences.
      *
-     * @param regexp
-     *            a regular expression to search for
-     * @param timeout
-     *            a timeout, in milliseconds
-     * @param outputFile
-     *            file to check
-     * @param previousOccurrences 
-     *.           the previous number of occurrences of the regular expression
+     * @param regexp a regular expression to search for
+     * @param timeout a timeout, in milliseconds
+     * @param outputFile file to check
+     * @param previousOccurrences . the previous number of occurrences of the regular expression
+     * 
      * @return updated line that matched the regexp
      */
-    public String waitForUpdatedStringInLog(String regexp, long timeout,
-                                     File outputFile, int previousOccurrences) {
+    public String waitForUpdatedStringInLog(String regexp, long timeout, File outputFile, int previousOccurrences) {
         long waited = 0;
         final long waitIncrement = 500;
 
@@ -572,7 +591,7 @@ public abstract class AbstractTask extends Task {
      * Returns file name without the extension.
      */
     protected String getFileName(String fileName) {
-        if (fileName.endsWith(".xml")) { //Handle loose app case for deploy
+        if (fileName.endsWith(".xml")) { // Handle loose app case for deploy
             fileName = fileName.substring(0, fileName.lastIndexOf('.'));
         }
 
@@ -581,7 +600,7 @@ public abstract class AbstractTask extends Task {
     }
 
     protected void stopServer(String timeout) {
-        //Stop server if exception happens.
+        // Stop server if exception happens.
         ServerTask st = new ServerTask();
         st.setProject(getProject());
         st.setInstallDir(getInstallDir());
@@ -592,7 +611,7 @@ public abstract class AbstractTask extends Task {
         st.setOperation("stop");
         st.execute();
     }
-    
+
     protected String getMessage(String key, Object... args) {
         return MessageFormat.format(messages.getString(key), args);
     }
