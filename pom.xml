@@ -78,7 +78,6 @@
     </dependencies>
 
     <build>
-        <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -103,7 +102,6 @@
                     <version>3.1.2</version>
                 </plugin>
             </plugins>
-        </pluginManagement>
     </build>
 
     <profiles>
