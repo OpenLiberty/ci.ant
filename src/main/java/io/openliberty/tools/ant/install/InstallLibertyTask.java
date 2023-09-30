@@ -35,7 +35,7 @@ public class InstallLibertyTask extends AbstractTask {
 
     private String baseDir;
     private String cacheDir;
-    private boolean verbose;
+    private boolean verbose=true;
     private String licenseCode;
     private String version;
     private String type;
@@ -98,10 +98,14 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     protected void downloadFile(URL source, File dest) throws IOException {
+        downloadFile(source, dest, false);
+    }
+
+    protected void downloadFile(URL source, File dest, boolean skipExisting) throws IOException {
         if (offline) {
             offlineDownload(source, dest);
         } else {
-            onlineDownload(source, dest);
+            onlineDownload(source, dest, skipExisting);
         }
     }
 
@@ -113,13 +117,17 @@ public class InstallLibertyTask extends AbstractTask {
         }
     }
 
-    private void onlineDownload(URL source, File dest) throws IOException {
+    private void onlineDownload(URL source, File dest, boolean skipExisting) throws IOException {
         Get get = (Get) getProject().createTask("get");
         DownloadProgress progress = null;
         if (verbose) {
             progress = new Get.VerboseProgress(System.out);
         }
-        get.setUseTimestamp(true);
+        if (skipExisting) {
+            get.setSkipExisting(true);
+        } //else {
+          //  get.setUseTimestamp(true);
+        //}
         get.setUsername(username);
         get.setPassword(password);
         get.setMaxTime(maxDownloadTime);
