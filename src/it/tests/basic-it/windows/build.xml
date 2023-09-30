@@ -13,12 +13,13 @@
     <property name="wlp.usr.dir" value="${target.dir}/wlp_usr" />
     <property name="wlp.output.dir" value="${target.dir}/wlp_output" />
     <property name="servername" value="basic" />
+    <property name="cacheDir" value="${target.dir}/wlp-cache" />
 
     <property name="serverConfig" value="${basedir}/src/test/resources/server.xml" />
     <property name="bootProp" value="${basedir}/src/test/resources/bootstrap.properties" />
 
     <target name="installServer">
-        <wlp:install-liberty licenseCode="${wlp.license}" version="${wlp.version}" basedir="${target.dir}" />
+        <wlp:install-liberty licenseCode="${wlp.license}" version="${wlp.version}" basedir="${target.dir}"  cacheDir="${cacheDir}" />
     </target>
 
     <target name="createServer">

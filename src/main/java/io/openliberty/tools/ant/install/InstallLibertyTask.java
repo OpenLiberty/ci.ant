@@ -71,7 +71,7 @@ public class InstallLibertyTask extends AbstractTask {
         }
 
         if (cacheDir == null) {
-            File dir = new File(System.getProperty("java.io.tmpdir"), "wlp-cache-"+Long.toString(System.nanoTime()));
+            File dir = new File(System.getProperty("java.io.tmpdir"), "wlp-cache");
             cacheDir = dir.getAbsolutePath();
         }
 
@@ -123,7 +123,6 @@ public class InstallLibertyTask extends AbstractTask {
         get.setUsername(username);
         get.setPassword(password);
         get.setMaxTime(maxDownloadTime);
-        get.setSkipExisting(true);
         get.doGet(source, dest, Project.MSG_INFO, progress);
     }
 
