@@ -123,6 +123,7 @@ public class InstallLibertyTask extends AbstractTask {
         get.setUsername(username);
         get.setPassword(password);
         get.setMaxTime(maxDownloadTime);
+        get.setRetries(5);
         get.doGet(source, dest, Project.MSG_INFO, progress);
     }
 
