@@ -82,7 +82,7 @@ public class ArchiveInstaller implements Installer {
             task.checkLicenseSet();
 
             // download Liberty jar
-            task.downloadFile(downloadURL, cachedFile, task.getSkipDownloadIfExisting());
+            task.downloadFile(downloadURL, cachedFile);
 
             // do license check
             task.checkLicense(getLicenseCode(cachedFile));
@@ -91,7 +91,7 @@ public class ArchiveInstaller implements Installer {
             task.installLiberty(cachedFile);
         } else {
             // download zip file
-            task.downloadFile(downloadURL, cachedFile, task.getSkipDownloadIfExisting());
+            task.downloadFile(downloadURL, cachedFile);
 
             // unzip
             task.unzipLiberty(cachedFile);

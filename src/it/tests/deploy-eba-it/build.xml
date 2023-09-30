@@ -33,7 +33,7 @@
 
         <wlp:server ref="testServer" operation="stop" />
 
-        <wlp:clean ref="testServer" apps="true" dropins="true"/>
+        <wlp:clean ref="testServer" apps="true" dropins="true" />
     	
     	<wlp:uninstall-feature ref="testServer">
             <feature>oauth-2.0</feature>

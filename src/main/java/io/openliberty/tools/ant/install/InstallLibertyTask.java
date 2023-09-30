@@ -42,10 +42,9 @@ public class InstallLibertyTask extends AbstractTask {
     private String runtimeUrl;
     private String username;
     private String password;
-    private String maxDownloadTime;
+    private long maxDownloadTime;
     private boolean offline;
     private boolean useOpenLiberty;
-    private boolean skipDownloadIfExisting;
     
     private boolean skipAlreadyInstalledCheck = false;
 
@@ -99,14 +98,10 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     protected void downloadFile(URL source, File dest) throws IOException {
-        downloadFile(source, dest, false);
-    }
-
-    protected void downloadFile(URL source, File dest, boolean skipExisting) throws IOException {
         if (offline) {
             offlineDownload(source, dest);
         } else {
-            onlineDownload(source, dest, skipExisting);
+            onlineDownload(source, dest);
         }
     }
 
@@ -118,11 +113,7 @@ public class InstallLibertyTask extends AbstractTask {
         }
     }
 
-    private void onlineDownload(URL source, File dest, boolean skipExisting) throws IOException {
-        if (skipExisting && dest.exists()) {
-            return;
-        }
-
+    private void onlineDownload(URL source, File dest) throws IOException {
         Get get = (Get) getProject().createTask("get");
         DownloadProgress progress = null;
         if (verbose) {
@@ -131,7 +122,7 @@ public class InstallLibertyTask extends AbstractTask {
         get.setUseTimestamp(true);
         get.setUsername(username);
         get.setPassword(password);
-        get.setMaxTime(getMaxDownloadTime());
+        get.setMaxTime(maxDownloadTime);
         get.setRetries(5);
         get.doGet(source, dest, Project.MSG_INFO, progress);
     }
@@ -241,18 +232,10 @@ public class InstallLibertyTask extends AbstractTask {
     }
 
     public long getMaxDownloadTime() {
-        if (maxDownloadTime == null) {
-            return 0;
-        } else {
-            return Long.parseLong(maxDownloadTime);
-        }
+        return maxDownloadTime;
     }
 
     public void setMaxDownloadTime(long maxDownloadTime) {
-        this.maxDownloadTime = Long.toString(maxDownloadTime);
-    }
-
-    public void setMaxDownloadTime(String maxDownloadTime) {
         this.maxDownloadTime = maxDownloadTime;
     }
 
@@ -278,13 +261,5 @@ public class InstallLibertyTask extends AbstractTask {
 
     public boolean getSkipAlreadyInstalledCheck() {
         return skipAlreadyInstalledCheck;
-    }
-
-    public boolean getSkipDownloadIfExisting() {
-        return skipDownloadIfExisting;
-    }
-
-    public void setSkipDownloadIfExisting(boolean skipDownloadIfExisting) {
-        this.skipDownloadIfExisting = skipDownloadIfExisting;
     }
 }
