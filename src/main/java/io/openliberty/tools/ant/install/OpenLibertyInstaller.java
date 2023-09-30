@@ -29,7 +29,7 @@ public class OpenLibertyInstaller implements Installer {
         
         // Download version json file
         File versionInfoFile = new File(cacheDir, "openliberty-versions.json");
-        task.downloadFile(versionInfoUrl, versionInfoFile);
+        task.downloadFile(versionInfoUrl, versionInfoFile, task.getSkipDownloadIfExisting());
                 
         // Parse JSON
         InputStream versionInfoIs =  new FileInputStream(versionInfoFile);
@@ -53,7 +53,7 @@ public class OpenLibertyInstaller implements Installer {
         String versionUrl = baseUrl + version + "/";
         URL runtimeInfoUrl = new URL(versionUrl + "info.json");
         File runtimeInfoFile = new File(cacheDir, version + ".json");
-        task.downloadFile(runtimeInfoUrl, runtimeInfoFile);
+        task.downloadFile(runtimeInfoUrl, runtimeInfoFile, task.getSkipDownloadIfExisting());
         
         // Parse JSON
         InputStream runtimeInfoIs =  new FileInputStream(runtimeInfoFile);
@@ -93,7 +93,7 @@ public class OpenLibertyInstaller implements Installer {
         
         URL runtimeUrl = new URL(runtimeUrlString);
         File runtimeFile = new File(versionCacheDir, InstallUtils.getFile(runtimeUrl));
-        task.downloadFile(runtimeUrl, runtimeFile);
+        task.downloadFile(runtimeUrl, runtimeFile, task.getSkipDownloadIfExisting());
                 
         if(runtimeUrlString.endsWith(".jar")) {
             task.installLiberty(runtimeFile);

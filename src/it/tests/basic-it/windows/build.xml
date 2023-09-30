@@ -18,7 +18,7 @@
     <property name="bootProp" value="${basedir}/src/test/resources/bootstrap.properties" />
 
     <target name="installServer">
-        <wlp:install-liberty licenseCode="${wlp.license}" version="${wlp.version}" basedir="${target.dir}" maxDownloadTime="120" />
+        <wlp:install-liberty licenseCode="${wlp.license}" version="${wlp.version}" basedir="${target.dir}" maxDownloadTime="120" skipDownloadIfExisting="true" />
     </target>
 
     <target name="createServer">
