@@ -8,6 +8,7 @@
     <taskdef classname="io.openliberty.tools.ant.UninstallFeatureTask" name="uninstall-feature" />
     <taskdef classname="io.openliberty.tools.ant.CleanTask" name="clean" />
     <taskdef classname="io.openliberty.tools.ant.install.InstallLibertyTask" name="install-liberty" />
+    <taskdef classname="io.openliberty.tools.ant.InstallLibertyInterimFixTask" name="install-fix" />
     <taskdef classname="io.openliberty.tools.ant.jsp.CompileJSPs" name="compileJSPs"/>
     <taskdef classname="io.openliberty.tools.ant.SpringBootUtilTask" name="springBootUtil"/>
 </antlib>
