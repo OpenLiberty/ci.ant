@@ -35,7 +35,7 @@ public class InstallLibertyTask extends AbstractTask {
 
     private String baseDir;
     private String cacheDir;
-    private boolean verbose=true;
+    private boolean verbose;
     private String licenseCode;
     private String version;
     private String type;
@@ -125,9 +125,7 @@ public class InstallLibertyTask extends AbstractTask {
         }
         if (skipExisting) {
             get.setSkipExisting(true);
-        } //else {
-          //  get.setUseTimestamp(true);
-        //}
+        }
         get.setUsername(username);
         get.setPassword(password);
         get.setMaxTime(maxDownloadTime);
