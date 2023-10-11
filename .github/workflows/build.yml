@@ -19,7 +19,7 @@ jobs:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         os: [ubuntu-latest, windows-latest]
         WLP_VERSION: [23.0.0_09, 23.0.0_06]
-        java: [17, 11, 8]
+        java: [21, 17, 11, 8]
         include:
           # match up licenses to WLP versions
           # http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml
