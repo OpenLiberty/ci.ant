@@ -33,7 +33,7 @@
 
         <wlp:server ref="testServer" operation="stop" />
 
-        <wlp:clean ref="testServer" apps="true" dropins="true" />
+        <wlp:clean ref="testServer" apps="true" dropins="true" logs="false" workarea="false" />
     	
     </target>
 	
