@@ -103,7 +103,7 @@ public class WasDevInstaller implements Installer {
             // download license
             URL licenseURL = new URL(selectedVersion.getLicenseUri());
             File licenseFile = new File(versionCacheDir, InstallUtils.getFile(licenseURL));
-            task.downloadFile(licenseURL, licenseFile);
+            task.downloadFile(licenseURL, licenseFile, true);
 
             // do license check
             task.checkLicense(InstallUtils.getLicenseCode(licenseFile, LICENSE_REGEX));
@@ -111,7 +111,7 @@ public class WasDevInstaller implements Installer {
             // download Liberty jar
             URL libertyURL = new URL(uri);
             File libertyFile = new File(versionCacheDir, InstallUtils.getFile(libertyURL));
-            task.downloadFile(libertyURL, libertyFile);
+            task.downloadFile(libertyURL, libertyFile, true);
 
             // install Liberty jar
             task.installLiberty(libertyFile);
@@ -119,7 +119,7 @@ public class WasDevInstaller implements Installer {
             // download zip file
             URL libertyURL = new URL(uri);
             File libertyFile = new File(versionCacheDir, InstallUtils.getFile(libertyURL));
-            task.downloadFile(libertyURL, libertyFile);
+            task.downloadFile(libertyURL, libertyFile, true);
 
             // unzip
             task.unzipLiberty(libertyFile);
