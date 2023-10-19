@@ -1,4 +1,4 @@
-# ci.ant ![Build Status](https://github.com/OpenLiberty/ci.ant/workflows/CI/badge.svg) [![Build Status](https://github.com/OpenLiberty/ci.ant/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/OpenLiberty/ci.ant/actions?branch=main) [![Maven Central Latest](https://maven-badges.herokuapp.com/maven-central/io.openliberty.tools/liberty-ant-tasks/badge.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22io.openliberty.tools%22%20AND%20a%3A%22liberty-ant-tasks%22)
+# ci.ant [![Maven Central Latest](https://maven-badges.herokuapp.com/maven-central/io.openliberty.tools/liberty-ant-tasks/badge.svg)](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22io.openliberty.tools%22%20AND%20a%3A%22liberty-ant-tasks%22) [![Build Status](https://github.com/OpenLiberty/ci.ant/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/OpenLiberty/ci.ant/actions?branch=main)
 
 Collection of Ant tasks for managing Open Liberty and WebSphere Liberty servers and applications.
 
