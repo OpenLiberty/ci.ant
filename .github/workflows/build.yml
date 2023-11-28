@@ -18,13 +18,13 @@ jobs:
       matrix:
         # test against latest update of each major Java version, as well as specific updates of LTS versions:
         os: [ubuntu-latest, windows-latest]
-        WLP_VERSION: [23.0.0_10]
+        WLP_VERSION: [23.0.0_11]
         java: [21, 17, 11, 8]
         include:
           # match up licenses to WLP versions
           # http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/index.yml
-          - WLP_VERSION: 23.0.0_10
-            WLP_LICENSE: L-HGVA-YUBJDP
+          - WLP_VERSION: 23.0.0_11
+            WLP_LICENSE: L-PVGR-Z33XBN
 
     runs-on: ${{ matrix.os }}
     name: WL ${{ matrix.WLP_VERSION }}, Java ${{ matrix.java }}, ${{ matrix.os }}
