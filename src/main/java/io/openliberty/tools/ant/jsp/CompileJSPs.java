@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2020.
+ * (C) Copyright IBM Corporation 2014, 2024.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -384,7 +384,7 @@ public class CompileJSPs extends Task {
             ps.println("<webApplication name=\"jspCompile\" location=\"fake.war\"/>");
         }
         ps.println("<httpEndpoint id=\"defaultHttpEndpoint\" host=\"localhost\" httpPort=\"0\"/>");
-        ps.print("<jspEngine prepareJsps=\"0\" scratchdir=\"" + serverDir.getAbsolutePath() + "/jsps\" jdkSourceLevel=\"" + source + "\"/>");
+        ps.print("<jspEngine prepareJsps=\"0\" scratchdir=\"" + serverDir.getAbsolutePath() + "/jsps\" javaSourceLevel=\"" + source + "\"/>");
         ps.println("<webContainer deferServletLoad=\"false\"/>");
         ps.println("<keyStore password=\"dummyKeystore\"/>");
         ps.println("</server>");
@@ -501,6 +501,8 @@ public class CompileJSPs extends Task {
             source = "17";
         } else if ("1.8".equals(src) || "8".equals(src)) {
             source = "18";
+        } else { // for Java 11 and beyond
+            source = src;
         }
     }
 
