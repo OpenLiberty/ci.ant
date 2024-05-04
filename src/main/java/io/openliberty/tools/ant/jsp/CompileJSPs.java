@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -59,6 +60,7 @@ public class CompileJSPs extends Task {
     private String classpath = "";
     private String classpathRef;
     private String source;
+    private boolean useJdkSourceLevel = false;
 
     // By default allow 30 seconds to compile the jsps
     private int timeout = 30;
@@ -365,7 +367,37 @@ public class CompileJSPs extends Task {
         return server;
     }
 
+    private String determineSourceAttribute(File serverDir) {
+        String sourceAttrToUse = "jdkSourceLevel";
+        File f = new File(wlpHome,"lib/versions/openliberty.properties");
+
+        if (f.exists()) {
+            try (FileInputStream input = new FileInputStream(f);) {
+                Properties libertyProductProperties = new Properties();
+
+                libertyProductProperties.load(input);
+                String version = libertyProductProperties.getProperty("com.ibm.websphere.productVersion");
+                if (version != null && version.startsWith("24.")) {
+                    if (useJdkSourceLevel && source.equals("18")) {
+                        // change source 18 to 8 and use javaSourceLevel instead
+                        source = "8";
+                        useJdkSourceLevel = false;
+                        sourceAttrToUse = "javaSourceLevel";
+                    } else if (!useJdkSourceLevel) {
+                        sourceAttrToUse = "javaSourceLevel";
+                    }
+                }
+            } catch (IOException e) {
+            }        
+        }
+        return sourceAttrToUse;
+    }
+
     private void writeServerXML(File serverDir) throws FileNotFoundException {
+        // Need to determine the version of Liberty installed. For versions prior to 24.0.0.1, use the jdkSourceLevel attribute
+        // on the jspEngine element. For versions 24.0.0.1 and later, use the javaSourceLevel attribute.
+        String sourceAttribute = determineSourceAttribute(serverDir);
+
         PrintStream ps = new PrintStream(new File(serverDir, "server.xml"));
         ps.println("<server>");
         ps.println("<featureManager>");
@@ -384,7 +416,7 @@ public class CompileJSPs extends Task {
             ps.println("<webApplication name=\"jspCompile\" location=\"fake.war\"/>");
         }
         ps.println("<httpEndpoint id=\"defaultHttpEndpoint\" host=\"localhost\" httpPort=\"0\"/>");
-        ps.print("<jspEngine prepareJsps=\"0\" scratchdir=\"" + serverDir.getAbsolutePath() + "/jsps\" javaSourceLevel=\"" + source + "\"/>");
+        ps.println("<jspEngine prepareJsps=\"0\" scratchdir=\"" + serverDir.getAbsolutePath() + "/jsps\" "+sourceAttribute+"=\"" + source + "\"/>");
         ps.println("<webContainer deferServletLoad=\"false\"/>");
         ps.println("<keyStore password=\"dummyKeystore\"/>");
         ps.println("</server>");
@@ -489,6 +521,8 @@ public class CompileJSPs extends Task {
     }
 
     public void setSource(String src) {
+        useJdkSourceLevel = false;
+        source = null;
         if ("1.3".equals(src)) {
             source = "13";
         } else if ("1.4".equals(src)) {
@@ -501,6 +535,10 @@ public class CompileJSPs extends Task {
             source = "17";
         } else if ("1.8".equals(src) || "8".equals(src)) {
             source = "18";
+        }
+
+        if (source != null) {
+            useJdkSourceLevel = true;
         } else { // for Java 11 and beyond
             source = src;
         }
