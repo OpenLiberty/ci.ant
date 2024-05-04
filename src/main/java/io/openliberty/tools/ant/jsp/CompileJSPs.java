@@ -367,6 +367,23 @@ public class CompileJSPs extends Task {
         return server;
     }
 
+    private boolean isVersion24xxOrLater(String version) {
+        boolean flag = false;
+
+        if (version != null && version.contains(".")) {
+            String majorVersion = version.substring(0,version.indexOf("."));
+            try {
+                Integer majorVersionInt = new Integer(majorVersion);
+                if (majorVersionInt.intValue() >= 24) {
+                    flag = true;
+                }    
+            } catch (NumberFormatException e) {
+            }
+        }
+
+        return flag;
+    }
+
     private String determineSourceAttribute(File serverDir) {
         String sourceAttrToUse = "jdkSourceLevel";
         File f = new File(wlpHome,"lib/versions/openliberty.properties");
@@ -377,7 +394,7 @@ public class CompileJSPs extends Task {
 
                 libertyProductProperties.load(input);
                 String version = libertyProductProperties.getProperty("com.ibm.websphere.productVersion");
-                if (version != null && version.startsWith("24.")) {
+                if (isVersion24xxOrLater(version)) {
                     if (useJdkSourceLevel && source.equals("18")) {
                         // change source 18 to 8 and use javaSourceLevel instead
                         source = "8";
