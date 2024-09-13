@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2014, 2024.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
+import io.openliberty.tools.ant.RegexRepository;
 import org.apache.tools.ant.BuildException;
 
 public class WasDevInstaller implements Installer {
-    
-    private static final String LICENSE_REGEX = "D/N:\\s*(.*?)\\s*\\<";
 
     private String licenseCode;
     private String version;
@@ -106,7 +105,7 @@ public class WasDevInstaller implements Installer {
             task.downloadFile(licenseURL, licenseFile, true);
 
             // do license check
-            task.checkLicense(InstallUtils.getLicenseCode(licenseFile, LICENSE_REGEX));
+            task.checkLicense(InstallUtils.getLicenseCode(licenseFile, RegexRepository.getRegex(WasDevInstaller.class.getName())));
 
             // download Liberty jar
             URL libertyURL = new URL(uri);

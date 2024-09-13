@@ -1,10 +1,10 @@
 package io.openliberty.tools.ant.install;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -32,7 +32,7 @@ public class OpenLibertyInstaller implements Installer {
         task.downloadFile(versionInfoUrl, versionInfoFile);
                 
         // Parse JSON
-        InputStream versionInfoIs =  new FileInputStream(versionInfoFile);
+        InputStream versionInfoIs = Files.newInputStream(versionInfoFile.toPath());
         String versionInfoTxt = IOUtils.toString(versionInfoIs, StandardCharsets.UTF_8);
         JSONObject versionInfoJson = new JSONObject(versionInfoTxt);
                 
@@ -56,7 +56,7 @@ public class OpenLibertyInstaller implements Installer {
         task.downloadFile(runtimeInfoUrl, runtimeInfoFile, true);
         
         // Parse JSON
-        InputStream runtimeInfoIs =  new FileInputStream(runtimeInfoFile);
+        InputStream runtimeInfoIs = Files.newInputStream(runtimeInfoFile.toPath());
         String runtimeInfoTxt = IOUtils.toString(runtimeInfoIs, StandardCharsets.UTF_8);
         JSONObject runtimeInfoJson = new JSONObject(runtimeInfoTxt);
                 

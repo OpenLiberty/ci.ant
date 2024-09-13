@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2023.
+ * (C) Copyright IBM Corporation 2014, 2024.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,7 +136,8 @@ public abstract class AbstractTask extends Task {
             log(MessageFormat.format(messages.getString("info.variable"), "server.output.dir", serverOutputDir.getCanonicalPath()),
                     Project.MSG_VERBOSE);
         } catch (IOException e) {
-            throw new BuildException(e);
+            log(e,Project.MSG_ERR);
+            throw new BuildException("Exception while configuring liberty installation directories. See previous messages for information on the issue(s)");
         }
 
         // Check for windows..
@@ -312,7 +313,8 @@ public abstract class AbstractTask extends Task {
                 }
             } catch (IOException ex) {
                 sb.setLength(0);
-                throw new BuildException(ex);
+                log(ex,Project.MSG_ERR);
+                throw new BuildException("Exception while running StreamCopier.See previous messages for information on the issue(s)");
             } finally {
                 if (isWindows) {
                     synchronized (this) {
