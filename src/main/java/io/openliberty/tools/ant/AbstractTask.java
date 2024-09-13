@@ -137,7 +137,7 @@ public abstract class AbstractTask extends Task {
                     Project.MSG_VERBOSE);
         } catch (IOException e) {
             log(e,Project.MSG_ERR);
-            throw new BuildException("Exception while configuring liberty installation directories. See previous messages for information on the issue(s)");
+            throw new BuildException("Exception while configuring liberty installation directories. See previous messages for information on the issue(s).");
         }
 
         // Check for windows..
@@ -314,7 +314,7 @@ public abstract class AbstractTask extends Task {
             } catch (IOException ex) {
                 sb.setLength(0);
                 log(ex,Project.MSG_ERR);
-                throw new BuildException("Exception while running StreamCopier.See previous messages for information on the issue(s)");
+                throw new BuildException("Exception received while checking for the return code in the output of the invoked command. See previous messages for more information on the issues().");
             } finally {
                 if (isWindows) {
                     synchronized (this) {
