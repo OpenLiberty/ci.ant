@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014.
+ * (C) Copyright IBM Corporation 2014, 2024.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@ import java.net.URL;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import io.openliberty.tools.ant.RegexRepository;
 import org.apache.tools.ant.BuildException;
 
 public class ArchiveInstaller implements Installer {
-
-    private static final String LICENSE_REGEX = "D/N:\\s*(.*)\\s*";
 
     private String runtimeUrl;
     private String extendedUrl;
@@ -107,7 +106,7 @@ public class ArchiveInstaller implements Installer {
                 throw new BuildException("Unable to find license file in " + jarFile);
             }
             in = jar.getInputStream(entry);
-            return InstallUtils.getLicenseCode(in, "UTF-16", LICENSE_REGEX);
+            return InstallUtils.getLicenseCode(in, "UTF-16", RegexRepository.getRegex(ArchiveInstaller.class.getName()));
         } finally {
             InstallUtils.close(in);
             jar.close();

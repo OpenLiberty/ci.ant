@@ -126,7 +126,8 @@ public class CompileJSPs extends Task {
                 }
             }
         } catch (IOException e) {
-            throw new BuildException("A failure occurred: " + e.toString(), e);
+            log(e,Project.MSG_ERR);
+            throw new BuildException("A failure occurred: " + e.getLocalizedMessage());
         }
 
     }
