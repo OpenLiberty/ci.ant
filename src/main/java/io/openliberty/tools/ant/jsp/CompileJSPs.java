@@ -1,5 +1,5 @@
 /**
- * (C) Copyright IBM Corporation 2014, 2024.
+ * (C) Copyright IBM Corporation 2014, 2025.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -424,8 +424,10 @@ public class CompileJSPs extends Task {
             ps.print(feature);
             ps.println("</feature>");
         }
-        ps.print("<feature>jsp-");
-        ps.print(featureVersion);
+        // add support for Jakarta Server Pages
+        String feature = featureVersion.startsWith("2.") ? "jsp-"+featureVersion : "pages-"+featureVersion;
+        ps.print("<feature>");
+        ps.print(feature);
         ps.println("</feature>");
         ps.println("</featureManager>");
         if (war != null) {
