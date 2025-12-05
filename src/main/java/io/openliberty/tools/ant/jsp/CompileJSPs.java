@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.zip.ZipEntry;
@@ -61,6 +62,7 @@ public class CompileJSPs extends Task {
     private String classpathRef;
     private String source;
     private boolean useJdkSourceLevel = false;
+    private Map<String, String> environmentVariables;
 
     // By default allow 30 seconds to compile the jsps
     private int timeout = 30;
@@ -93,6 +95,9 @@ public class CompileJSPs extends Task {
                     // Compile jsps by having the server start with eager app
                     // start and compilation
                     ServerTask server = createServerTask(compileDir);
+                    if (environmentVariables != null) {
+                        server.setEnvironmentVariables(environmentVariables);
+                    }
                     server.setOperation("start");
                     server.execute();
 
@@ -566,5 +571,13 @@ public class CompileJSPs extends Task {
 
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    public Map<String, String> getEnvironmentVariables() {
+        return environmentVariables;
+    }
+
+    public void setEnvironmentVariables(Map<String, String> environmentVariables) {
+        this.environmentVariables = environmentVariables;
     }
 }
