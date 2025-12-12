@@ -88,6 +88,8 @@ public class ServerTask extends AbstractTask {
     private Map<String, String> environmentVariables;
     
     private String serverRoot;
+
+    private String customArchiveOption;
     
     @Override
     protected void initTask() {
@@ -420,7 +422,11 @@ public class ServerTask extends AbstractTask {
     
     private void doDump() throws Exception {
         List<String> command = getInitialCommand(operation);
-        addArchiveOption(command);
+        if (customArchiveOption != null) {
+            command.add(customArchiveOption);
+        } else {
+            addArchiveOption(command);
+        }
         addIncludeOption(command);
         processBuilder.command(command);
         Process p = processBuilder.start();
@@ -437,7 +443,12 @@ public class ServerTask extends AbstractTask {
     
     private void doPackage() throws Exception {
         List<String> command = getInitialCommand(operation);
-        addArchiveOption(command);
+        if (customArchiveOption != null) {
+            command.add(customArchiveOption);
+        } else {
+            addArchiveOption(command);
+        }
+
         addIncludeOption(command);
         addOsOption(command);
         addServerRootOption(command);
@@ -683,6 +694,10 @@ public class ServerTask extends AbstractTask {
 
     public void setEnvironmentVariables(Map<String, String> environmentVariables) {
         this.environmentVariables = environmentVariables;
+    }
+
+    public void setCustomArchiveOption(String customArchiveOption) {
+        this.customArchiveOption = customArchiveOption;
     }
 
 }
