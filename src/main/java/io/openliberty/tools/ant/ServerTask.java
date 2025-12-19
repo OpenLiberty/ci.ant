@@ -89,7 +89,7 @@ public class ServerTask extends AbstractTask {
     
     private String serverRoot;
 
-    private String customArchiveOption;
+    private boolean usePosixRules = false;
     
     @Override
     protected void initTask() {
@@ -422,11 +422,7 @@ public class ServerTask extends AbstractTask {
     
     private void doDump() throws Exception {
         List<String> command = getInitialCommand(operation);
-        if (customArchiveOption != null) {
-            command.add(customArchiveOption);
-        } else {
-            addArchiveOption(command);
-        }
+        addArchiveOption(command);
         addIncludeOption(command);
         processBuilder.command(command);
         Process p = processBuilder.start();
@@ -443,12 +439,7 @@ public class ServerTask extends AbstractTask {
     
     private void doPackage() throws Exception {
         List<String> command = getInitialCommand(operation);
-        if (customArchiveOption != null) {
-            command.add(customArchiveOption);
-        } else {
-            addArchiveOption(command);
-        }
-
+        addArchiveOption(command);
         addIncludeOption(command);
         addOsOption(command);
         addServerRootOption(command);
@@ -491,6 +482,7 @@ public class ServerTask extends AbstractTask {
             if (archive.isDirectory()) {
                 throw new BuildException("The archive attribute must specify a file");
             }
+
             if (isWindows) {
                 String archivePath = archive.toString();
                 if (archivePath.contains(" ")) {
@@ -501,6 +493,11 @@ public class ServerTask extends AbstractTask {
                     command.add("--archive=" + "\"" + archivePath + "\"");
                 }
             } else {
+                if(isUsePosixRules()){
+                    command.add("--archive=" + archive.toString());
+                    log("Setting archive option based on latest POSIX rules");
+                    return;
+                }
                 command.add("--archive=" + archive.toString().replaceAll(" ", "\\\\ "));
             }
         }
@@ -696,8 +693,11 @@ public class ServerTask extends AbstractTask {
         this.environmentVariables = environmentVariables;
     }
 
-    public void setCustomArchiveOption(String customArchiveOption) {
-        this.customArchiveOption = customArchiveOption;
+    public boolean isUsePosixRules() {
+        return usePosixRules;
     }
 
+    public void setUsePosixRules(boolean usePosixRules) {
+        this.usePosixRules = usePosixRules;
+    }
 }
