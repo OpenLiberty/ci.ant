@@ -22,12 +22,14 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.openliberty.tools.ant.types.EnvironmentVariable;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -119,6 +121,18 @@ public class ServerTask extends AbstractTask {
         if (environmentVariables != null) {
             processBuilder.environment().putAll(environmentVariables);
         }
+    }
+
+    /**
+     * used in gradle closure while calling ant task using project.ant.server
+     * this method is called automatically when we create an object of EnvironmentVariable using closure
+     * @param var environment object
+     */
+    public void addConfiguredEnvironmentVariable(EnvironmentVariable var) {
+        if (this.environmentVariables == null) {
+            this.environmentVariables = new HashMap<>();
+        }
+        this.environmentVariables.put(var.getName(), var.getValue());
     }
 
     @Override
@@ -687,6 +701,10 @@ public class ServerTask extends AbstractTask {
         public int getValue() {
             return val;
         }
+    }
+
+    public Map<String, String> getEnvironmentVariables() {
+        return environmentVariables;
     }
 
     public void setEnvironmentVariables(Map<String, String> environmentVariables) {
