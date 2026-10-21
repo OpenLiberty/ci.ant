@@ -59,3 +59,5 @@ The `liberty-ant-tasks.jar` provides the following tasks.
 | [springBootUtil](docs/springBootUtil.md#SpringBootUtilTask) | The `SpringBootUtilTask` task thins a spring boot fat jar, pulling out the runtime dependencies into a local library and producing a much smaller jar containing only the application logic. Use this capability to create efficient Docker layers for your Spring Boot application.
 
 =======
+
+
