@@ -1,0 +1,7 @@
+- stepName: "CiAntDependencyBuild"
+  coreStep: true
+  workType: Jenkins
+  projectName: CiAntDependencyBuild
+  timeoutInMinutes: 30
+  properties:
+    jenkinsServiceName: "websphere-extra-jenkins"
