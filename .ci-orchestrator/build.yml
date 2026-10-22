@@ -8,12 +8,12 @@ triggers:
   triggerName: "Manual"
   description: "Runs a ci.ant Pipeline, building and testing the PR - Manual Trigger"
   triggerRank: 50
-  groups: ["CommonComponents"]
+  groups: ["WebsphereCommonComponents"]
 - type: github
   triggerName: "GitHub"
   description: "Runs a ci.ant Pipeline, building and testing the PR - Github Trigger"
   triggerRank: 50
-  groups: ["CommonComponents"]
+  groups: ["WebsphereCommonComponents"]
   keyword: "!build"
   aliasKeywords:
     - "#build"
