@@ -4,7 +4,7 @@
   projectName: CiAntBuild
   timeoutInMinutes: 30
   dependsOn:
-    - stepName: Build ci.ant Dependency
+    - stepName: CiAntDependencyBuild
       awaitOutputProperties: true
   properties:
     jenkinsServiceName: "websphere-extra-jenkins"
