@@ -1,6 +1,6 @@
 type: pipeline_definition
 product: Liberty
-name: CiAnt
+name: OpenLiberty CI Ant
 description: Run a Pipeline for ci.ant using Cognitive Software Delivery infrastructure
 
 triggers:
