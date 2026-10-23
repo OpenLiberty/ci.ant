@@ -4,7 +4,7 @@
   projectName: OpenLibertyCIAntBuild
   timeoutInMinutes: 30
   dependsOn:
-    - stepName: Build Open Liberty CI Ant dependency
+    - stepName: OpenLibertyCIAntDependencyBuild
       awaitOutputProperties: true
   properties:
     jenkinsServiceName: "websphere-extra-jenkins"
