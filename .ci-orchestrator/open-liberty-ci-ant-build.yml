@@ -1,0 +1,27 @@
+type: pipeline_definition
+product: Liberty
+name: Open Liberty CI Ant
+description: Run a Pipeline for Open Liberty CI Ant using Cognitive Software Delivery infrastructure
+
+triggers:
+- type: manual
+  triggerName: "Manual"
+  description: "Runs an Open Liberty CI Ant Pipeline, building and testing the PR - Manual Trigger"
+  triggerRank: 50
+  groups: ["WebsphereCommonComponents"]
+- type: github
+  triggerName: "GitHub"
+  description: "Runs an Open Liberty CI Ant, building and testing the PR - Github Trigger"
+  triggerRank: 50
+  groups: ["WebsphereCommonComponents"]
+  keyword: "!build"
+  aliasKeywords:
+    - "#build"
+
+steps:
+- stepGroup: Build Open Liberty CI Ant dependency
+  includeSteps:
+  - file: steps/OpenLibertyCIAntDependencyBuild.yml
+- stepGroup: Build Open Liberty CI Ant
+  includeSteps:
+  - file: steps/OpenLibertyCIAntBuild.yml

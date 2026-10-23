@@ -3,7 +3,8 @@ properties([
       string(name: 'executionId',      defaultValue: UUID.randomUUID().toString(), description: 'Unique execution id.'),
       string(name: 'ebcPlan',          defaultValue: 'See Shortlist', description: 'EBC plan to use when provisioning a Jenkins node (ignored when shortlist is supplied).'),
       string(name: 'ebcShortlist',     defaultValue: 'jenkins-child.yml', description: 'Overrides the ebcPlan.  This controls the EBC shortlist to use when provisioning a Jenkins node.'),
-      string(name: 'github_pr_branch', defaultValue: "main", description: 'Git branch to check out of repo.  If the branch does not exist, main is used instead.')
+      string(name: 'github_pr_sha', defaultValue: '',   description: 'Head commit SHA of the PR being tested.'),
+      string(name: 'ecosystemTracking', defaultValue: '"productArea":"Liberty"', description: 'Tracking Map as string often containing information about what CI Orchestrator pipeline.')
    ])
 ])
 timestamps {
@@ -20,8 +21,14 @@ timestamps {
          autoCompleteAfterXHours: 24) {
          buildName params.executionId
          stage("Running Job") {
-            reportActivity(name: "ci.ant Dependency Build", executionId: params.executionId) {
-               sh "git clone --branch ${params.github_pr_branch} --depth 1 https://github.com/OpenLiberty/ci.ant.git ci.ant"
+            reportActivity(name: "Build Open Liberty CI Ant dependency", executionId: params.executionId) {
+               sh """
+                  git init ci.ant
+                  cd ci.ant
+                  git remote add origin https://github.com/OpenLiberty/ci.ant.git
+                  git fetch --depth 1 origin ${params.github_pr_sha}
+                  git checkout --detach FETCH_HEAD
+               """
                withEnv([
                   "executionId=${params.executionId}"
                ]) {

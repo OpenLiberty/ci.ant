@@ -21,7 +21,7 @@ timestamps {
          autoCompleteAfterXHours: 24) {
          buildName params.executionId
          stage("Running Job") {
-            reportActivity(name: "ci.ant PR Build", executionId: params.executionId) {
+            reportActivity(name: "Build Open Liberty CI Ant", executionId: params.executionId) {
                sh """
                   git init ci.ant
                   cd ci.ant

@@ -1,7 +1,7 @@
-- stepName: "CiAntDependencyBuild"
+- stepName: "OpenLibertyCIAntDependencyBuild"
   coreStep: true
   workType: Jenkins
-  projectName: CiAntDependencyBuild
+  projectName: OpenLibertyCIAntDependencyBuild
   timeoutInMinutes: 30
   properties:
     jenkinsServiceName: "websphere-extra-jenkins"
