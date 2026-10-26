@@ -10,10 +10,10 @@ triggers:
   triggerRank: 50
   groups: ["WebsphereCommonComponents"]
   propertyDefinitions:
-    - name: github_pr_sha
+    - name: repoSHA
       description: "The Full Commit Sha you wish to build"
       required: true
-    - name: github_pr_user
+    - name: repoUser
       description: "The GitHub user/fork owner (e.g. OpenLiberty or contributor)"
       defaultValue: "OpenLiberty"
 - type: github
@@ -25,11 +25,11 @@ triggers:
   aliasKeywords:
     - "#build"
   propertyDefinitions:
-    - name: github_pr_sha
+    - name: repoSHA
       defaultValue: "${github_pr_sha}"
       description: "The Full Commit Sha you wish to build"
       required: true
-    - name: github_pr_user
+    - name: repoUser
       defaultValue: "${github_pr_user}"
       description: "The GitHub user/fork owner"
 
