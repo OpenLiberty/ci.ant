@@ -1,10 +1,8 @@
 - stepName: "OpenLibertyCIAntBuild"
-  coreStep: true
   workType: Jenkins
   projectName: OpenLibertyCIAntBuild
-  timeoutInMinutes: 30
+  timeoutInMinutes: 720
   dependsOn:
     - stepName: OpenLibertyCIAntDependencyBuild
-      awaitOutputProperties: true
   properties:
     jenkinsServiceName: "websphere-extra-jenkins"

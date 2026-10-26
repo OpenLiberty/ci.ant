@@ -9,6 +9,13 @@ triggers:
   description: "Runs an Open Liberty CI Ant Pipeline, building and testing the PR - Manual Trigger"
   triggerRank: 50
   groups: ["WebsphereCommonComponents"]
+  propertyDefinitions:
+    - name: repoSHA
+      description: "The Full Commit Sha you wish to build"
+      required: true
+    - name: repoUser
+      description: "The GitHub user/fork owner (e.g. OpenLiberty or contributor)"
+      defaultValue: "OpenLiberty"
 - type: github
   triggerName: "GitHub"
   description: "Runs an Open Liberty CI Ant, building and testing the PR - Github Trigger"
@@ -17,6 +24,14 @@ triggers:
   keyword: "!build"
   aliasKeywords:
     - "#build"
+  propertyDefinitions:
+    - name: repoSHA
+      defaultValue: "${github_pr_sha}"
+      description: "The Full Commit Sha you wish to build"
+      required: true
+    - name: repoUser
+      defaultValue: "${github_pr_user}"
+      description: "The GitHub user/fork owner"
 
 steps:
 - stepGroup: Build Open Liberty CI Ant dependency

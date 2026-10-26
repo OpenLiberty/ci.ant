@@ -1,9 +1,11 @@
 properties([
    parameters([
       string(name: 'executionId', defaultValue: UUID.randomUUID().toString(), description: 'Unique execution id.'),
-      string(name: 'ebcPlan', defaultValue: 'See Shortlist', description: 'EBC plan to use when provisioning a Jenkins node (ignored when shortlist is supplied).'),
-      string(name: 'ebcShortlist', defaultValue: 'jenkins-child.yml', description: 'Overrides the ebcPlan.  This controls the EBC shortlist to use when provisioning a Jenkins node.'),
-      string(name: 'github_pr_sha', defaultValue: '',   description: 'Head commit SHA of the PR being tested.'),
+      string(name: 'ebcPlan', defaultValue: 'See Shortlist', description: 'EBC plan to use when provisioning a Jenkins node.  Ignored when shortlist is supplied.'),
+      string(name: 'ebcShortlist', defaultValue: 'jenkins-child.yml', description: 'Overrides the ebcPlan. This controls the EBC shortlist to use when provisioning a Jenkins node.'),
+      string(name: 'ebcPriority', defaultValue: '90', description: 'Priority of the build execution on EBC.'),
+      string(name: 'repoUser', defaultValue: 'OpenLiberty', description: 'GitHub user or org holding the repository/fork.'),
+      string(name: 'repoSHA', defaultValue: '', description: 'Head commit SHA of the PR being tested.'),
       string(name: 'ecosystemTracking', defaultValue: '"productArea":"Liberty"', description: 'Tracking Map as string often containing information about what CI Orchestrator pipeline.')
    ])
 ])
@@ -16,23 +18,24 @@ timestamps {
    try {
       onEBC(
          demandId: params.executionId,
-         ebcPlan: params.ebcPlan,
          ebcShortlist: params.ebcShortlist,
+         priority: params.ebcPriority,
          autoCompleteAfterXHours: 24) {
          buildName params.executionId
          stage("Running Job") {
             reportActivity(name: "Build Open Liberty CI Ant", executionId: params.executionId) {
-               sh """
-                  git init ci.ant
-                  cd ci.ant
-                  git remote add origin https://github.com/OpenLiberty/ci.ant.git
-                  git fetch --depth 1 origin ${params.github_pr_sha}
-                  git checkout --detach FETCH_HEAD
-               """
-               withEnv([
-                  "executionId=${params.executionId}"
-               ]) {
-                  sh "ci.ant/scripts/build.sh"
+               dir('ci.ant') {
+                  sh """
+                     git init
+                     git remote add origin git@github.com:${params.repoUser}/ci.ant.git
+                     git fetch --depth 1 origin ${params.repoSHA}
+                     git checkout --detach FETCH_HEAD
+                  """
+                  withEnv([
+                     "executionId=${params.executionId}"
+                  ]) {
+                     sh "./scripts/build.sh"
+                  }
                }
             }
          }
