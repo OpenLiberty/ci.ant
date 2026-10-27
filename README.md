@@ -17,7 +17,7 @@ Use Maven 3.x to build the Ant tasks.
 
 ### Java Support
 
-The Ant tasks are tested with Long-Term-Support (LTS) releases of Java. The Ant tasks, as of release 1.9.11, are supported on Java 8, 11 and 17. Prior to this version, the Ant tasks are supported on Java 8 and 11.
+The Ant tasks are tested with Long-Term-Support (LTS) releases of Java. The Ant tasks, as of release 1.9.19, are supported on Java 8, 11, 17, 21 and 25. Prior to this version, the Ant tasks are supported on Java 8, 11 and 17.
 
 ## Configuration
 
