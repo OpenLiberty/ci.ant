@@ -19,6 +19,12 @@ triggers:
   - name: repoSHA
     required: true
     description: "Head commit SHA of the PR being tested."
+  - name: WLP_VERSION
+    defaultValue: "26.0.0_03"
+    description: "Use this to substitue the default value used in the scripts"
+  - name: WLP_LICENSE
+    defaultValue: "L-CJVT-WW2FFS"
+    description: "Use this to substitue the default value used in the scripts"
 
 - type: github
   triggerName: "GitHub"
@@ -38,6 +44,12 @@ triggers:
   - name: repoSHA
     defaultValue: "${github_pr_sha}"
     description: "Head commit SHA of the PR being tested."
+  - name: WLP_VERSION
+    defaultValue: "26.0.0_03"
+    description: "Use this to substitue the default value used in the scripts"
+  - name: WLP_LICENSE
+    defaultValue: "L-CJVT-WW2FFS"
+    description: "Use this to substitue the default value used in the scripts"
 
 steps:
 - stepName: Ubuntu build and test
