@@ -1,0 +1,60 @@
+type: pipeline_definition
+product: Liberty
+name: Open Liberty Common Components CI Ant
+description: Run a PR Pipeline for Open Liberty CI Ant
+
+triggers:
+- type: manual
+  triggerName: "Manual"
+  description: "Runs an Open Liberty Common Components CI Ant Pipeline, building and testing the PR - Manual Trigger"
+  triggerRank: 50
+  groups: ["WebsphereCommonComponents"]
+  propertyDefinitions:
+  - name: repoName
+    defaultValue: "ci.ant"
+    description: "Name of Github Repository"
+  - name: org
+    defaultValue: "OpenLiberty"
+    description: "GitHub user or org holding the repository/fork."
+  - name: repoSHA
+    required: true
+    description: "Head commit SHA of the PR being tested."
+  - name: WLP_VERSION
+    defaultValue: "26.0.0_03"
+    description: "Use this to substitue the default value used in the scripts"
+  - name: WLP_LICENSE
+    defaultValue: "L-CJVT-WW2FFS"
+    description: "Use this to substitue the default value used in the scripts"
+
+- type: github
+  triggerName: "GitHub"
+  description: "Runs an Open Liberty Common Components CI Ant Pipeline, building and testing the PR - Github Trigger"
+  triggerRank: 50
+  groups: ["WebsphereCommonComponents"]
+  keyword: "!build"
+  aliasKeywords:
+    - "#build"
+  propertyDefinitions:
+  - name: repoName
+    defaultValue: "${github_pr_repo}"
+    description: "Name of Github Repository"
+  - name: org
+    defaultValue: "${github_pr_user}"
+    description: "GitHub user or org holding the repository/fork."
+  - name: repoSHA
+    defaultValue: "${github_pr_sha}"
+    description: "Head commit SHA of the PR being tested."
+  - name: WLP_VERSION
+    defaultValue: "26.0.0_03"
+    description: "Use this to substitue the default value used in the scripts"
+  - name: WLP_LICENSE
+    defaultValue: "L-CJVT-WW2FFS"
+    description: "Use this to substitue the default value used in the scripts"
+
+steps:
+- stepName: Ubuntu build and test
+  workType: Jenkins
+  projectName: WSCommonComponents_BuildArtifacts
+  timeoutInMinutes: 1440
+  properties:
+    jenkinsServiceName: "websphere-extra-jenkins"
