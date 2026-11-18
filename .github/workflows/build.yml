@@ -34,7 +34,7 @@ jobs:
     - name: Setup Java ${{ matrix.java }}
       uses: actions/setup-java@v3
       with:
-        distribution: 'temurin'
+        distribution: 'semeru'
         java-version: ${{ matrix.java }}
         cache: 'maven'
     - name: Run tests with maven for ubuntu
